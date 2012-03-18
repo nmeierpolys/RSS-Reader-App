@@ -1,5 +1,5 @@
 //
-//  StoryDetail.h
+//  StoryDetailViewController.h
 //  RSSReader
 //
 //  Created by Nathaniel Meierpolys on 3/17/12.
@@ -7,7 +7,20 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "Story.h"
 
-@interface StoryDetail : UIView
+@interface StoryDetailViewController : UIViewController {
+    Story *currentStory;
+}
+@property (weak, nonatomic) IBOutlet UILabel *labelTitle;
+@property (weak, nonatomic) IBOutlet UILabel *labelAuthor;
+@property (weak, nonatomic) IBOutlet UILabel *labelBlogTitle;
+@property (weak, nonatomic) IBOutlet UILabel *labelDateCreated;
+@property (weak, nonatomic) IBOutlet UILabel *labelDateRetrieved;
+@property (weak, nonatomic) IBOutlet UILabel *labelRead;
+@property (weak, nonatomic) IBOutlet UILabel *labelURL;
+@property (weak, nonatomic) IBOutlet UITextView *textBody;
+@property (weak, nonatomic) IBOutlet UIWebView *webView;
+@property (nonatomic, strong) Story *currentStory;
 
 @end
