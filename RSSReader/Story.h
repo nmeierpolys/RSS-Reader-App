@@ -9,27 +9,35 @@
 #import <UIKit/UIKit.h>
 
 @interface Story : NSObject {
+    int storyID;
     NSString *title;
     NSString *author;
     NSString *body;
     NSString *source;
     NSString *url;
-    NSString *content;
     NSDate *dateCreated;
     NSDate *dateRetrieved;
-    bool read;
+    bool isRead;
+    NSString *imagePath;
+    bool isFavorite;
+    int rank;
+    bool isDirty;
 }
 
-
+@property (nonatomic) int storyID;
 @property (nonatomic, copy) NSString *title;
 @property (nonatomic, copy) NSString *author;
 @property (nonatomic, copy) NSString *body;
 @property (nonatomic, copy) NSString *source;
 @property (nonatomic, copy) NSString *url;
-@property (nonatomic, copy) NSString *content;
 @property (nonatomic, copy) NSDate *dateCreated;
 @property (nonatomic, copy) NSDate *dateRetrieved;
-@property (nonatomic) bool read;
+@property (nonatomic) bool isRead;
+@property (nonatomic, copy) NSString *imagePath;
+@property (nonatomic) bool isFavorite;
+@property (nonatomic) int rank;
+@property (nonatomic) bool isDirty;
+
 
 - (id)init;
 - (id)initWithTitle:(NSString *)title 
@@ -37,9 +45,17 @@
                body:(NSString *)body 
              source:(NSString *)source 
                 url:(NSString *)url 
-            content:(NSString *)content
         dateCreated:(NSDate *)dateCreated
-               read:(bool)read;
+      dateRetrieved:(NSDate *)dateRetrieved
+             isRead:(bool)isRead
+          imagePath:(NSString *)imagePath
+         isFavorite:(bool)isFavorite
+               rank:(int)rank
+            isDirty:(bool)isDirty;
+- (id)initWithID:(int)newStoryID 
+           title:(NSString *)newTitle;
+- (id)initWithDummyInfo;
+- (id)initWithEmpty;
 - (void)PopulateDummyData;
 - (void)PopulateEmptyData;
 - (NSString *)GetDateCreatedString;

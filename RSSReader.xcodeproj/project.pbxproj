@@ -7,7 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		F126F70B151AC31000BF54EF /* stories.sqlite in Resources */ = {isa = PBXBuildFile; fileRef = F126F70A151AC31000BF54EF /* stories.sqlite */; };
+		F126F70F151AC3E900BF54EF /* Persistence.m in Sources */ = {isa = PBXBuildFile; fileRef = F126F70E151AC3E900BF54EF /* Persistence.m */; };
+		F126F711151AC50900BF54EF /* libsqlite3.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = F126F710151AC50900BF54EF /* libsqlite3.0.dylib */; };
+		F126F71B151AD3AA00BF54EF /* stories.sqlite in Resources */ = {isa = PBXBuildFile; fileRef = F126F71A151AD3AA00BF54EF /* stories.sqlite */; };
 		F1E23DE815153553007CD8F7 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F1E23DE715153553007CD8F7 /* UIKit.framework */; };
 		F1E23DEA15153553007CD8F7 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F1E23DE915153553007CD8F7 /* Foundation.framework */; };
 		F1E23DEC15153553007CD8F7 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F1E23DEB15153553007CD8F7 /* CoreGraphics.framework */; };
@@ -55,7 +57,10 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		F126F70A151AC31000BF54EF /* stories.sqlite */ = {isa = PBXFileReference; lastKnownFileType = file; path = stories.sqlite; sourceTree = "<group>"; };
+		F126F70D151AC3E900BF54EF /* Persistence.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Persistence.h; sourceTree = "<group>"; };
+		F126F70E151AC3E900BF54EF /* Persistence.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Persistence.m; sourceTree = "<group>"; };
+		F126F710151AC50900BF54EF /* libsqlite3.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.0.dylib; path = usr/lib/libsqlite3.0.dylib; sourceTree = SDKROOT; };
+		F126F71A151AD3AA00BF54EF /* stories.sqlite */ = {isa = PBXFileReference; lastKnownFileType = file; path = stories.sqlite; sourceTree = "<group>"; };
 		F1E23DE315153553007CD8F7 /* RSSReader.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RSSReader.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F1E23DE715153553007CD8F7 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		F1E23DE915153553007CD8F7 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -121,6 +126,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F126F711151AC50900BF54EF /* libsqlite3.0.dylib in Frameworks */,
 				F1E23E5815155482007CD8F7 /* libz.1.2.5.dylib in Frameworks */,
 				F1E23E5615155479007CD8F7 /* MobileCoreServices.framework in Frameworks */,
 				F1E23E5415155472007CD8F7 /* SystemConfiguration.framework in Frameworks */,
@@ -144,9 +150,20 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		F126F719151AD39400BF54EF /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				F126F71A151AD3AA00BF54EF /* stories.sqlite */,
+			);
+			name = Resources;
+			path = RSSReader/Resources;
+			sourceTree = "<group>";
+		};
 		F1E23DD815153553007CD8F7 = {
 			isa = PBXGroup;
 			children = (
+				F126F719151AD39400BF54EF /* Resources */,
+				F126F710151AC50900BF54EF /* libsqlite3.0.dylib */,
 				F1E23E5915155918007CD8F7 /* GDataXML */,
 				F1E23E3115155425007CD8F7 /* ASIHTTPRequest */,
 				F1E23DED15153553007CD8F7 /* RSSReader */,
@@ -183,7 +200,8 @@
 		F1E23DED15153553007CD8F7 /* RSSReader */ = {
 			isa = PBXGroup;
 			children = (
-				F126F70A151AC31000BF54EF /* stories.sqlite */,
+				F126F70D151AC3E900BF54EF /* Persistence.h */,
+				F126F70E151AC3E900BF54EF /* Persistence.m */,
 				F1E23E2A151542DF007CD8F7 /* StoryDetailViewController.h */,
 				F1E23E2B151542DF007CD8F7 /* StoryDetailViewController.m */,
 				F1E23E5D15155A2B007CD8F7 /* GDataXMLElement-Extras.h */,
@@ -198,9 +216,9 @@
 				F1E23DFC15153553007CD8F7 /* MainStoryboard_iPad.storyboard */,
 				F1E23DFF15153553007CD8F7 /* RSSViewController.h */,
 				F1E23E0015153553007CD8F7 /* RSSViewController.m */,
-				F1E23DEE15153553007CD8F7 /* Supporting Files */,
 				F1E23E641515624B007CD8F7 /* NSArray+Extras.h */,
 				F1E23E651515624B007CD8F7 /* NSArray+Extras.m */,
+				F1E23DEE15153553007CD8F7 /* Supporting Files */,
 			);
 			path = RSSReader;
 			sourceTree = "<group>";
@@ -349,7 +367,7 @@
 				F1E23DF215153553007CD8F7 /* InfoPlist.strings in Resources */,
 				F1E23DFB15153553007CD8F7 /* MainStoryboard_iPhone.storyboard in Resources */,
 				F1E23DFE15153553007CD8F7 /* MainStoryboard_iPad.storyboard in Resources */,
-				F126F70B151AC31000BF54EF /* stories.sqlite in Resources */,
+				F126F71B151AD3AA00BF54EF /* stories.sqlite in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -402,6 +420,7 @@
 				F1E23E5C15155918007CD8F7 /* GDataXMLNode.m in Sources */,
 				F1E23E5F15155A2B007CD8F7 /* GDataXMLElement-Extras.m in Sources */,
 				F1E23E661515624B007CD8F7 /* NSArray+Extras.m in Sources */,
+				F126F70F151AC3E900BF54EF /* Persistence.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

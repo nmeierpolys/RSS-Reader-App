@@ -13,6 +13,7 @@
 #import "GDataXMLElement-Extras.h"
 #import "NSDate+InternetDateTime.h"
 #import "NSArray+Extras.h"
+#import "Persistence.h"
 
 @interface RSSViewController ()
 
@@ -25,6 +26,7 @@
 @synthesize allEntries = _allEntries;
 @synthesize feeds = _feeds;
 @synthesize queue = _queue;
+@synthesize PM = _PM;
 
 - (void)viewDidLoad
 {
@@ -37,8 +39,17 @@
     self.queue = [[NSOperationQueue alloc] init];
     self.feeds = [NSArray arrayWithObjects:
                   @"http://vikesgeek.blogspot.com/feeds/posts/default",
-                  nil];    
+                  @"http://www.thanscorner.info/rss",
+                  nil];   
+    PM = [[Persistence alloc] init];
+    [PM ClearDB];
+    [self loadSqlStoriesIntoTable];
     [self refresh];
+}
+
+- (void)loadSqlStoriesIntoTable
+{
+    self.allEntries = PM.stories;
 }
 
 - (void)refresh {
@@ -75,10 +86,15 @@
                         Story *entry1 = (Story *) a;
                         Story *entry2 = (Story *) b;
                         return [entry1.dateCreated compare:entry2.dateCreated];
-                    }];                 
-                    [_allEntries insertObject:entry atIndex:insertIdx];
-                    [self.tableView insertRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:insertIdx inSection:0]]
-                                          withRowAnimation:UITableViewRowAnimationRight];
+                    }];           
+                    [PM AddStory:entry];
+                    Story *newEntry = [PM GetLastStory];
+                    if(newEntry != nil)
+                    {
+                        [_allEntries insertObject:newEntry atIndex:insertIdx];
+                        [self.tableView insertRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:insertIdx inSection:0]] 
+                                              withRowAnimation:UITableViewRowAnimationRight];
+                    }
                     
                 }                            
                 
@@ -133,12 +149,16 @@
             
             Story *entry = [[Story alloc] initWithTitle:articleTitle
                                                  author:@"n/a"
-                                                   body:@"n/a"
+                                                   body:articleContent
                                                  source:blogTitle
                                                     url:articleUrl
-                                                content:articleContent
                                             dateCreated:articleDate
-                                                   read:NO];
+                                          dateRetrieved:[NSDate date] 
+                                                 isRead:NO 
+                                              imagePath:@"" 
+                                             isFavorite:NO 
+                                                   rank:0 
+                                                isDirty:NO];
             [entries addObject:entry];
             
         }      
@@ -171,13 +191,17 @@
 
         
         Story *entry = [[Story alloc] initWithTitle:articleTitle
-                                              author:@"n/a"
-                                                body:@"n/a"
-                                              source:blogTitle
-                                                 url:articleUrl
-                                            content:articleContent
-                                         dateCreated:articleDate
-                                                read:NO];
+                                             author:@"n/a"
+                                               body:articleContent
+                                             source:blogTitle
+                                                url:articleUrl
+                                        dateCreated:articleDate
+                                      dateRetrieved:[NSDate date] 
+                                             isRead:NO 
+                                          imagePath:@"" 
+                                         isFavorite:NO 
+                                               rank:0 
+                                            isDirty:NO];
         [entries addObject:entry];
         
     }      

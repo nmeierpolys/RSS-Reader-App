@@ -35,9 +35,9 @@
     labelURL.text = currentStory.url;
     self.title = currentStory.title;
     
-    [webView loadHTMLString:currentStory.content baseURL:nil];
+    [webView loadHTMLString:currentStory.body baseURL:nil];
     
-    if(currentStory.read)
+    if(currentStory.isRead)
         labelRead.text = @"Read";
     else 
         labelRead.text = @"Unread";

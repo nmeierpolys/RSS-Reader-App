@@ -15,10 +15,15 @@
 @synthesize body = _body;
 @synthesize source = _source;
 @synthesize url = _url;
-@synthesize content = _content;
 @synthesize dateCreated = _dateCreated;
 @synthesize dateRetrieved = _dateRetrieved;
-@synthesize read = _read;
+@synthesize isRead = _isRead;
+@synthesize storyID = _storyID;
+@synthesize imagePath = _imagePath;
+@synthesize isFavorite = _isFavorite;
+@synthesize rank = _rank;
+@synthesize isDirty = _isDirty;
+
 
 - (id)init
 {
@@ -35,9 +40,13 @@
                body:(NSString *)newBody 
              source:(NSString *)newSource 
                 url:(NSString *)newUrl 
-            content:(NSString *)content
         dateCreated:(NSDate *)newDateCreated
-               read:(bool)newRead
+      dateRetrieved:(NSDate *)newDateRetrieved
+             isRead:(bool)newIsRead
+          imagePath:(NSString *)newImagePath
+         isFavorite:(bool)newIsFavorite
+               rank:(int)newRank
+            isDirty:(bool)newIsDirty
 {
     if(self = [super init])
     {
@@ -46,10 +55,46 @@
         self.body = newBody;
         self.source = newSource;
         self.url = newUrl;
-        self.content = content;
         self.dateCreated = newDateCreated;
-        self.dateRetrieved = [[NSDate alloc] init];
-        self.read = newRead;
+        self.dateRetrieved = newDateRetrieved;
+        self.isRead = newIsRead;
+        self.imagePath = newImagePath;
+        self.isFavorite = newIsFavorite;
+        self.rank = newRank;
+        self.isDirty = newIsDirty;
+    }
+    
+    return self;
+}
+
+- (id)initWithID:(int)newStoryID 
+           title:(NSString *)newTitle 
+{
+    if(self = [super init])
+    {
+        [self PopulateEmptyData];
+        self.storyID = newStoryID;
+        self.title = newTitle;
+    }
+    
+    return self;
+}
+
+- (id)initWithEmpty
+{
+    if(self = [super init])
+    {
+        [self PopulateEmptyData];
+    }
+    
+    return self;
+}
+
+- (id)initWithDummyInfo
+{
+    if(self = [super init])
+    {
+        [self PopulateDummyData];
     }
     
     return self;
@@ -57,15 +102,19 @@
 
 - (void)PopulateDummyData
 {
-    self.title = @"My title";
+    self.title = @"My dummy title";
     self.author = @"Me";
     self.body = @"This is the story...";
     self.source = @"ThansCorner";
     self.url = @"http://www.thanscorner.info";
-    self.content = @"This is my awesome blog post";
-    self.dateCreated = [[NSDate alloc] init];
+    self.body = @"This is my awesome blog post";
+    self.dateCreated = [NSDate date];
     self.dateRetrieved = [[NSDate alloc] init];
-    self.read = NO;
+    self.isRead = YES;
+    self.imagePath = @"http://awesome.jpg";
+    self.isFavorite = YES;
+    self.rank = 15;
+    self.isDirty = YES;
 }
 
 - (void)PopulateEmptyData
@@ -75,10 +124,14 @@
     self.body = @"";
     self.source = @"";
     self.url = @"";
-    self.content = @"";
+    self.body = @"";
     self.dateCreated = [[NSDate alloc] init];
     self.dateRetrieved = [[NSDate alloc] init];
-    self.read = NO;
+    self.isRead = NO;
+    self.imagePath = @"";
+    self.isFavorite = NO;
+    self.rank = 0;
+    self.isDirty = NO;
 }
 
 - (NSString *)GetDateCreatedString
