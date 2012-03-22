@@ -35,13 +35,15 @@
     labelURL.text = currentStory.url;
     self.title = currentStory.title;
     
+    [webView loadHTMLString:currentStory.content baseURL:nil];
+    
     if(currentStory.read)
         labelRead.text = @"Read";
     else 
         labelRead.text = @"Unread";
     
-    NSURL *url = [NSURL URLWithString:currentStory.url];    
-    [webView loadRequest:[NSURLRequest requestWithURL:url]];
+    //NSURL *url = [NSURL URLWithString:currentStory.url];    
+    //[webView loadRequest:[NSURLRequest requestWithURL:url]];
         
     
 }

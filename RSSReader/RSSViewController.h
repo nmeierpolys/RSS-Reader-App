@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import "Story.h"
+#import "GDataXMLNode.h"
 
 @interface RSSViewController : UITableViewController {
     Story *tempStory;
@@ -26,4 +27,5 @@
 
 - (IBAction)btnGetPressed:(id)sender;
 - (void)testPopulate;
+- (void)testPrint:(GDataXMLDocument *)doc;
 @end

@@ -15,6 +15,7 @@
 @synthesize body = _body;
 @synthesize source = _source;
 @synthesize url = _url;
+@synthesize content = _content;
 @synthesize dateCreated = _dateCreated;
 @synthesize dateRetrieved = _dateRetrieved;
 @synthesize read = _read;
@@ -24,7 +25,6 @@
     if(self = [super init])
     {
         [self PopulateDummyData];
-        //[self PopulateEmptyData];
     }
     
     return self;
@@ -35,6 +35,7 @@
                body:(NSString *)newBody 
              source:(NSString *)newSource 
                 url:(NSString *)newUrl 
+            content:(NSString *)content
         dateCreated:(NSDate *)newDateCreated
                read:(bool)newRead
 {
@@ -45,6 +46,7 @@
         self.body = newBody;
         self.source = newSource;
         self.url = newUrl;
+        self.content = content;
         self.dateCreated = newDateCreated;
         self.dateRetrieved = [[NSDate alloc] init];
         self.read = newRead;
@@ -60,6 +62,7 @@
     self.body = @"This is the story...";
     self.source = @"ThansCorner";
     self.url = @"http://www.thanscorner.info";
+    self.content = @"This is my awesome blog post";
     self.dateCreated = [[NSDate alloc] init];
     self.dateRetrieved = [[NSDate alloc] init];
     self.read = NO;
@@ -72,6 +75,7 @@
     self.body = @"";
     self.source = @"";
     self.url = @"";
+    self.content = @"";
     self.dateCreated = [[NSDate alloc] init];
     self.dateRetrieved = [[NSDate alloc] init];
     self.read = NO;

@@ -14,6 +14,7 @@
     NSString *body;
     NSString *source;
     NSString *url;
+    NSString *content;
     NSDate *dateCreated;
     NSDate *dateRetrieved;
     bool read;
@@ -25,6 +26,7 @@
 @property (nonatomic, copy) NSString *body;
 @property (nonatomic, copy) NSString *source;
 @property (nonatomic, copy) NSString *url;
+@property (nonatomic, copy) NSString *content;
 @property (nonatomic, copy) NSDate *dateCreated;
 @property (nonatomic, copy) NSDate *dateRetrieved;
 @property (nonatomic) bool read;
@@ -35,6 +37,7 @@
                body:(NSString *)body 
              source:(NSString *)source 
                 url:(NSString *)url 
+            content:(NSString *)content
         dateCreated:(NSDate *)dateCreated
                read:(bool)read;
 - (void)PopulateDummyData;

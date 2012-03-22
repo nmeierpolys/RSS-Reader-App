@@ -36,14 +36,7 @@
     self.allEntries = [NSMutableArray array];
     self.queue = [[NSOperationQueue alloc] init];
     self.feeds = [NSArray arrayWithObjects:
-                  @"http://feeds.feedburner.com/RayWenderlich",
                   @"http://vikesgeek.blogspot.com/feeds/posts/default",
-                  @"hhttp://www.rumgr.com/home/feed/", 
-                  @"http://feeds.feedburner.com/LasVegasStartups",
-                  @"http://www.dodgycoder.net/feeds/posts/default?alt=rss",
-                  @"http://feeds.feedburner.com/ChrisEidhof",
-                  @"http://downtownproject.com/feed/",
-                  @"http://xkcd.com/rss.xml",
                   nil];    
     [self refresh];
 }
@@ -69,6 +62,9 @@
         } else {
             
             NSMutableArray *entries = [NSMutableArray array];
+            
+            //[self testPrint:doc];
+            
             [self parseFeed:doc.rootElement entries:entries];                
             
             [[NSOperationQueue mainQueue] addOperationWithBlock:^{
@@ -93,7 +89,23 @@
     
 }
 
-- (void)parseFeed:(GDataXMLElement *)rootElement entries:(NSMutableArray *)entries {    
+- (void)testPrint:(GDataXMLDocument *)doc
+{
+    NSArray *userElements = [doc.rootElement elementsForName:@"entry"];
+    
+    for (GDataXMLElement *userEl in userElements) {
+        
+        // Name
+        NSArray *titles = [userEl elementsForName:@"content "];
+        if (titles.count > 0) {
+            GDataXMLElement *title = (GDataXMLElement *) [titles objectAtIndex:0];
+            
+            NSLog(@"title is %@", title.stringValue);
+        }
+    }
+}
+
+- (void)parseFeed:(GDataXMLElement *)rootElement entries:(NSMutableArray *)entries {   
     if ([rootElement.name compare:@"rss"] == NSOrderedSame) {
         [self parseRss:rootElement entries:entries];
     } else if ([rootElement.name compare:@"feed"] == NSOrderedSame) {                       
@@ -115,7 +127,8 @@
             
             NSString *articleTitle = [item valueForChild:@"title"];
             NSString *articleUrl = [item valueForChild:@"link"];            
-            NSString *articleDateString = [item valueForChild:@"pubDate"];        
+            NSString *articleDateString = [item valueForChild:@"pubDate"];      
+            NSString *articleContent = [item valueForChild:@"content"];
             NSDate *articleDate = [NSDate dateFromInternetDateTimeString:articleDateString formatHint:DateFormatHintRFC822];
             
             Story *entry = [[Story alloc] initWithTitle:articleTitle
@@ -123,6 +136,7 @@
                                                    body:@"n/a"
                                                  source:blogTitle
                                                     url:articleUrl
+                                                content:articleContent
                                             dateCreated:articleDate
                                                    read:NO];
             [entries addObject:entry];
@@ -141,6 +155,7 @@
         
         NSString *articleTitle = [item valueForChild:@"title"];
         NSString *articleUrl = nil;
+        NSString *articleContent = [item valueForChild:@"content"];
         NSArray *links = [item elementsForName:@"link"];        
         for(GDataXMLElement *link in links) {
             NSString *rel = [[link attributeForName:@"rel"] stringValue];
@@ -160,6 +175,7 @@
                                                 body:@"n/a"
                                               source:blogTitle
                                                  url:articleUrl
+                                            content:articleContent
                                          dateCreated:articleDate
                                                 read:NO];
         [entries addObject:entry];

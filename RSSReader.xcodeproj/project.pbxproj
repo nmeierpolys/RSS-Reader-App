@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		F126F70B151AC31000BF54EF /* stories.sqlite in Resources */ = {isa = PBXBuildFile; fileRef = F126F70A151AC31000BF54EF /* stories.sqlite */; };
 		F1E23DE815153553007CD8F7 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F1E23DE715153553007CD8F7 /* UIKit.framework */; };
 		F1E23DEA15153553007CD8F7 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F1E23DE915153553007CD8F7 /* Foundation.framework */; };
 		F1E23DEC15153553007CD8F7 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F1E23DEB15153553007CD8F7 /* CoreGraphics.framework */; };
@@ -54,6 +55,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		F126F70A151AC31000BF54EF /* stories.sqlite */ = {isa = PBXFileReference; lastKnownFileType = file; path = stories.sqlite; sourceTree = "<group>"; };
 		F1E23DE315153553007CD8F7 /* RSSReader.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RSSReader.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F1E23DE715153553007CD8F7 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		F1E23DE915153553007CD8F7 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -181,6 +183,7 @@
 		F1E23DED15153553007CD8F7 /* RSSReader */ = {
 			isa = PBXGroup;
 			children = (
+				F126F70A151AC31000BF54EF /* stories.sqlite */,
 				F1E23E2A151542DF007CD8F7 /* StoryDetailViewController.h */,
 				F1E23E2B151542DF007CD8F7 /* StoryDetailViewController.m */,
 				F1E23E5D15155A2B007CD8F7 /* GDataXMLElement-Extras.h */,
@@ -346,6 +349,7 @@
 				F1E23DF215153553007CD8F7 /* InfoPlist.strings in Resources */,
 				F1E23DFB15153553007CD8F7 /* MainStoryboard_iPhone.storyboard in Resources */,
 				F1E23DFE15153553007CD8F7 /* MainStoryboard_iPad.storyboard in Resources */,
+				F126F70B151AC31000BF54EF /* stories.sqlite in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -582,6 +586,7 @@
 				F1E23E1B15153553007CD8F7 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		F1E23E1C15153553007CD8F7 /* Build configuration list for PBXNativeTarget "RSSReaderTests" */ = {
 			isa = XCConfigurationList;
@@ -590,6 +595,7 @@
 				F1E23E1E15153553007CD8F7 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
