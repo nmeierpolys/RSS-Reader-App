@@ -87,11 +87,9 @@
                         Story *entry2 = (Story *) b;
                         return [entry1.dateCreated compare:entry2.dateCreated];
                     }];           
-                    [PM AddStory:entry];
-                    Story *newEntry = [PM GetLastStory];
-                    if(newEntry != nil)
+                    if(entry != nil)
                     {
-                        [_allEntries insertObject:newEntry atIndex:insertIdx];
+                        [_allEntries insertObject:entry atIndex:insertIdx];
                         [self.tableView insertRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:insertIdx inSection:0]] 
                                               withRowAnimation:UITableViewRowAnimationRight];
                     }
@@ -160,6 +158,7 @@
                                                    rank:0 
                                                 isDirty:NO];
             [entries addObject:entry];
+            [PM AddStory:entry];
             
         }      
     }
@@ -203,6 +202,7 @@
                                                rank:0 
                                             isDirty:NO];
         [entries addObject:entry];
+        [PM AddStory:entry];
         
     }      
     

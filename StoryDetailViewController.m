@@ -25,7 +25,7 @@
     if(currentStory == nil)
         currentStory = [[Story alloc] init];
     
-    currentStory.title = [currentStory.title stringByAppendingFormat:@"##"];
+    currentStory.title = currentStory.title;
     labelTitle.text = currentStory.title;
     labelAuthor.text = currentStory.author;
     textBody.text = currentStory.body;
