@@ -107,12 +107,13 @@
             
             [[NSOperationQueue mainQueue] addOperationWithBlock:^{
                 for (Story *entry in entries) {
-                    
-                    int insertIdx = 0;
-                    
+                    int insertIdx = [_allEntries indexForInsertingObject:entry sortedUsingBlock:^(id a, id b) {
+                        Story *entry1 = (Story *) a;
+                        Story *entry2 = (Story *) b;
+                        return [entry1.dateCreated compare:entry2.dateCreated];
+                    }];     
                     if(entry != nil)
                     {
-                        NSLog(@"Rows: %i",[self.tableView numberOfRowsInSection:0]);
                         [_allEntries insertObject:entry atIndex:insertIdx];
                         [self.tableView insertRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:insertIdx inSection:0]] withRowAnimation:UITableViewRowAnimationRight];
                     }
