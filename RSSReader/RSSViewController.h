@@ -31,4 +31,6 @@
 - (IBAction)btnGetPressed:(id)sender;
 - (void)testPopulate;
 - (void)testPrint:(GDataXMLDocument *)doc;
+- (void)enteringBackground;
+- (void)enteringForeground;
 @end

@@ -30,7 +30,11 @@
 
 - (void)viewDidLoad
 {
-    [super viewDidLoad];
+    [super viewDidLoad]; 
+    
+    UIBarButtonItem *tempButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh target:self action:@selector(refreshButtonAction)];
+    self.navigationItem.rightBarButtonItem = tempButton;
+    
 	// Do any additional setup after loading the view, typically from a nib.
     tempStory = [[Story alloc] init];
     
@@ -40,16 +44,41 @@
     self.feeds = [NSArray arrayWithObjects:
                   @"http://vikesgeek.blogspot.com/feeds/posts/default",
                   @"http://www.thanscorner.info/rss",
+                  @"http://feeds.feedburner.com/RayWenderlich",
+                  @"http://feeds.feedburner.com/LasVegasStartups",
+                  @"http://www.dodgycoder.net/feeds/posts/default?alt=rss",
+                  @"http://xkcd.com/rss.xml",
                   nil];   
     PM = [[Persistence alloc] init];
-    [PM ClearDB];
+    //[PM ClearDB];
     [self loadSqlStoriesIntoTable];
     [self refresh];
+}
+
+- (void)enteringBackground
+{
+    [PM shutItDown];
+}
+
+- (void)enteringForeground
+{
+    [PM initializeDatabaseIfNeeded];
+}
+
+- (void)refreshButtonAction
+{
+    
 }
 
 - (void)loadSqlStoriesIntoTable
 {
     self.allEntries = PM.stories;
+    for (Story *entry in self.allEntries) {
+        if(![self.allEntries containsObject:entry])
+        {
+            [self.tableView insertRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:0 inSection:0]] withRowAnimation:UITableViewRowAnimationRight];
+        }
+    }
 }
 
 - (void)refresh {
@@ -74,24 +103,18 @@
             
             NSMutableArray *entries = [NSMutableArray array];
             
-            //[self testPrint:doc];
-            
             [self parseFeed:doc.rootElement entries:entries];                
             
             [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                
                 for (Story *entry in entries) {
                     
-                    int insertIdx = [_allEntries indexForInsertingObject:entry sortedUsingBlock:^(id a, id b) {
-                        Story *entry1 = (Story *) a;
-                        Story *entry2 = (Story *) b;
-                        return [entry1.dateCreated compare:entry2.dateCreated];
-                    }];           
+                    int insertIdx = 0;
+                    
                     if(entry != nil)
                     {
+                        NSLog(@"Rows: %i",[self.tableView numberOfRowsInSection:0]);
                         [_allEntries insertObject:entry atIndex:insertIdx];
-                        [self.tableView insertRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:insertIdx inSection:0]] 
-                                              withRowAnimation:UITableViewRowAnimationRight];
+                        [self.tableView insertRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:insertIdx inSection:0]] withRowAnimation:UITableViewRowAnimationRight];
                     }
                     
                 }                            
@@ -138,43 +161,35 @@
         
         NSArray *items = [channel elementsForName:@"item"];
         for (GDataXMLElement *item in items) {
+            Story *entry = [self parseItemToStory:item withBlogTitle:blogTitle itemType:1];
             
-            NSString *articleTitle = [item valueForChild:@"title"];
-            NSString *articleUrl = [item valueForChild:@"link"];            
-            NSString *articleDateString = [item valueForChild:@"pubDate"];      
-            NSString *articleContent = [item valueForChild:@"content"];
-            NSDate *articleDate = [NSDate dateFromInternetDateTimeString:articleDateString formatHint:DateFormatHintRFC822];
-            
-            Story *entry = [[Story alloc] initWithTitle:articleTitle
-                                                 author:@"n/a"
-                                                   body:articleContent
-                                                 source:blogTitle
-                                                    url:articleUrl
-                                            dateCreated:articleDate
-                                          dateRetrieved:[NSDate date] 
-                                                 isRead:NO 
-                                              imagePath:@"" 
-                                             isFavorite:NO 
-                                                   rank:0 
-                                                isDirty:NO];
-            [entries addObject:entry];
-            [PM AddStory:entry];
-            
+            bool storyExists = [PM StoryExistsInDB:entry];
+            if(!storyExists)
+            {
+                [entries addObject:entry];
+                [PM AddStory:entry];
+            }
         }      
     }
     
 }
 
-- (void)parseAtom:(GDataXMLElement *)rootElement entries:(NSMutableArray *)entries {
+- (Story *)parseItemToStory:(GDataXMLElement *)item withBlogTitle:(NSString *)blogTitle itemType:(int)type
+{
+    //Type is an enumaration:  1 => RSS  2 => Atom
     
-    NSString *blogTitle = [rootElement valueForChild:@"title"];                    
+    //Title
+    NSString *articleTitle = [item valueForChild:@"title"];
     
-    NSArray *items = [rootElement elementsForName:@"entry"];
-    for (GDataXMLElement *item in items) {
-        
-        NSString *articleTitle = [item valueForChild:@"title"];
-        NSString *articleUrl = nil;
-        NSString *articleContent = [item valueForChild:@"content"];
+    //Author
+    NSString *articleAuthor = [item valueForChild:@"dc:creator"];
+    
+    //URL
+    NSString *articleUrl;
+    if(type == 1)
+        articleUrl = [item valueForChild:@"link"];    
+    else  
+    {
         NSArray *links = [item elementsForName:@"link"];        
         for(GDataXMLElement *link in links) {
             NSString *rel = [[link attributeForName:@"rel"] stringValue];
@@ -184,25 +199,52 @@
                 articleUrl = [[link attributeForName:@"href"] stringValue];
             }
         }
-        
-        NSString *articleDateString = [item valueForChild:@"updated"];  
-        NSDate *articleDate = [NSDate dateFromInternetDateTimeString:articleDateString formatHint:DateFormatHintRFC3339];
+    }
+    
+    //Date Created
+    NSString *articleDateString;
+    if(type == 1)
+        articleDateString = [item valueForChild:@"pubDate"];
+    else
+        articleDateString = [item valueForChild:@"updated"];  
+    NSDate *articleDate = [NSDate dateFromInternetDateTimeString:articleDateString formatHint:DateFormatHintRFC822];
+    
+    //Content
+    NSString *articleContent = [item valueForChild:@"content"];
+    if(articleContent == nil)
+        articleContent = [item valueForChild:@"content:encoded"];
+    if(articleContent == nil)
+        articleContent = [item valueForChild:@"description"];
+    
+    Story *entry = [[Story alloc] initWithTitle:articleTitle
+                                         author:articleAuthor
+                                           body:articleContent
+                                         source:blogTitle
+                                            url:articleUrl
+                                    dateCreated:articleDate
+                                  dateRetrieved:[NSDate date] 
+                                         isRead:NO 
+                                      imagePath:@"" 
+                                     isFavorite:NO 
+                                           rank:0 
+                                        isDirty:NO];
+    return entry;
+}
 
+- (void)parseAtom:(GDataXMLElement *)rootElement entries:(NSMutableArray *)entries {
+    
+    NSString *blogTitle = [rootElement valueForChild:@"title"];                    
+    
+    NSArray *items = [rootElement elementsForName:@"entry"];
+    for (GDataXMLElement *item in items) {
+        Story *entry = [self parseItemToStory:item withBlogTitle:blogTitle itemType:2];
         
-        Story *entry = [[Story alloc] initWithTitle:articleTitle
-                                             author:@"n/a"
-                                               body:articleContent
-                                             source:blogTitle
-                                                url:articleUrl
-                                        dateCreated:articleDate
-                                      dateRetrieved:[NSDate date] 
-                                             isRead:NO 
-                                          imagePath:@"" 
-                                         isFavorite:NO 
-                                               rank:0 
-                                            isDirty:NO];
-        [entries addObject:entry];
-        [PM AddStory:entry];
+        bool storyExists = [PM StoryExistsInDB:entry];
+        if(!storyExists)
+        {
+            [entries addObject:entry];
+            [PM AddStory:entry];
+        }
         
     }      
     
@@ -230,7 +272,7 @@
                              dequeueReusableCellWithIdentifier:@"StoryCell"];
 	Story *story = [self.allEntries objectAtIndex:indexPath.row];
 	cell.textLabel.text = story.title;
-	cell.detailTextLabel.text = story.GetDateCreatedString;
+	cell.detailTextLabel.text = story.source;
     
     return cell;
 }

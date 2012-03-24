@@ -28,5 +28,7 @@
 - (void)AddNew;
 - (void)AddStory:(Story *)newStory;
 - (void)ClearDB;
+- (void)shutItDown;
+- (bool)StoryExistsInDB:(Story *)testStory;
 
 @end

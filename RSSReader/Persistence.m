@@ -105,21 +105,12 @@
     return story;
 }
 
-- (Story *)GetStoryByID:(int)storyID
+- (Story *)GetStoryFromSqlString:(NSString *)sqlStr
 {
-    [self initializeDatabaseIfNeeded];
+    if(sqlStr == nil)
+        return nil;
     
     Story *story;
-    
-    if(!storyID)
-        return [[Story alloc] initWithEmpty];
-    
-    story = nil;
-    
-    NSString *sqlStr = [NSString stringWithFormat:
-                        @"select storyID,title,author,body,source,dateCreated,dateRetrieved,isRead,imagePath,isFavorite,rank,isDirty from story where storyID = %i",
-                        storyID];
-    
     const char *sql = [self GetSqlStringFromNSString:sqlStr];
     
     sqlite3_stmt *statement;
@@ -189,8 +180,47 @@
     return story;
 }
 
+- (Story *)GetStoryByID:(int)storyID
+{
+    [self initializeDatabaseIfNeeded];
+    
+    Story *story;
+    
+    if(!storyID)
+        return [[Story alloc] initWithEmpty];
+    
+    story = nil;
+    
+    NSString *sqlStr = [NSString stringWithFormat:
+                        @"select storyID,title,author,body,source,dateCreated,dateRetrieved,isRead,imagePath,isFavorite,rank,isDirty from story where storyID = %i",
+                        storyID];
+    
+    return [self GetStoryFromSqlString:sqlStr];
+}
+
+- (bool)StoryExistsInDB:(Story *)testStory
+{   
+    [self initializeDatabaseIfNeeded];
+    
+    Story *foundStory = nil;
+    
+    NSString *sqlStr = [NSString stringWithFormat:
+                        @"select storyID,title,author,body,source,dateCreated,dateRetrieved,isRead,imagePath,isFavorite,rank,isDirty from story where title='%@' and author='%@' and source='%@' and dateCreated = '%@'",
+                        testStory.title,
+                        testStory.author,
+                        testStory.source,
+                        testStory.GetDateCreatedString];
+    
+    foundStory = [self GetStoryFromSqlString:sqlStr];
+    
+    bool storyExists = (foundStory != nil);
+    return storyExists;
+}
+
 - (void)AddStory:(Story *)newStory
 {
+    [self initializeDatabaseIfNeeded];
+    
     NSString *sqlStr = [NSString stringWithFormat:
                         @"insert into story(title,author,body,source,dateCreated,dateRetrieved,isRead,imagePath,isFavorite,rank,isDirty) VALUES('%@','%@',?,'%@','%@','%@',%i,'%@',%i,%i,%i)",
                         newStory.title,
@@ -219,12 +249,12 @@
     newStory = [self GetLastStory];
     if(newStory != nil)
         [self.stories addObject:newStory];
-    
-    NSLog([NSString stringWithFormat:@"%i",self.stories.count]);
 }
 
 - (void)ClearDB
 {
+    [self initializeDatabaseIfNeeded];
+    
     NSString *sqlStr = @"delete from story";
     
     const char *sql = [self GetSqlStringFromNSString:sqlStr];
@@ -262,6 +292,12 @@
         [self initializeDatabase];
 }
 
+- (void)shutItDown
+{
+    NSLog(@"Closing DB Connection");
+    sqlite3_close(database);
+    isInitialized = NO;
+}
 
 
 
