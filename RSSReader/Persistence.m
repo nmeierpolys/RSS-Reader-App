@@ -20,7 +20,6 @@
     {
         [self initializeDatabase];
         stories = [NSMutableArray array];
-        isInitialized = NO;
     }
     
     return self;
@@ -39,7 +38,7 @@
     
     if (sqlite3_open([path UTF8String], &database) == SQLITE_OK) {
         isInitialized = true;
-        const char *sql = "SELECT storyID FROM story";
+        const char *sql = "SELECT storyID FROM story ORDER BY dateCreated";
         sqlite3_stmt *statement;
         
         if (sqlite3_prepare_v2(database, sql, -1, &statement, NULL) == SQLITE_OK)
@@ -105,74 +104,65 @@
     return story;
 }
 
-- (Story *)GetStoryFromSqlString:(NSString *)sqlStr
+- (Story *)GetStoryFromStatement:(sqlite3_stmt *)statement
 {
-    if(sqlStr == nil)
-        return nil;
-    
     Story *story;
-    const char *sql = [self GetSqlStringFromNSString:sqlStr];
     
-    sqlite3_stmt *statement;
-    
-    if (sqlite3_prepare_v2(database, sql, -1, &statement, NULL) == SQLITE_OK)
+    if(sqlite3_step(statement) == SQLITE_ROW)
     {
-        if(sqlite3_step(statement) == SQLITE_ROW)
+        story = [[Story alloc] init];
+        story.storyID = sqlite3_column_int(statement, 0);
+        
+        char *temp = (char *)sqlite3_column_text(statement, 1);
+        if(temp != nil)
+            story.title = [NSString stringWithUTF8String:temp];
+        
+        temp = (char *)sqlite3_column_text(statement, 2);
+        if(temp != nil)
+            story.author = [NSString stringWithUTF8String:temp];
+        
+        temp = (char *)sqlite3_column_text(statement, 3);
+        if(temp != nil)
+            story.body = [NSString stringWithUTF8String:temp];
+        
+        temp = (char *)sqlite3_column_text(statement, 4);
+        if(temp != nil)
+            story.source = [NSString stringWithUTF8String:temp];
+        
+        
+        temp = (char *)sqlite3_column_text(statement, 5);
+        if(temp != nil)
         {
-            story = [[Story alloc] init];
-            story.storyID = sqlite3_column_int(statement, 0);
+            NSString *dateCreatedString = [NSString stringWithUTF8String:temp];
             
-            char *temp = (char *)sqlite3_column_text(statement, 1);
-            if(temp != nil)
-                story.title = [NSString stringWithUTF8String:temp];
-            
-            temp = (char *)sqlite3_column_text(statement, 2);
-            if(temp != nil)
-                story.author = [NSString stringWithUTF8String:temp];
-            
-            temp = (char *)sqlite3_column_text(statement, 3);
-            if(temp != nil)
-                story.body = [NSString stringWithUTF8String:temp];
-            
-            temp = (char *)sqlite3_column_text(statement, 4);
-            if(temp != nil)
-                story.source = [NSString stringWithUTF8String:temp];
-            
-            
-            temp = (char *)sqlite3_column_text(statement, 5);
-            if(temp != nil)
-            {
-                NSString *dateCreatedString = [NSString stringWithUTF8String:temp];
-                
-                NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
-                [formatter setDateFormat:@"M dd, yyyy HH:mm:ss a"]; 
-                story.dateCreated = [formatter dateFromString:dateCreatedString];
-            }
-            
-            temp = (char *)sqlite3_column_text(statement, 6);
-            if(temp != nil)
-            {
-                NSString *dateRetrievedString = [NSString stringWithUTF8String:temp];
-                
-                NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
-                [formatter setDateFormat:@"M dd, yyyy HH:mm:ss a"]; 
-                story.dateRetrieved = [formatter dateFromString:dateRetrievedString];
-            }
-            
-            temp = (char *)sqlite3_column_text(statement, 7);
-            if(temp != nil)
-                story.dateRetrieved = [NSString stringWithUTF8String:temp];
-            
-            story.isRead = sqlite3_column_int(statement, 8);
-            
-            temp = (char *)sqlite3_column_text(statement, 9);
-            if(temp != nil)
-                story.imagePath = [NSString stringWithUTF8String:temp];
-            
-            story.isFavorite = sqlite3_column_int(statement, 10);
-            story.rank = sqlite3_column_int(statement, 11);
-            story.isDirty = sqlite3_column_int(statement, 12);
+            NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+            [formatter setDateFormat:@"M dd, yyyy HH:mm:ss a"]; 
+            story.dateCreated = [formatter dateFromString:dateCreatedString];
         }
+        
+        temp = (char *)sqlite3_column_text(statement, 6);
+        if(temp != nil)
+        {
+            NSString *dateRetrievedString = [NSString stringWithUTF8String:temp];
+            
+            NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+            [formatter setDateFormat:@"M dd, yyyy HH:mm:ss a"]; 
+            story.dateRetrieved = [formatter dateFromString:dateRetrievedString];
+        }
+        
+        temp = (char *)sqlite3_column_text(statement, 7);
+        if(temp != nil)
+            story.dateRetrieved = [NSString stringWithUTF8String:temp];
+        
+        story.isRead = sqlite3_column_int(statement, 8);
+        
+        temp = (char *)sqlite3_column_text(statement, 9);
+        if(temp != nil)
+            story.imagePath = [NSString stringWithUTF8String:temp];
+        
+        story.isFavorite = sqlite3_column_int(statement, 10);
+        story.rank = sqlite3_column_int(statement, 11);
+        story.isDirty = sqlite3_column_int(statement, 12);
     }
     
     sqlite3_finalize(statement);
@@ -184,18 +174,24 @@
 {
     [self initializeDatabaseIfNeeded];
     
-    Story *story;
+    Story *story = nil;
     
     if(!storyID)
-        return [[Story alloc] initWithEmpty];
+        return nil;
     
-    story = nil;
+    NSString *sqlStr = @"select storyID,title,author,body,source,dateCreated,dateRetrieved,isRead,imagePath,isFavorite,rank,isDirty from story where storyID = ?";
     
-    NSString *sqlStr = [NSString stringWithFormat:
-                        @"select storyID,title,author,body,source,dateCreated,dateRetrieved,isRead,imagePath,isFavorite,rank,isDirty from story where storyID = %i",
-                        storyID];
+    const char *sql = [self GetSqlStringFromNSString:sqlStr];
     
-    return [self GetStoryFromSqlString:sqlStr];
+    sqlite3_stmt *statement;
+    
+    if (sqlite3_prepare_v2(database, sql, -1, &statement, NULL) == SQLITE_OK)
+    {
+        sqlite3_bind_int(statement, 1, storyID);
+        story = [self GetStoryFromStatement:statement];
+    }
+    
+    return story;
 }
 
 - (bool)StoryExistsInDB:(Story *)testStory
@@ -204,16 +200,35 @@
     
     Story *foundStory = nil;
     
-    NSString *sqlStr = [NSString stringWithFormat:
-                        @"select storyID,title,author,body,source,dateCreated,dateRetrieved,isRead,imagePath,isFavorite,rank,isDirty from story where title='%@' and author='%@' and source='%@' and dateCreated = '%@'",
-                        testStory.title,
-                        testStory.author,
-                        testStory.source,
-                        testStory.GetDateCreatedString];
+    NSString *sqlStr = @"select storyID,title,author,body,source,dateCreated,dateRetrieved,isRead,imagePath,isFavorite,rank,isDirty from story where title=? and author=? and source=? and dateCreated=?";
     
-    foundStory = [self GetStoryFromSqlString:sqlStr];
+    
+    const char *sql = [self GetSqlStringFromNSString:sqlStr];
+    
+    sqlite3_stmt *statement = nil;
+    
+    const char *debug = [testStory.author UTF8String];
+    
+    if (sqlite3_prepare_v2(database, sql, -1, &statement, NULL) == SQLITE_OK)
+    {
+        const char *authorString;
+        if(testStory.title == @"Keyed")
+            NSLog([@"|" stringByAppendingFormat:@"%@|", testStory.author ]);
+        
+        if(testStory.author == nil)
+            authorString = "(null)";
+        else 
+            authorString = [testStory.author UTF8String];
+        
+        sqlite3_bind_text(statement, 1, [testStory.title UTF8String], -1, SQLITE_TRANSIENT);
+        sqlite3_bind_text(statement, 2, authorString, -1, SQLITE_TRANSIENT);
+        sqlite3_bind_text(statement, 3, [testStory.source UTF8String], -1, SQLITE_TRANSIENT);
+        sqlite3_bind_text(statement, 4, [testStory.GetDateCreatedString UTF8String], -1, SQLITE_TRANSIENT);
+        foundStory = [self GetStoryFromStatement:statement];
+    }
     
     bool storyExists = (foundStory != nil);
+    //NSLog([testStory.title stringByAppendingFormat:@": %i",storyExists]);
     return storyExists;
 }
 
@@ -221,26 +236,64 @@
 {
     [self initializeDatabaseIfNeeded];
     
-    NSString *sqlStr = [NSString stringWithFormat:
-                        @"insert into story(title,author,body,source,dateCreated,dateRetrieved,isRead,imagePath,isFavorite,rank,isDirty) VALUES('%@','%@',?,'%@','%@','%@',%i,'%@',%i,%i,%i)",
-                        newStory.title,
-                        newStory.author,
-                        newStory.source,
-                        newStory.GetDateCreatedString,
-                        newStory.GetDateRetrievedString,
-                        newStory.isRead,
-                        newStory.imagePath,
-                        newStory.isFavorite,
-                        newStory.rank,
-                        newStory.isDirty];
+    NSString *sqlStr = @"insert into story(title,author,body,source,dateCreated,dateRetrieved,isRead,imagePath,isFavorite,rank,isDirty) VALUES(?,?,?,?,?,?,?,?,?,?,?)";
     
     const char *sql = [self GetSqlStringFromNSString:sqlStr];
     sqlite3_stmt *statement;
     
     if (sqlite3_prepare_v2(database, sql, -1, &statement, NULL) == SQLITE_OK)
     {
+        const char *temp;
         
-        sqlite3_bind_text(statement, 1, [newStory.body UTF8String], -1, nil);
+        //Title
+        temp = [newStory.title UTF8String];
+        sqlite3_bind_text(statement, 1, temp, -1, SQLITE_TRANSIENT);
+        
+        //Author
+        if(newStory.author == nil)
+            temp = "(null)";
+        else
+            temp = [newStory.author UTF8String];
+        sqlite3_bind_text(statement, 2, temp, -1, SQLITE_TRANSIENT);
+        
+        //Body
+        temp = [newStory.body UTF8String];
+        sqlite3_bind_text(statement, 3, temp, -1, SQLITE_TRANSIENT);
+        
+        //Source
+        temp = [newStory.source UTF8String];
+        sqlite3_bind_text(statement, 4, temp, -1, SQLITE_TRANSIENT);
+        
+        //CreatedDate
+        if(newStory.GetDateCreatedString == nil)
+            temp = "(null)";
+        else
+            temp = [newStory.GetDateCreatedString UTF8String];
+        sqlite3_bind_text(statement, 5, temp, -1, SQLITE_TRANSIENT);
+        
+        //RetreivedDate
+        if(newStory.GetDateCreatedString == nil)
+            temp = "(null)";
+        else
+            temp = [newStory.GetDateRetrievedString UTF8String];
+        sqlite3_bind_text(statement, 6, temp, -1, SQLITE_TRANSIENT);
+        
+        //IsRead
+        sqlite3_bind_int(statement, 7, newStory.isRead);
+        
+        //ImagePath
+        temp = [newStory.title UTF8String];
+        sqlite3_bind_text(statement, 8, temp, -1, SQLITE_TRANSIENT);
+        
+        //IsFavorite
+        sqlite3_bind_int(statement, 9, newStory.isFavorite);
+        
+        //Rank
+        sqlite3_bind_int(statement, 10, newStory.rank);
+        
+        //IsDirty
+        sqlite3_bind_int(statement, 11, newStory.isDirty);
+        
         sqlite3_step(statement);
     }
     

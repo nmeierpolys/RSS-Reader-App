@@ -15,11 +15,10 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     
-    UINavigationController *navigationController = (UINavigationController *)_window.rootViewController;
-    UITabBarController *tabController =  (RSSViewController *)[navigationController topViewController];
+    //UINavigationController *navigationController = (UINavigationController *)_window.rootViewController;
+    //UITabBarController *tabController =  (UITabBarController *)[navigationController topViewController];
     
-    rootViewController = tabController.viewControllers.lastObject;
-    
+    //rootViewController = tabController.viewControllers.lastObject;
     return YES;
 }
 							
@@ -31,12 +30,12 @@
 
 - (void)applicationDidEnterBackground:(UIApplication *)application
 {
-    [rootViewController enteringBackground];
+    //[rootViewController enteringBackground];
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application
 {
-    [rootViewController enteringForeground];
+    //[rootViewController enteringForeground];
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application

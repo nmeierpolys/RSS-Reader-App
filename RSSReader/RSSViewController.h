@@ -17,16 +17,22 @@
     NSOperationQueue *_queue;
     NSArray *_feeds;
     Persistence *PM;
+    NSDate *lowerLimitDate;
+    int alwaysIncludeCount;
 }
 
 @property (weak, nonatomic) IBOutlet UIView *btnGET;
 @property (weak, nonatomic) IBOutlet UITextView *textBody;
 @property (weak, nonatomic) IBOutlet UITextField *textTitle;
+- (IBAction)btnRefresh:(id)sender;
+@property (weak, nonatomic) IBOutlet UINavigationItem *toolbar;
 @property (weak, nonatomic) Persistence *PM;
 
 @property (retain) NSMutableArray *allEntries;
 @property (retain) NSOperationQueue *queue;
 @property (retain) NSArray *feeds;
+@property (retain) NSDate *lowerLimitDate;
+@property int alwaysIncludeCount;
 
 - (IBAction)btnGetPressed:(id)sender;
 - (void)testPopulate;

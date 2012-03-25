@@ -23,23 +23,24 @@
 @synthesize btnGET = _btnGET;
 @synthesize textBody = _textBody;
 @synthesize textTitle = _textTitle;
+@synthesize toolbar = _toolbar;
 @synthesize allEntries = _allEntries;
 @synthesize feeds = _feeds;
 @synthesize queue = _queue;
 @synthesize PM = _PM;
+@synthesize lowerLimitDate;
+@synthesize alwaysIncludeCount = _alwaysIncludeCount;
 
 - (void)viewDidLoad
 {
     [super viewDidLoad]; 
-    
-    UIBarButtonItem *tempButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh target:self action:@selector(refreshButtonAction)];
-    self.navigationItem.rightBarButtonItem = tempButton;
     
 	// Do any additional setup after loading the view, typically from a nib.
     tempStory = [[Story alloc] init];
     
     self.title = @"Feeds";
     self.allEntries = [NSMutableArray array];
+    [self updatePromptText];
     self.queue = [[NSOperationQueue alloc] init];
     self.feeds = [NSArray arrayWithObjects:
                   @"http://vikesgeek.blogspot.com/feeds/posts/default",
@@ -48,11 +49,19 @@
                   @"http://feeds.feedburner.com/LasVegasStartups",
                   @"http://www.dodgycoder.net/feeds/posts/default?alt=rss",
                   @"http://xkcd.com/rss.xml",
+                  @"http://www.engadget.com/rss.xml",
                   nil];   
+    alwaysIncludeCount = 3;
     PM = [[Persistence alloc] init];
-    //[PM ClearDB];
-    [self loadSqlStoriesIntoTable];
-    [self refresh];
+    [PM ClearDB];
+    //[self loadSqlStoriesIntoTable];
+    //[self refresh];
+}
+
+- (void)updatePromptText
+{
+    int numStories = self.allEntries.count;
+    self.toolbar.prompt = [@"Stories: " stringByAppendingFormat:@"%i",numStories];
 }
 
 - (void)enteringBackground
@@ -65,9 +74,21 @@
     [PM initializeDatabaseIfNeeded];
 }
 
-- (void)refreshButtonAction
+- (void) viewWillAppear:(BOOL)animated
 {
-    
+    //[self.navigationController setNavigationBarHidden:YES animated:animated];
+    [super viewWillAppear:animated];
+}
+
+- (void) viewWillDisappear:(BOOL)animated
+{
+    //[self.navigationController setNavigationBarHidden:NO animated:animated];
+    [super viewWillDisappear:animated];
+}
+
+- (void)didReceiveMemoryWarning {
+    [super didReceiveMemoryWarning]; // Releases the view if it doesn't have a superview
+    // Release anything that's not essential, such as cached data
 }
 
 - (void)loadSqlStoriesIntoTable
@@ -79,9 +100,13 @@
             [self.tableView insertRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:0 inSection:0]] withRowAnimation:UITableViewRowAnimationRight];
         }
     }
+    [self updatePromptText];
 }
 
 - (void)refresh {
+    NSLog(@"Refresh - loading feed stories");
+    lowerLimitDate = [NSDate dateWithTimeIntervalSinceNow:-1*60*60*24*2];
+    
     for (NSString *feed in _feeds) {
         NSURL *url = [NSURL URLWithString:feed];
         ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
@@ -116,11 +141,13 @@
                     {
                         [_allEntries insertObject:entry atIndex:insertIdx];
                         [self.tableView insertRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:insertIdx inSection:0]] withRowAnimation:UITableViewRowAnimationRight];
+                        [self updatePromptText];
                     }
                     
                 }                            
                 
             }];
+            
             
         }        
     }];
@@ -161,8 +188,16 @@
         NSString *blogTitle = [channel valueForChild:@"title"];                    
         
         NSArray *items = [channel elementsForName:@"item"];
+        int storyCount = 0;
         for (GDataXMLElement *item in items) {
-            Story *entry = [self parseItemToStory:item withBlogTitle:blogTitle itemType:1];
+            storyCount++;
+            Story *entry = [self parseItemToStory:item 
+                                    withBlogTitle:blogTitle 
+                                         itemType:1 
+                                    alwaysInclude:(storyCount < alwaysIncludeCount)];
+            
+            if(entry == nil)
+                return;
             
             bool storyExists = [PM StoryExistsInDB:entry];
             if(!storyExists)
@@ -175,9 +210,27 @@
     
 }
 
-- (Story *)parseItemToStory:(GDataXMLElement *)item withBlogTitle:(NSString *)blogTitle itemType:(int)type
+- (Story *)parseItemToStory:(GDataXMLElement *)item 
+              withBlogTitle:(NSString *)blogTitle 
+                   itemType:(int)type
+              alwaysInclude:(bool)alwaysInclude
 {
     //Type is an enumaration:  1 => RSS  2 => Atom
+    
+    //Date Created
+    NSString *articleDateString;
+    if(type == 1)
+        articleDateString = [item valueForChild:@"pubDate"];
+    else
+        articleDateString = [item valueForChild:@"updated"];  
+    NSDate *articleDate = [NSDate dateFromInternetDateTimeString:articleDateString formatHint:DateFormatHintRFC822];
+    
+    //Quit if the article is too early
+    if(!alwaysInclude)
+    {
+        if([articleDate compare:lowerLimitDate] == NSOrderedAscending)
+            return nil;
+    }
     
     //Title
     NSString *articleTitle = [item valueForChild:@"title"];
@@ -201,14 +254,6 @@
             }
         }
     }
-    
-    //Date Created
-    NSString *articleDateString;
-    if(type == 1)
-        articleDateString = [item valueForChild:@"pubDate"];
-    else
-        articleDateString = [item valueForChild:@"updated"];  
-    NSDate *articleDate = [NSDate dateFromInternetDateTimeString:articleDateString formatHint:DateFormatHintRFC822];
     
     //Content
     NSString *articleContent = [item valueForChild:@"content"];
@@ -237,8 +282,16 @@
     NSString *blogTitle = [rootElement valueForChild:@"title"];                    
     
     NSArray *items = [rootElement elementsForName:@"entry"];
+    bool alwaysInclude = YES;
+    int storyCount = 0;
     for (GDataXMLElement *item in items) {
-        Story *entry = [self parseItemToStory:item withBlogTitle:blogTitle itemType:2];
+        storyCount++;
+        Story *entry = [self parseItemToStory:item 
+                                withBlogTitle:blogTitle 
+                                     itemType:2 
+                                alwaysInclude:(storyCount == alwaysIncludeCount)];
+        if(entry == nil)
+            return;
         
         bool storyExists = [PM StoryExistsInDB:entry];
         if(!storyExists)
@@ -298,6 +351,7 @@
 {
     [self setBtnGET:nil];
     [self setTextBody:nil];
+    [self setToolbar:nil];
     [super viewDidUnload];
     // Release any retained subviews of the main view.
 }
@@ -311,4 +365,7 @@
     }
 }
 
+- (IBAction)btnRefresh:(id)sender {
+    [self refresh];
+}
 @end
