@@ -105,11 +105,12 @@
 - (IBAction)btnAdd:(id)sender {
     if((textName.text.length > 0) && (textURL.text.length > 0))
     {
-        detailFeed.name = textName.text;
-        detailFeed.url = textURL.text;
-        [self.parentTableView addFeed:detailFeed];
+        Feed *newFeed = [[Feed alloc] init];
+        newFeed.name = textName.text;
+        newFeed.url = textURL.text;
+        [self.parentTableView addFeed:newFeed];
         [self.parentTableView.tableView reloadData];
-        [self dismissModalViewControllerAnimated:YES];
+        [self.navigationController popViewControllerAnimated:YES];
     }
 }
 

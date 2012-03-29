@@ -1,24 +1,23 @@
 //
-//  FeedsViewController.m
+//  FeedsTestViewController.m
 //  RSSReader
 //
-//  Created by Nathaniel Meierpolys on 3/25/12.
+//  Created by Nathaniel Meierpolys on 3/28/12.
 //  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
 //
 
-#import "FeedsViewController.h"
+#import "FeedsTestViewController.h"
 #import "Feed.h"
 #import "FeedDetailViewController.h"
 
-@interface FeedsViewController ()
+@interface FeedsTestViewController ()
 
 @end
 
-@implementation FeedsViewController
-@synthesize navigationItem;
-
-@synthesize feeds = _feeds;
-@synthesize parentTableView = _parentTableView;
+@implementation FeedsTestViewController
+@synthesize btnEditOutlet;
+@synthesize feeds;
+@synthesize parentTableView;
 
 - (id)initWithStyle:(UITableViewStyle)style
 {
@@ -32,13 +31,23 @@
 {
     [super viewDidLoad];
     
-    self.feeds = [NSMutableArray array];
-	self.navigationItem.title = @"Feeds";   
+    if(self.feeds == nil)
+        self.feeds = [NSMutableArray array];
     
+
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
  
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
+    // self.navigationItem.rightBarButtonItem = self.editButtonItem;
+}
+
+- (void)viewDidUnload
+{
+    [self setBtnEditOutlet:nil];
+    [super viewDidUnload];
+    // Release any retained subviews of the main view.
+    // e.g. self.myOutlet = nil;
 }
 
 - (void) addFeed:(Feed *)newFeed
@@ -47,14 +56,6 @@
         return;
     
     [self.feeds addObject:newFeed];
-}
-
-- (void)viewDidUnload
-{
-    [self setNavigationItem:nil];
-    [super viewDidUnload];
-    // Release any retained subviews of the main view.
-    // e.g. self.myOutlet = nil;
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
@@ -72,7 +73,7 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    // Return the number of rows in the section.
+    // Return the number of rows in the section.x
     return self.feeds.count;
 }
 
@@ -89,7 +90,6 @@
     return cell;
 }
 
-
 // Override to support conditional editing of the table view.
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
 {
@@ -98,25 +98,27 @@
 }
 
 
-
 // Override to support editing the table view.
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if (editingStyle == UITableViewCellEditingStyleDelete) {
         // Delete the row from the data source
-        [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
-        
-        [self.feeds removeObjectAtIndex:indexPath.row];
+        //[self.tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
+        //[self.feeds removeObjectAtIndex:indexPath.row];
     }   
     else if (editingStyle == UITableViewCellEditingStyleInsert) {
         // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
     }   
 }
 
+
+
 // Override to support rearranging the table view.
 - (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath
 {
 }
+
+
 
 // Override to support conditional rearranging of the table view.
 - (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath
@@ -125,6 +127,7 @@
     return YES;
 }
 
+
 #pragma mark - Table view delegate
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
@@ -132,7 +135,7 @@
     // Navigation logic may go here. Create and push another view controller.
     /*
      <#DetailViewController#> *detailViewController = [[<#DetailViewController#> alloc] initWithNibName:@"<#Nib name#>" bundle:nil];
-     // ...
+     // ...www
      // Pass the selected object to the new view controller.
      [self.navigationController pushViewController:detailViewController animated:YES];
      */
@@ -154,8 +157,14 @@
     }
 }
 
-- (IBAction)btnClose:(id)sender {
-    parentTableView.feeds = self.feeds;
-    [self dismissModalViewControllerAnimated:YES];
+
+- (IBAction)btnEdit:(id)sender {
+    if([self isEditing]) {
+        btnEditOutlet.title = @"Edit";
+        [self setEditing:NO animated:YES];
+    } else {
+        btnEditOutlet.title = @"Done";
+        [self setEditing:YES animated:YES];
+    }
 }
 @end

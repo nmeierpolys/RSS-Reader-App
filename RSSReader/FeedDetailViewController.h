@@ -8,16 +8,15 @@
 
 #import <UIKit/UIKit.h>
 #import "Feed.h"
-#import "FeedsViewController.h"
+#import "FeedsTestViewController.h"
 
 @interface FeedDetailViewController : UIViewController {
     Feed *detailFeed;
-    FeedsViewController *parentTableView;
+    FeedsTestViewController *parentTableView;
 }
 
 @property (retain)Feed *detailFeed;
-@property (retain)FeedsViewController *parentTableView;
-- (IBAction)btnAdd:(id)sender;
+@property (retain)FeedsTestViewController *parentTableView;
 - (IBAction)btnClose:(id)sender;
 
 @property (weak, nonatomic) IBOutlet UITextField *textName;

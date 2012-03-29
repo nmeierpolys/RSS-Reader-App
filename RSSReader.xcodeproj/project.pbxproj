@@ -34,6 +34,7 @@
 		F126F70F151AC3E900BF54EF /* Persistence.m in Sources */ = {isa = PBXBuildFile; fileRef = F126F70E151AC3E900BF54EF /* Persistence.m */; };
 		F126F711151AC50900BF54EF /* libsqlite3.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = F126F710151AC50900BF54EF /* libsqlite3.0.dylib */; };
 		F126F71B151AD3AA00BF54EF /* stories.sqlite in Resources */ = {isa = PBXBuildFile; fileRef = F126F71A151AD3AA00BF54EF /* stories.sqlite */; };
+		F1AC823915242AEF005819D8 /* FeedsTestViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F1AC823815242AEF005819D8 /* FeedsTestViewController.m */; };
 		F1E23DE815153553007CD8F7 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F1E23DE715153553007CD8F7 /* UIKit.framework */; };
 		F1E23DEA15153553007CD8F7 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F1E23DE915153553007CD8F7 /* Foundation.framework */; };
 		F1E23DEC15153553007CD8F7 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F1E23DEB15153553007CD8F7 /* CoreGraphics.framework */; };
@@ -107,6 +108,8 @@
 		F126F70E151AC3E900BF54EF /* Persistence.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Persistence.m; sourceTree = "<group>"; };
 		F126F710151AC50900BF54EF /* libsqlite3.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.0.dylib; path = usr/lib/libsqlite3.0.dylib; sourceTree = SDKROOT; };
 		F126F71A151AD3AA00BF54EF /* stories.sqlite */ = {isa = PBXFileReference; lastKnownFileType = file; path = stories.sqlite; sourceTree = "<group>"; };
+		F1AC823715242AEF005819D8 /* FeedsTestViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FeedsTestViewController.h; sourceTree = "<group>"; };
+		F1AC823815242AEF005819D8 /* FeedsTestViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FeedsTestViewController.m; sourceTree = "<group>"; };
 		F1E23DE315153553007CD8F7 /* RSSReader.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RSSReader.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F1E23DE715153553007CD8F7 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		F1E23DE915153553007CD8F7 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -275,6 +278,8 @@
 				F1E23E641515624B007CD8F7 /* NSArray+Extras.h */,
 				F1E23E651515624B007CD8F7 /* NSArray+Extras.m */,
 				F1E23DEE15153553007CD8F7 /* Supporting Files */,
+				F1AC823715242AEF005819D8 /* FeedsTestViewController.h */,
+				F1AC823815242AEF005819D8 /* FeedsTestViewController.m */,
 				F120AA7C151F897100CD4345 /* FeedsViewController.h */,
 				F120AA7D151F897100CD4345 /* FeedsViewController.m */,
 				F120AA80151F898400CD4345 /* Feed.h */,
@@ -455,6 +460,7 @@
 				F120AA82151F898400CD4345 /* Feed.m in Sources */,
 				F120AA85151F991100CD4345 /* FeedDetailViewController.m in Sources */,
 				F120AA88151F9EDA00CD4345 /* ToRemoveViewController.m in Sources */,
+				F1AC823915242AEF005819D8 /* FeedsTestViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

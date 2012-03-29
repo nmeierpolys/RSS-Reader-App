@@ -15,6 +15,7 @@
 #import "NSArray+Extras.h"
 #import "Persistence.h"
 #import "FeedsViewController.h"
+#import "FeedsTestViewController.h"
 #import "Feed.h"
 
 @interface RSSViewController ()
@@ -51,7 +52,7 @@
     [self initialPopulateFeeds];
     alwaysIncludeCount = 3;
     PM = [[Persistence alloc] init];
-    [PM ClearDB];
+    //[PM ClearDB];
     //[self loadSqlStoriesIntoTable];
     //[self refresh];
 }
@@ -390,7 +391,7 @@
         detailView.parentTableView = self;
     }
     else if ([[segue identifier] isEqualToString:@"FeedManagement"]) {
-        FeedsViewController *feedView = (FeedsViewController *)[segue destinationViewController];
+        FeedsTestViewController *feedView = (FeedsTestViewController *)[segue destinationViewController];
         
         feedView.feeds = self.feeds;
         feedView.parentTableView = self;

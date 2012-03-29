@@ -30,44 +30,82 @@
             </objects>
             <point key="canvasLocation" x="-218" y="105"/>
         </scene>
+        <!--Feeds Test View Controller-->
+        <scene sceneID="wU4-To-9LG">
+            <objects>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="dwX-yL-eTy" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <tableViewController id="dKI-bd-ee1" customClass="FeedsTestViewController" sceneMemberID="viewController">
+                    <tableView key="view" opaque="NO" clipsSubviews="YES" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="xz2-vE-eLt">
+                        <rect key="frame" x="0.0" y="64" width="320" height="372"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <prototypes>
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="DetailCell" textLabel="iLZ-55-wkh" detailTextLabel="C6d-p7-mSg" style="IBUITableViewCellStyleSubtitle" id="cec-S9-xL4">
+                                <rect key="frame" x="0.0" y="22" width="320" height="44"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                                    <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <label opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="left" text="Title" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="iLZ-55-wkh">
+                                            <rect key="frame" x="10" y="2" width="38" height="22"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <fontDescription key="fontDescription" type="boldSystem" pointSize="18"/>
+                                            <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                            <color key="highlightedColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                        </label>
+                                        <label opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="left" text="Subtitle" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="C6d-p7-mSg">
+                                            <rect key="frame" x="10" y="24" width="47" height="18"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                            <color key="textColor" red="0.50196078431372548" green="0.50196078431372548" blue="0.50196078431372548" alpha="1" colorSpace="calibratedRGB"/>
+                                            <color key="highlightedColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                        </label>
+                                    </subviews>
+                                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                </view>
+                            </tableViewCell>
+                        </prototypes>
+                        <connections>
+                            <outlet property="dataSource" destination="dKI-bd-ee1" id="H96-Kw-JXE"/>
+                            <outlet property="delegate" destination="dKI-bd-ee1" id="2xg-Hm-L58"/>
+                        </connections>
+                    </tableView>
+                    <toolbarItems>
+                        <barButtonItem style="plain" systemItem="flexibleSpace" id="nND-Uh-KGu"/>
+                        <barButtonItem title="Edit" id="eQw-aD-fG0">
+                            <connections>
+                                <action selector="btnEdit:" destination="dKI-bd-ee1" id="CG3-Bj-t6P"/>
+                            </connections>
+                        </barButtonItem>
+                    </toolbarItems>
+                    <navigationItem key="navigationItem" id="oMP-bd-9z9">
+                        <barButtonItem key="rightBarButtonItem" systemItem="add" id="jb2-Bh-1EL">
+                            <connections>
+                                <segue destination="ZrI-LY-xWq" kind="push" identifier="FeedDetail" id="Aao-6V-3cg"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
+                    <simulatedToolbarMetrics key="simulatedBottomBarMetrics" barStyle="blackOpaque"/>
+                    <connections>
+                        <outlet property="btnEditOutlet" destination="eQw-aD-fG0" id="t8m-a1-nWe"/>
+                    </connections>
+                </tableViewController>
+            </objects>
+            <point key="canvasLocation" x="311" y="-503"/>
+        </scene>
         <!--Feeds View Controller - Feeds-->
         <scene sceneID="HUi-fW-hQr">
             <objects>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="j9W-EP-Y0F" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <tableViewController title="Feeds" id="w7q-zq-HFh" customClass="FeedsViewController" sceneMemberID="viewController">
                     <tableView key="view" opaque="NO" clipsSubviews="YES" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" allowsSelectionDuringEditing="YES" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="dHH-ea-fPt">
-                        <rect key="frame" x="0.0" y="20" width="320" height="416"/>
+                        <rect key="frame" x="0.0" y="20" width="320" height="460"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                        <navigationBar key="tableHeaderView" contentMode="scaleToFill" id="Mv6-6a-Mgz">
-                            <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
-                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
-                            <items>
-                                <navigationItem title="Feeds" id="ifg-Nx-6YT">
-                                    <barButtonItem key="backBarButtonItem" title="Stories" id="2hJ-Qs-CJu"/>
-                                    <barButtonItem key="leftBarButtonItem" systemItem="edit" id="lHG-xV-rVF"/>
-                                    <barButtonItem key="rightBarButtonItem" systemItem="add" id="NNp-yL-rLR">
-                                        <connections>
-                                            <segue destination="ZrI-LY-xWq" kind="modal" identifier="FeedDetail" id="KdU-Ll-itm"/>
-                                        </connections>
-                                    </barButtonItem>
-                                </navigationItem>
-                            </items>
-                        </navigationBar>
-                        <toolbar key="tableFooterView" opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="deo-gO-rB8">
-                            <rect key="frame" x="0.0" y="110" width="320" height="44"/>
-                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                            <items>
-                                <barButtonItem title="Back" id="BWt-Sf-26f">
-                                    <connections>
-                                        <action selector="btnClose:" destination="w7q-zq-HFh" id="EDT-8w-gFV"/>
-                                    </connections>
-                                </barButtonItem>
-                            </items>
-                        </toolbar>
                         <prototypes>
-                            <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="Cell" textLabel="TUK-dP-Cq2" detailTextLabel="cqT-Np-5XU" style="IBUITableViewCellStyleSubtitle" id="jid-S7-E2e">
-                                <rect key="frame" x="0.0" y="66" width="320" height="44"/>
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="DetailCell" textLabel="TUK-dP-Cq2" detailTextLabel="cqT-Np-5XU" style="IBUITableViewCellStyleSubtitle" id="jid-S7-E2e">
+                                <rect key="frame" x="0.0" y="22" width="320" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
                                     <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
@@ -97,20 +135,11 @@
                             <outlet property="delegate" destination="w7q-zq-HFh" id="1xX-FD-gRm"/>
                         </connections>
                     </tableView>
-                    <toolbarItems>
-                        <barButtonItem title="Back" id="w1c-PI-DeN">
-                            <connections>
-                                <action selector="btnClose:" destination="w7q-zq-HFh" id="3Ue-PK-LZh"/>
-                            </connections>
-                        </barButtonItem>
-                    </toolbarItems>
-                    <simulatedToolbarMetrics key="simulatedBottomBarMetrics" barStyle="blackOpaque"/>
-                    <connections>
-                        <outlet property="navigationItem" destination="ifg-Nx-6YT" id="ZjH-Na-S0I"/>
-                    </connections>
+                    <toolbarItems/>
+                    <navigationItem key="navigationItem" id="QNy-RJ-hce"/>
                 </tableViewController>
             </objects>
-            <point key="canvasLocation" x="753" y="-464"/>
+            <point key="canvasLocation" x="747" y="-503"/>
         </scene>
         <!--Feed Detail View Controller-->
         <scene sceneID="ptq-Jl-io6">
@@ -118,43 +147,25 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="rLC-d5-7w8" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <viewController id="ZrI-LY-xWq" customClass="FeedDetailViewController" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="LfA-Ix-kCh">
-                        <rect key="frame" x="0.0" y="20" width="320" height="460"/>
+                        <rect key="frame" x="0.0" y="64" width="320" height="372"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
-                            <navigationBar contentMode="scaleToFill" id="XUH-px-k80">
-                                <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
-                                <items>
-                                    <navigationItem title="Title" id="Na5-H8-ywV">
-                                        <barButtonItem key="leftBarButtonItem" title="Cancel" id="Ukd-12-mUR">
-                                            <connections>
-                                                <action selector="btnClose:" destination="ZrI-LY-xWq" id="08F-J5-d86"/>
-                                            </connections>
-                                        </barButtonItem>
-                                        <barButtonItem key="rightBarButtonItem" title="Add" id="8PT-Z5-Kgs">
-                                            <connections>
-                                                <action selector="btnAdd:" destination="ZrI-LY-xWq" id="tEQ-wB-dGV"/>
-                                            </connections>
-                                        </barButtonItem>
-                                    </navigationItem>
-                                </items>
-                            </navigationBar>
                             <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="Name" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" id="BTJ-VZ-1Uf">
-                                <rect key="frame" x="20" y="74" width="46" height="21"/>
+                                <rect key="frame" x="20" y="20" width="46" height="21"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="URL:" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" id="t4N-vm-nsI">
-                                <rect key="frame" x="20" y="159" width="42" height="21"/>
+                                <rect key="frame" x="20" y="93" width="42" height="21"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" minimumFontSize="17" id="kzo-b8-94Z">
-                                <rect key="frame" x="20" y="103" width="280" height="31"/>
+                                <rect key="frame" x="20" y="49" width="280" height="31"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits"/>
@@ -163,7 +174,7 @@
                                 </connections>
                             </textField>
                             <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" minimumFontSize="17" id="Lai-53-I9Z">
-                                <rect key="frame" x="20" y="188" width="280" height="31"/>
+                                <rect key="frame" x="20" y="122" width="280" height="31"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits"/>
@@ -171,13 +182,20 @@
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                     </view>
+                    <navigationItem key="navigationItem" id="O3k-Uo-zvZ">
+                        <barButtonItem key="rightBarButtonItem" systemItem="add" id="8PT-Z5-Kgs">
+                            <connections>
+                                <action selector="btnAdd:" destination="ZrI-LY-xWq" id="Nbp-Tc-uSS"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
                     <connections>
                         <outlet property="textName" destination="kzo-b8-94Z" id="np2-QQ-J1R"/>
                         <outlet property="textURL" destination="Lai-53-I9Z" id="ihe-Aq-327"/>
                     </connections>
                 </viewController>
             </objects>
-            <point key="canvasLocation" x="1164" y="-456"/>
+            <point key="canvasLocation" x="1130" y="-503"/>
         </scene>
         <!--View Controller - Feeds-->
         <scene sceneID="AFj-ZS-8V3">
@@ -188,7 +206,7 @@
                         <rect key="frame" x="0.0" y="64" width="320" height="372"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                        <view key="tableHeaderView" contentMode="scaleToFill" id="kZ6-lJ-6x8">
+                        <view key="tableHeaderView" contentMode="top" id="kZ6-lJ-6x8">
                             <rect key="frame" x="0.0" y="0.0" width="320" height="19"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <subviews>
@@ -210,11 +228,11 @@
                             <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                         </view>
                         <prototypes>
-                            <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="StoryCell" textLabel="Znc-6Y-oGH" detailTextLabel="jyC-hu-pb8" rowHeight="34" style="IBUITableViewCellStyleSubtitle" id="LBg-tb-Iqf">
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="blue" accessoryType="disclosureIndicator" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="StoryCell" textLabel="Znc-6Y-oGH" detailTextLabel="jyC-hu-pb8" rowHeight="34" style="IBUITableViewCellStyleSubtitle" id="LBg-tb-Iqf">
                                 <rect key="frame" x="0.0" y="41" width="320" height="35"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
-                                    <rect key="frame" x="0.0" y="0.0" width="320" height="33"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="300" height="33"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <label opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="left" text="Title" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="Znc-6Y-oGH">
@@ -248,7 +266,7 @@
                     <toolbarItems>
                         <barButtonItem systemItem="bookmarks" id="Yca-S1-3Fi">
                             <connections>
-                                <segue destination="w7q-zq-HFh" kind="modal" identifier="FeedManagement" modalTransitionStyle="flipHorizontal" id="NP3-r1-QD6"/>
+                                <segue destination="dKI-bd-ee1" kind="push" identifier="FeedManagement" id="gOG-x6-JaY"/>
                             </connections>
                         </barButtonItem>
                         <barButtonItem style="plain" systemItem="flexibleSpace" id="zMn-iV-KEh"/>
@@ -344,10 +362,18 @@
         <class className="FeedDetailViewController" superclassName="UIViewController">
             <source key="sourceIdentifier" type="project" relativePath="./Classes/FeedDetailViewController.h"/>
             <relationships>
-                <relationship kind="action" name="btnAdd:"/>
                 <relationship kind="action" name="btnClose:"/>
                 <relationship kind="outlet" name="textName" candidateClass="UITextField"/>
                 <relationship kind="outlet" name="textURL" candidateClass="UITextField"/>
+            </relationships>
+        </class>
+        <class className="FeedsTestViewController" superclassName="UITableViewController">
+            <source key="sourceIdentifier" type="project" relativePath="./Classes/FeedsTestViewController.h"/>
+            <relationships>
+                <relationship kind="action" name="btnClose:"/>
+                <relationship kind="action" name="btnEdit:"/>
+                <relationship kind="outlet" name="btnEditOutlet" candidateClass="UIBarButtonItem"/>
+                <relationship kind="outlet" name="navigationItem" candidateClass="UINavigationItem"/>
             </relationships>
         </class>
         <class className="FeedsViewController" superclassName="UITableViewController">
