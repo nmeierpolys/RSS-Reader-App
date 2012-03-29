@@ -51,7 +51,8 @@
           imagePath:(NSString *)imagePath
          isFavorite:(bool)isFavorite
                rank:(int)rank
-            isDirty:(bool)isDirty;
+            isDirty:(bool)isDirty
+            storyID:(int)newStoryID;
 - (id)initWithID:(int)newStoryID 
            title:(NSString *)newTitle;
 - (id)initWithDummyInfo;
@@ -60,4 +61,5 @@
 - (void)PopulateEmptyData;
 - (NSString *)GetDateCreatedString;
 - (NSString *)GetDateRetrievedString;
+- (NSString *)IsCompleteStory;
 @end

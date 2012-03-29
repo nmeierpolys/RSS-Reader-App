@@ -27,6 +27,10 @@
 		F11EF03C151D915E00B1456C /* ASINetworkQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = F11EF028151D910300B1456C /* ASINetworkQueue.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		F11EF03D151D916200B1456C /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = F11EF02B151D910300B1456C /* Reachability.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		F11EF03E151D919100B1456C /* GDataXMLNode.m in Sources */ = {isa = PBXBuildFile; fileRef = F11EF012151D909600B1456C /* GDataXMLNode.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		F120AA7E151F897100CD4345 /* FeedsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F120AA7D151F897100CD4345 /* FeedsViewController.m */; };
+		F120AA82151F898400CD4345 /* Feed.m in Sources */ = {isa = PBXBuildFile; fileRef = F120AA81151F898400CD4345 /* Feed.m */; };
+		F120AA85151F991100CD4345 /* FeedDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F120AA84151F991100CD4345 /* FeedDetailViewController.m */; };
+		F120AA88151F9EDA00CD4345 /* ToRemoveViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F120AA87151F9EDA00CD4345 /* ToRemoveViewController.m */; };
 		F126F70F151AC3E900BF54EF /* Persistence.m in Sources */ = {isa = PBXBuildFile; fileRef = F126F70E151AC3E900BF54EF /* Persistence.m */; };
 		F126F711151AC50900BF54EF /* libsqlite3.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = F126F710151AC50900BF54EF /* libsqlite3.0.dylib */; };
 		F126F71B151AD3AA00BF54EF /* stories.sqlite in Resources */ = {isa = PBXBuildFile; fileRef = F126F71A151AD3AA00BF54EF /* stories.sqlite */; };
@@ -91,6 +95,14 @@
 		F11EF029151D910300B1456C /* ASIProgressDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ASIProgressDelegate.h; sourceTree = "<group>"; };
 		F11EF02A151D910300B1456C /* Reachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Reachability.h; sourceTree = "<group>"; };
 		F11EF02B151D910300B1456C /* Reachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Reachability.m; sourceTree = "<group>"; };
+		F120AA7C151F897100CD4345 /* FeedsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FeedsViewController.h; sourceTree = "<group>"; };
+		F120AA7D151F897100CD4345 /* FeedsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FeedsViewController.m; sourceTree = "<group>"; };
+		F120AA80151F898400CD4345 /* Feed.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Feed.h; sourceTree = "<group>"; };
+		F120AA81151F898400CD4345 /* Feed.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Feed.m; sourceTree = "<group>"; };
+		F120AA83151F991100CD4345 /* FeedDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FeedDetailViewController.h; sourceTree = "<group>"; };
+		F120AA84151F991100CD4345 /* FeedDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FeedDetailViewController.m; sourceTree = "<group>"; };
+		F120AA86151F9EDA00CD4345 /* ToRemoveViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ToRemoveViewController.h; sourceTree = "<group>"; };
+		F120AA87151F9EDA00CD4345 /* ToRemoveViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ToRemoveViewController.m; sourceTree = "<group>"; };
 		F126F70D151AC3E900BF54EF /* Persistence.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Persistence.h; sourceTree = "<group>"; };
 		F126F70E151AC3E900BF54EF /* Persistence.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Persistence.m; sourceTree = "<group>"; };
 		F126F710151AC50900BF54EF /* libsqlite3.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.0.dylib; path = usr/lib/libsqlite3.0.dylib; sourceTree = SDKROOT; };
@@ -202,6 +214,8 @@
 		F1E23DD815153553007CD8F7 = {
 			isa = PBXGroup;
 			children = (
+				F120AA86151F9EDA00CD4345 /* ToRemoveViewController.h */,
+				F120AA87151F9EDA00CD4345 /* ToRemoveViewController.m */,
 				F11EF015151D910300B1456C /* ASIHTTPRequest */,
 				F126F719151AD39400BF54EF /* Resources */,
 				F126F710151AC50900BF54EF /* libsqlite3.0.dylib */,
@@ -252,6 +266,8 @@
 				F1E23E6115156008007CD8F7 /* NSDate+InternetDateTime.m */,
 				F1E23DF615153553007CD8F7 /* RSSAppDelegate.h */,
 				F1E23DF715153553007CD8F7 /* RSSAppDelegate.m */,
+				F120AA83151F991100CD4345 /* FeedDetailViewController.h */,
+				F120AA84151F991100CD4345 /* FeedDetailViewController.m */,
 				F1E23DF915153553007CD8F7 /* MainStoryboard_iPhone.storyboard */,
 				F1E23DFC15153553007CD8F7 /* MainStoryboard_iPad.storyboard */,
 				F1E23DFF15153553007CD8F7 /* RSSViewController.h */,
@@ -259,6 +275,10 @@
 				F1E23E641515624B007CD8F7 /* NSArray+Extras.h */,
 				F1E23E651515624B007CD8F7 /* NSArray+Extras.m */,
 				F1E23DEE15153553007CD8F7 /* Supporting Files */,
+				F120AA7C151F897100CD4345 /* FeedsViewController.h */,
+				F120AA7D151F897100CD4345 /* FeedsViewController.m */,
+				F120AA80151F898400CD4345 /* Feed.h */,
+				F120AA81151F898400CD4345 /* Feed.m */,
 			);
 			path = RSSReader;
 			sourceTree = "<group>";
@@ -431,6 +451,10 @@
 				F1E23E5F15155A2B007CD8F7 /* GDataXMLElement-Extras.m in Sources */,
 				F1E23E661515624B007CD8F7 /* NSArray+Extras.m in Sources */,
 				F126F70F151AC3E900BF54EF /* Persistence.m in Sources */,
+				F120AA7E151F897100CD4345 /* FeedsViewController.m in Sources */,
+				F120AA82151F898400CD4345 /* Feed.m in Sources */,
+				F120AA85151F991100CD4345 /* FeedDetailViewController.m in Sources */,
+				F120AA88151F9EDA00CD4345 /* ToRemoveViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

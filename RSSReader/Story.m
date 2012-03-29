@@ -47,9 +47,11 @@
          isFavorite:(bool)newIsFavorite
                rank:(int)newRank
             isDirty:(bool)newIsDirty
+            storyID:(int)newStoryID
 {
     if(self = [super init])
     {
+        self.storyID = newStoryID;
         self.title = newTitle;
         self.author = newAuthor;
         self.body = newBody;
@@ -102,6 +104,7 @@
 
 - (void)PopulateDummyData
 {
+    self.storyID = 42;
     self.title = @"My dummy title";
     self.author = @"Me";
     self.body = @"This is the story...";
@@ -119,6 +122,7 @@
 
 - (void)PopulateEmptyData
 {
+    self.storyID = 0;
     self.title = @"";
     self.author = @"";
     self.body = @"";
@@ -150,6 +154,44 @@
     [dateFormatter setTimeStyle:NSDateFormatterMediumStyle];
     [dateFormatter setDateStyle:NSDateFormatterMediumStyle];
     return [dateFormatter stringFromDate:self.dateRetrieved];
+}
+
+- (NSString *)IsCompleteStory
+{
+    NSString *missingData = @"";
+    
+    if(self.title == nil)
+        [missingData stringByAppendingString:@"title nil"];
+    if(self.title == @"")
+        [missingData stringByAppendingString:@"title"];
+    if(self.author == nil)
+        [missingData stringByAppendingString:@"author nil"];
+    if(self.author == @"")
+        [missingData stringByAppendingString:@"author"];
+    if(self.body == nil)
+        [missingData stringByAppendingString:@"body nil"];
+    if(self.body == @"")
+        [missingData stringByAppendingString:@"body"];
+    if(self.source == nil)
+        [missingData stringByAppendingString:@"source nil"];
+    if(self.source == @"")
+        [missingData stringByAppendingString:@"source"];
+    if(self.url == nil)
+        [missingData stringByAppendingString:@"url nil"];
+    if(self.url == @"")
+        [missingData stringByAppendingString:@"url"];
+    if(self.dateCreated == nil)
+        [missingData stringByAppendingString:@"dateCreated"];
+    if(self.dateRetrieved == nil)
+        [missingData stringByAppendingString:@"dateRetrieved"];
+    if(self.imagePath == nil)
+        [missingData stringByAppendingString:@"imagePath"];
+    if(self.imagePath == @"")
+        [missingData stringByAppendingString:@"imagePath"];
+    if(self.storyID < 1)
+        [missingData stringByAppendingString:@"storyID"];
+    
+    return missingData;
 }
 
 @end

@@ -27,8 +27,11 @@
 - (void)initializeDatabaseIfNeeded;
 - (void)AddNew;
 - (void)AddStory:(Story *)newStory;
+- (Story *)AddStoryAndGetNewStory:(Story *)newStory;
 - (void)ClearDB;
 - (void)shutItDown;
 - (bool)StoryExistsInDB:(Story *)testStory;
+- (void)MarkStoryAsRead:(int)storyID;
+- (bool)initializeDatabaseWithDB:(sqlite3 *)localDB;
 
 @end

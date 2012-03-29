@@ -25,6 +25,26 @@
     return self;
 }
 
+static NSString * DatabaseLock = nil;
++ (void)initialize {
+    [super initialize];
+    DatabaseLock = [[NSString alloc] initWithString:@"Database-Lock"];
+}
++ (NSString *)databaseLock {
+    return DatabaseLock;
+}
+
+- (void)writeToDatabase1 {
+    @synchronized ([Persistence databaseLock]) {
+        // Code that writes to an sqlite3 database goes here...
+    }
+}
+- (void)writeToDatabase2 {
+    @synchronized ([Persistence databaseLock]) {
+        // Code that writes to an sqlite3 database goes here...
+    }
+}
+
 - (void)initializeDatabase 
 {
     [self createEditableCopyOfDatabaseIfNeeded];
@@ -82,6 +102,7 @@
 
 - (Story *)GetLastStory
 {
+    @synchronized ([Persistence databaseLock]) {
     [self initializeDatabaseIfNeeded];
     
     Story *story = nil;
@@ -100,8 +121,9 @@
     }
     
     sqlite3_finalize(statement);
-    
+        
     return story;
+    }
 }
 
 - (Story *)GetStoryFromStatement:(sqlite3_stmt *)statement
@@ -172,6 +194,7 @@
 
 - (Story *)GetStoryByID:(int)storyID
 {
+    @synchronized ([Persistence databaseLock]) {
     [self initializeDatabaseIfNeeded];
     
     Story *story = nil;
@@ -192,10 +215,13 @@
     }
     
     return story;
+    }
 }
 
 - (bool)StoryExistsInDB:(Story *)testStory
 {   
+    
+    @synchronized ([Persistence databaseLock]) {
     [self initializeDatabaseIfNeeded];
     
     Story *foundStory = nil;
@@ -230,10 +256,13 @@
     bool storyExists = (foundStory != nil);
     //NSLog([testStory.title stringByAppendingFormat:@": %i",storyExists]);
     return storyExists;
+    }
 }
 
 - (void)AddStory:(Story *)newStory
 {
+    
+    @synchronized ([Persistence databaseLock]) {
     [self initializeDatabaseIfNeeded];
     
     NSString *sqlStr = @"insert into story(title,author,body,source,dateCreated,dateRetrieved,isRead,imagePath,isFavorite,rank,isDirty) VALUES(?,?,?,?,?,?,?,?,?,?,?)";
@@ -302,10 +331,38 @@
     newStory = [self GetLastStory];
     if(newStory != nil)
         [self.stories addObject:newStory];
+    }
+}
+
+- (Story *)AddStoryAndGetNewStory:(Story *)newStory
+{
+    [self AddStory:newStory];
+    return [self GetLastStory];
+}
+
+- (void)MarkStoryAsRead:(int)storyID
+{
+    
+    @synchronized ([Persistence databaseLock]) {
+    [self initializeDatabaseIfNeeded];
+    
+    NSString *sqlStr = [@"update story set isRead=1 where storyID=" stringByAppendingFormat:@"%i",storyID];
+    
+    const char *sql = [self GetSqlStringFromNSString:sqlStr];
+    sqlite3_stmt *statement;
+    
+    if (sqlite3_prepare_v2(database, sql, -1, &statement, NULL) == SQLITE_OK)
+    {
+        sqlite3_exec(database, sql, nil, nil, nil);
+    }
+    
+    sqlite3_finalize(statement);
+    }
 }
 
 - (void)ClearDB
 {
+    @synchronized ([Persistence databaseLock]) {
     [self initializeDatabaseIfNeeded];
     
     NSString *sqlStr = @"delete from story";
@@ -321,6 +378,7 @@
     sqlite3_finalize(statement);
     
     stories = [NSMutableArray array];
+    }
 }
 
 

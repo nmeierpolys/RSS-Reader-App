@@ -7,6 +7,7 @@
 //
 
 #import "StoryDetailViewController.h"
+#import "RSSViewController.h"
 
 @implementation StoryDetailViewController
 @synthesize labelTitle;
@@ -19,12 +20,22 @@
 @synthesize labelRead;
 @synthesize labelURL;
 @synthesize currentStory;
+@synthesize parentTableView;
 
 - (void)viewDidLoad {
     
     if(currentStory == nil)
         currentStory = [[Story alloc] init];
+    [self loadStoryToView];
     
+    //NSURL *url = [NSURL URLWithString:currentStory.url];    
+    //[webView loadRequest:[NSURLRequest requestWithURL:url]];
+        
+    
+}
+
+- (void)loadStoryToView
+{
     currentStory.title = currentStory.title;
     labelTitle.text = currentStory.title;
     labelAuthor.text = currentStory.author;
@@ -41,11 +52,6 @@
         labelRead.text = @"Read";
     else 
         labelRead.text = @"Unread";
-    
-    //NSURL *url = [NSURL URLWithString:currentStory.url];    
-    //[webView loadRequest:[NSURLRequest requestWithURL:url]];
-        
-    
 }
 
 - (void)viewDidUnload {
@@ -59,5 +65,24 @@
     [self setLabelURL:nil];
     [self setWebView:nil];
     [super viewDidUnload];
+}
+- (IBAction)btnPrevious:(id)sender 
+{    
+    if(self.parentTableView == nil)
+        return;
+    
+    [self.parentTableView SwitchToPreviousStory];
+    currentStory = [self.parentTableView GetSelectedStory];
+    [self loadStoryToView];
+}
+
+- (IBAction)btnNext:(id)sender 
+{
+    if(self.parentTableView == nil)
+        return;
+    
+    [parentTableView SwitchToNextStory];
+    currentStory = [self.parentTableView GetSelectedStory];
+    [self loadStoryToView];
 }
 @end

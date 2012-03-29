@@ -14,15 +14,19 @@
 #import "NSDate+InternetDateTime.h"
 #import "NSArray+Extras.h"
 #import "Persistence.h"
+#import "FeedsViewController.h"
+#import "Feed.h"
 
 @interface RSSViewController ()
 
 @end
 
 @implementation RSSViewController
+@synthesize labelStatus = _labelStatus;
 @synthesize btnGET = _btnGET;
 @synthesize textBody = _textBody;
 @synthesize textTitle = _textTitle;
+@synthesize labelCount = _labelCount;
 @synthesize toolbar = _toolbar;
 @synthesize allEntries = _allEntries;
 @synthesize feeds = _feeds;
@@ -30,6 +34,8 @@
 @synthesize PM = _PM;
 @synthesize lowerLimitDate;
 @synthesize alwaysIncludeCount = _alwaysIncludeCount;
+@synthesize outstandingFeedsToParse = _outstandingFeedsToParse;
+@synthesize selectedRow = _selectedRow;
 
 - (void)viewDidLoad
 {
@@ -42,15 +48,7 @@
     self.allEntries = [NSMutableArray array];
     [self updatePromptText];
     self.queue = [[NSOperationQueue alloc] init];
-    self.feeds = [NSArray arrayWithObjects:
-                  @"http://vikesgeek.blogspot.com/feeds/posts/default",
-                  @"http://www.thanscorner.info/rss",
-                  @"http://feeds.feedburner.com/RayWenderlich",
-                  @"http://feeds.feedburner.com/LasVegasStartups",
-                  @"http://www.dodgycoder.net/feeds/posts/default?alt=rss",
-                  @"http://xkcd.com/rss.xml",
-                  @"http://www.engadget.com/rss.xml",
-                  nil];   
+    [self initialPopulateFeeds];
     alwaysIncludeCount = 3;
     PM = [[Persistence alloc] init];
     [PM ClearDB];
@@ -58,10 +56,35 @@
     //[self refresh];
 }
 
+- (void)initialPopulateFeeds
+{
+    Feed *vikesFeed = [[Feed alloc] initWithName:@"Vikes Geek" url:@"http://vikesgeek.blogspot.com/feeds/posts/default" type:1];
+    Feed *rayFeed = [[Feed alloc] initWithName:@"Ray Wenderlich" url:@"http://feeds.feedburner.com/RayWenderlich" type:1];
+    Feed *vegasStartupsFeed = [[Feed alloc] initWithName:@"Las Vegas Startups" url:@"http://feeds.feedburner.com/LasVegasStartups" type:1];
+    Feed *thansCornerFeed = [[Feed alloc] initWithName:@"ThansCorner" url:@"http://www.thanscorner.info/rss" type:1];
+    Feed *dodgyCoderFeed = [[Feed alloc] initWithName:@"Dodgy Coder" url:@"http://www.dodgycoder.net/feeds/posts/default?alt=rss" type:1];
+    Feed *xkcdFeed = [[Feed alloc] initWithName:@"xkcd" url:@"http://xkcd.com/rss.xml" type:1];
+    Feed *engadgetFeed = [[Feed alloc] initWithName:@"Engadget" url:@"http://www.engadget.com/rss.xml" type:1];
+    
+    self.feeds = [NSMutableArray arrayWithObjects:vikesFeed, 
+                  rayFeed,
+                  vegasStartupsFeed,
+                  thansCornerFeed,
+                  dodgyCoderFeed,
+                  xkcdFeed,
+                  engadgetFeed,
+                  nil];   
+}
+
 - (void)updatePromptText
 {
+    NSLog([NSString stringWithFormat:@"%i",self.outstandingFeedsToParse]);
     int numStories = self.allEntries.count;
-    self.toolbar.prompt = [@"Stories: " stringByAppendingFormat:@"%i",numStories];
+    self.labelCount.text = [NSString stringWithFormat:@"%i Stories",numStories];
+    if(self.outstandingFeedsToParse < 1)
+        self.labelStatus.text = @"";
+    else
+        self.labelStatus.text = @"Loading..";
 }
 
 - (void)enteringBackground
@@ -77,6 +100,7 @@
 - (void) viewWillAppear:(BOOL)animated
 {
     //[self.navigationController setNavigationBarHidden:YES animated:animated];
+//    [self.tableView reloadData];
     [super viewWillAppear:animated];
 }
 
@@ -105,18 +129,19 @@
 
 - (void)refresh {
     NSLog(@"Refresh - loading feed stories");
+    NSLog([NSString stringWithFormat:@"%i",self.outstandingFeedsToParse]);
     lowerLimitDate = [NSDate dateWithTimeIntervalSinceNow:-1*60*60*24*2];
-    
-    for (NSString *feed in _feeds) {
-        NSURL *url = [NSURL URLWithString:feed];
+    for (Feed *feed in _feeds) {
+        self.outstandingFeedsToParse++;
+        NSURL *url = [NSURL URLWithString:feed.url];
         ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
         [request setDelegate:self];
         [_queue addOperation:request];
     }    
+    [self updatePromptText];
 }
 
 - (void)requestFinished:(ASIHTTPRequest *)request {
-    
     [_queue addOperationWithBlock:^{
         
         NSError *error;
@@ -143,13 +168,11 @@
                         [self.tableView insertRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:insertIdx inSection:0]] withRowAnimation:UITableViewRowAnimationRight];
                         [self updatePromptText];
                     }
-                    
-                }                            
-                
+                }  
             }];
-            
-            
-        }        
+        }
+        self.outstandingFeedsToParse--;
+        [self updatePromptText];
     }];
     
 }
@@ -202,8 +225,9 @@
             bool storyExists = [PM StoryExistsInDB:entry];
             if(!storyExists)
             {
-                [entries addObject:entry];
-                [PM AddStory:entry];
+                entry = [PM AddStoryAndGetNewStory:entry];
+                if(entry != nil)
+                    [entries addObject:entry];
             }
         }      
     }
@@ -273,7 +297,8 @@
                                       imagePath:@"" 
                                      isFavorite:NO 
                                            rank:0 
-                                        isDirty:NO];
+                                        isDirty:NO
+                                        storyID:0];
     return entry;
 }
 
@@ -296,8 +321,8 @@
         bool storyExists = [PM StoryExistsInDB:entry];
         if(!storyExists)
         {
+            entry = [PM AddStoryAndGetNewStory:entry];
             [entries addObject:entry];
-            [PM AddStory:entry];
         }
         
     }      
@@ -305,8 +330,10 @@
 }
 
 - (void)requestFailed:(ASIHTTPRequest *)request {
+    
     NSError *error = [request error];
-    NSLog(@"Error: %@", error);
+    //NSLog(@"Error: %@", error);
+    self.outstandingFeedsToParse--;
 }
 
 
@@ -325,7 +352,18 @@
 	UITableViewCell *cell = [tableView 
                              dequeueReusableCellWithIdentifier:@"StoryCell"];
 	Story *story = [self.allEntries objectAtIndex:indexPath.row];
-	cell.textLabel.text = story.title;
+    
+    UIColor *textColor;
+    if(story.isRead)
+        textColor = [UIColor grayColor];
+    else
+        textColor = [UIColor blackColor];
+    
+    cell.textLabel.textColor = textColor;
+    cell.detailTextLabel.textColor = textColor;
+    
+    
+	cell.textLabel.text = [NSString stringWithFormat:@"%i - %@",story.storyID, story.title];
 	cell.detailTextLabel.text = story.source;
     
     return cell;
@@ -338,13 +376,79 @@
         //Get a reference to the detail view we're loading
         StoryDetailViewController *detailView = (StoryDetailViewController *)[segue destinationViewController];
         
-        //Get the selected Story object
-        NSIndexPath *myIndexPath = [self.tableView indexPathForSelectedRow];
-        Story *detailStory = [self.allEntries objectAtIndex:[myIndexPath row]];
+        [self UpdateSelectedRowValue];
+        Story *detailStory = [self GetSelectedStory];  
+        
+        if (detailStory == nil)
+            return;
+        
+        [self MarkStoryAsRead:detailStory];
+        [self.tableView reloadData];
         
         //Set the story object on the detail view
         detailView.currentStory = detailStory;
+        detailView.parentTableView = self;
     }
+    else if ([[segue identifier] isEqualToString:@"FeedManagement"]) {
+        FeedsViewController *feedView = (FeedsViewController *)[segue destinationViewController];
+        
+        feedView.feeds = self.feeds;
+        feedView.parentTableView = self;
+    }
+}
+ 
+- (void)MarkStoryAsRead:(Story *)story
+{
+    [PM MarkStoryAsRead:story.storyID];
+    story.isRead = true;
+}
+
+- (void)MarkSelectedStoryAsRead
+{
+    Story *selectedStory = [self GetSelectedStory];
+    if(selectedStory != nil)
+        selectedStory.isRead = YES;
+}
+
+- (void)UpdateSelectedRowValue
+{
+    NSIndexPath *myIndexPath = [self.tableView indexPathForSelectedRow];
+    
+    if(myIndexPath == nil)
+        self.selectedRow = 0;
+    else
+        self.selectedRow = [myIndexPath row];
+}
+
+- (Story *)GetSelectedStory
+{   
+    Story *selectedStory = [self.allEntries objectAtIndex:self.selectedRow];
+    
+    return selectedStory;
+}
+
+
+- (void)SwitchToPreviousStory
+{   
+    [self MarkSelectedStoryAsRead];
+    int previousRow;
+    if(self.selectedRow < 1)
+        previousRow = self.selectedRow;
+    else
+        previousRow = self.selectedRow - 1;  
+    self.selectedRow = previousRow;    
+}
+
+- (void)SwitchToNextStory
+{   
+    [self MarkSelectedStoryAsRead];
+    int nextRow;
+    if((self.selectedRow + 2) > (self.allEntries.count))
+        nextRow = self.selectedRow;
+    else
+        nextRow = self.selectedRow + 1;   
+    NSLog([NSString stringWithFormat:@"Cur: %i   Next:  %i",self.selectedRow,nextRow]);
+    self.selectedRow = nextRow;
 }
 
 - (void)viewDidUnload
@@ -352,6 +456,8 @@
     [self setBtnGET:nil];
     [self setTextBody:nil];
     [self setToolbar:nil];
+    [self setLabelStatus:nil];
+    [self setLabelCount:nil];
     [super viewDidUnload];
     // Release any retained subviews of the main view.
 }
@@ -365,6 +471,12 @@
     }
 }
 
+- (IBAction)btnClear:(id)sender {
+    [PM ClearDB];
+    self.allEntries = [NSMutableArray array];
+    [self.tableView reloadData];
+    [self updatePromptText];
+}
 - (IBAction)btnRefresh:(id)sender {
     [self refresh];
 }
