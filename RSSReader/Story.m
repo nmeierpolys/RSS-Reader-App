@@ -29,7 +29,7 @@
 {
     if(self = [super init])
     {
-        [self PopulateDummyData];
+        [self PopulateEmptyData];
     }
     
     return self;

@@ -44,14 +44,9 @@
     labelDateCreated.text = currentStory.GetDateCreatedString;
     labelDateRetrieved.text = currentStory.GetDateRetrievedString;
     labelURL.text = currentStory.url;
-    self.title = currentStory.title;
+    self.title = currentStory.source;
     
     [webView loadHTMLString:currentStory.body baseURL:nil];
-    
-    if(currentStory.isRead)
-        labelRead.text = @"Read";
-    else 
-        labelRead.text = @"Unread";
 }
 
 - (void)viewDidUnload {

@@ -107,7 +107,7 @@
     {
         Feed *newFeed = [[Feed alloc] init];
         newFeed.name = textName.text;
-        newFeed.url = textURL.text;
+        newFeed.url = [@"http://" stringByAppendingString:textURL.text];
         [self.parentTableView addFeed:newFeed];
         [self.parentTableView.tableView reloadData];
         [self.navigationController popViewControllerAnimated:YES];
