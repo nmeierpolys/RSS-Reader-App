@@ -17,6 +17,7 @@
 @synthesize textURL;
 @synthesize parentTableView;
 @synthesize detailFeed;
+@synthesize PM;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -55,7 +56,6 @@
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-#warning Potentially incomplete method implementation.
     // Return the number of sections.
     return 0;
 }

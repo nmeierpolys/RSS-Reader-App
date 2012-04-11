@@ -209,7 +209,7 @@
             <objects>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="76v-My-9b3" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <tableViewController title="Feeds" id="7f4-yH-WRB" customClass="RSSViewController" sceneMemberID="viewController">
-                    <tableView key="view" opaque="NO" clipsSubviews="YES" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" alwaysBounceVertical="YES" indicatorStyle="black" dataMode="prototypes" style="plain" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="Bzt-5B-grX">
+                    <tableView key="view" opaque="NO" clipsSubviews="YES" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" alwaysBounceVertical="YES" indicatorStyle="black" dataMode="prototypes" style="plain" rowHeight="58" sectionHeaderHeight="22" sectionFooterHeight="22" id="Bzt-5B-grX">
                         <rect key="frame" x="0.0" y="64" width="320" height="372"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -235,26 +235,33 @@
                             <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                         </view>
                         <prototypes>
-                            <tableViewCell contentMode="scaleToFill" selectionStyle="blue" accessoryType="disclosureIndicator" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="StoryCell" textLabel="Znc-6Y-oGH" detailTextLabel="jyC-hu-pb8" rowHeight="34" style="IBUITableViewCellStyleSubtitle" id="LBg-tb-Iqf">
-                                <rect key="frame" x="0.0" y="41" width="320" height="34"/>
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="blue" accessoryType="disclosureIndicator" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="StoryCell" rowHeight="58" id="LBg-tb-Iqf">
+                                <rect key="frame" x="0.0" y="41" width="320" height="58"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
-                                    <rect key="frame" x="0.0" y="0.0" width="300" height="33"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="300" height="57"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
-                                        <label opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="left" text="Title" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="Znc-6Y-oGH">
-                                            <rect key="frame" x="10" y="-1" width="31" height="19"/>
-                                            <autoresizingMask key="autoresizingMask"/>
-                                            <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
+                                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" tag="100" contentMode="left" text="Title" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="none" minimumFontSize="12" id="jqU-uf-QBm">
+                                            <rect key="frame" x="8" y="0.0" width="275" height="37"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            <fontDescription key="fontDescription" type="boldSystem" pointSize="13"/>
                                             <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
-                                            <color key="highlightedColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                            <color key="highlightedColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                         </label>
-                                        <label opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="left" text="Detail" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="jyC-hu-pb8">
-                                            <rect key="frame" x="10" y="18" width="34" height="16"/>
-                                            <autoresizingMask key="autoresizingMask"/>
-                                            <fontDescription key="fontDescription" type="system" pointSize="13"/>
-                                            <color key="textColor" red="0.50196078431372548" green="0.50196078431372548" blue="0.50196078431372548" alpha="1" colorSpace="calibratedRGB"/>
-                                            <color key="highlightedColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" tag="101" contentMode="left" text="Subtitle" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" id="78h-uU-6S2">
+                                            <rect key="frame" x="8" y="36" width="214" height="21"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                            <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                            <color key="highlightedColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                        </label>
+                                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" tag="102" contentMode="left" text="Rank" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" adjustsFontSizeToFit="NO" id="nJ8-Cx-CAS">
+                                            <rect key="frame" x="230" y="34" width="65" height="21"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                            <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                            <color key="highlightedColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                         </label>
                                     </subviews>
                                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
@@ -274,6 +281,11 @@
                         <barButtonItem systemItem="bookmarks" id="Yca-S1-3Fi">
                             <connections>
                                 <segue destination="dKI-bd-ee1" kind="push" identifier="FeedManagement" id="gOG-x6-JaY"/>
+                            </connections>
+                        </barButtonItem>
+                        <barButtonItem title="ReFeed" id="sUo-Ee-T3D">
+                            <connections>
+                                <action selector="btnReFeed:" destination="7f4-yH-WRB" id="GZ7-1m-aSq"/>
                             </connections>
                         </barButtonItem>
                         <barButtonItem style="plain" systemItem="flexibleSpace" id="zMn-iV-KEh"/>
@@ -377,17 +389,8 @@
         <class className="FeedsTestViewController" superclassName="UITableViewController">
             <source key="sourceIdentifier" type="project" relativePath="./Classes/FeedsTestViewController.h"/>
             <relationships>
-                <relationship kind="action" name="btnClose:"/>
                 <relationship kind="action" name="btnEdit:"/>
                 <relationship kind="outlet" name="btnEditOutlet" candidateClass="UIBarButtonItem"/>
-                <relationship kind="outlet" name="navigationItem" candidateClass="UINavigationItem"/>
-            </relationships>
-        </class>
-        <class className="FeedsViewController" superclassName="UITableViewController">
-            <source key="sourceIdentifier" type="project" relativePath="./Classes/FeedsViewController.h"/>
-            <relationships>
-                <relationship kind="action" name="btnClose:"/>
-                <relationship kind="outlet" name="navigationItem" candidateClass="UINavigationItem"/>
             </relationships>
         </class>
         <class className="RSSViewController" superclassName="UITableViewController">
@@ -395,6 +398,7 @@
             <relationships>
                 <relationship kind="action" name="btnClear:"/>
                 <relationship kind="action" name="btnGetPressed:"/>
+                <relationship kind="action" name="btnReFeed:"/>
                 <relationship kind="action" name="btnRefresh:"/>
                 <relationship kind="outlet" name="btnGET" candidateClass="UIView"/>
                 <relationship kind="outlet" name="labelCount" candidateClass="UILabel"/>

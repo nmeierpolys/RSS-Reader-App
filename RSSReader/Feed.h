@@ -11,15 +11,32 @@
 @interface Feed : NSObject {
     NSString *name;
     NSString *url;
+    int feedID;
     int type;
+    int rank;
+    int timesRead;
 }
 
 @property (retain) NSString *name;
 @property (retain) NSString *url;
 @property int type;
+@property int rank;
+@property int timesRead;
+@property int feedID;
 
 - (id)initWithName:(NSString *)newName
                url:(NSString *)newUrl
               type:(int)newType;
+
+- (id)initWithName:(NSString *)newName
+               url:(NSString *)newUrl
+              type:(int)newType
+              rank:(int)newRank;
+- (id)initWithName:(NSString *)newName
+               url:(NSString *)newUrl
+              type:(int)newType
+              rank:(int)newRank
+         timesRead:(int)newTimesRead
+            feedID:(int)newFeedID;
 
 @end

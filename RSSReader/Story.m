@@ -23,6 +23,7 @@
 @synthesize isFavorite = _isFavorite;
 @synthesize rank = _rank;
 @synthesize isDirty = _isDirty;
+@synthesize feedID = _feedID;
 
 
 - (id)init
@@ -48,6 +49,7 @@
                rank:(int)newRank
             isDirty:(bool)newIsDirty
             storyID:(int)newStoryID
+             feedID:(int)newFeedID
 {
     if(self = [super init])
     {
@@ -64,6 +66,7 @@
         self.isFavorite = newIsFavorite;
         self.rank = newRank;
         self.isDirty = newIsDirty;
+        self.feedID = newFeedID;
     }
     
     return self;
@@ -118,6 +121,7 @@
     self.isFavorite = YES;
     self.rank = 15;
     self.isDirty = YES;
+    self.feedID = 0;
 }
 
 - (void)PopulateEmptyData
@@ -136,6 +140,7 @@
     self.isFavorite = NO;
     self.rank = 0;
     self.isDirty = NO;
+    self.feedID = 0;
 }
 
 - (NSString *)GetDateCreatedString
@@ -190,8 +195,33 @@
         [missingData stringByAppendingString:@"imagePath"];
     if(self.storyID < 1)
         [missingData stringByAppendingString:@"storyID"];
+    if(self.feedID < 1)
+        [missingData stringByAppendingString:@"feedID"];
     
     return missingData;
+}
+
+- (void)Print
+{
+    NSString *outString = @"";
+    
+    outString = [outString stringByAppendingFormat:@"\n    ID: %i",self.storyID];
+    outString = [outString stringByAppendingFormat:@"\n    Title: %@",self.title];
+    outString = [outString stringByAppendingFormat:@"\n    Author: %@",self.author];
+    outString = [outString stringByAppendingFormat:@"\n    Body: %@",self.body];
+    outString = [outString stringByAppendingFormat:@"\n    Source: %@",self.source];
+    outString = [outString stringByAppendingFormat:@"\n    Url: %@",self.url];
+    outString = [outString stringByAppendingFormat:@"\n    Created: %@",[self GetDateCreatedString]];
+    outString = [outString stringByAppendingFormat:@"\n    Retrieved: %@",[self GetDateRetrievedString]];
+    outString = [outString stringByAppendingFormat:@"\n    Read?: %i",self.isRead];
+    outString = [outString stringByAppendingFormat:@"\n    ImagePath: %@",self.imagePath];
+    outString = [outString stringByAppendingFormat:@"\n    Favorite?: %i",self.isFavorite];
+    outString = [outString stringByAppendingFormat:@"\n    Rank: %i",self.rank];
+    outString = [outString stringByAppendingFormat:@"\n    Dirty?: %i",self.isDirty];
+    outString = [outString stringByAppendingFormat:@"\n    FeedID: %i",self.feedID];
+     
+    
+    NSLog(@"%@", outString);
 }
 
 @end

@@ -13,12 +13,12 @@
 @interface FeedsTestViewController : UITableViewController {
     NSMutableArray *feeds;
     RSSViewController *parentTableView;
+    Persistence *PM;
 }
 
 @property (retain) NSMutableArray *feeds;
 @property (nonatomic, retain) RSSViewController *parentTableView;
-- (IBAction)btnClose:(id)sender;
-@property (weak, nonatomic) IBOutlet UINavigationItem *navigationItem;
+@property (nonatomic, retain) Persistence *PM;
 - (void) addFeed:(Feed *)newFeed;
 - (IBAction)btnEdit:(id)sender;
 @property (weak, nonatomic) IBOutlet UIBarButtonItem *btnEditOutlet;

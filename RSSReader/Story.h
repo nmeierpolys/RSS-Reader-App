@@ -22,6 +22,7 @@
     bool isFavorite;
     int rank;
     bool isDirty;
+    int feedID;
 }
 
 @property (nonatomic) int storyID;
@@ -37,6 +38,7 @@
 @property (nonatomic) bool isFavorite;
 @property (nonatomic) int rank;
 @property (nonatomic) bool isDirty;
+@property (nonatomic) int feedID;
 
 
 - (id)init;
@@ -52,7 +54,8 @@
          isFavorite:(bool)isFavorite
                rank:(int)rank
             isDirty:(bool)isDirty
-            storyID:(int)newStoryID;
+            storyID:(int)newStoryID
+             feedID:(int)newFeedID;
 - (id)initWithID:(int)newStoryID 
            title:(NSString *)newTitle;
 - (id)initWithDummyInfo;
@@ -62,4 +65,5 @@
 - (NSString *)GetDateCreatedString;
 - (NSString *)GetDateRetrievedString;
 - (NSString *)IsCompleteStory;
+- (void)Print;
 @end

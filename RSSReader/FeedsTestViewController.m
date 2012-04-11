@@ -18,6 +18,7 @@
 @synthesize btnEditOutlet;
 @synthesize feeds;
 @synthesize parentTableView;
+@synthesize PM;
 
 - (id)initWithStyle:(UITableViewStyle)style
 {
@@ -55,7 +56,8 @@
     if(newFeed == nil)
         return;
     
-    [self.feeds addObject:newFeed];
+    //[self.feeds addObject:newFeed];
+    [PM AddFeed:newFeed];
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
@@ -154,6 +156,7 @@
         //Set the story object on the detail view
         detailView.detailFeed = selectedFeed;
         detailView.parentTableView = self;
+        detailView.PM = self.PM;
     }
 }
 

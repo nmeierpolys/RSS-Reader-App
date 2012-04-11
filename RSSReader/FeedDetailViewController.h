@@ -13,10 +13,12 @@
 @interface FeedDetailViewController : UIViewController {
     Feed *detailFeed;
     FeedsTestViewController *parentTableView;
+    Persistence *PM;
 }
 
 @property (retain)Feed *detailFeed;
 @property (retain)FeedsTestViewController *parentTableView;
+@property (retain)Persistence *PM;
 - (IBAction)btnClose:(id)sender;
 
 @property (weak, nonatomic) IBOutlet UITextField *textName;

@@ -37,6 +37,7 @@
 @synthesize alwaysIncludeCount = _alwaysIncludeCount;
 @synthesize outstandingFeedsToParse = _outstandingFeedsToParse;
 @synthesize selectedRow = _selectedRow;
+@synthesize orderBy = _orderBy;
 
 - (void)viewDidLoad
 {
@@ -47,39 +48,102 @@
     
     self.title = @"Feeds";
     self.allEntries = [NSMutableArray array];
+    self.feeds = [NSMutableArray array];
     [self updatePromptText];
     self.queue = [[NSOperationQueue alloc] init];
-    [self initialPopulateFeeds];
-    alwaysIncludeCount = 3;
+    alwaysIncludeCount = 4;
     PM = [[Persistence alloc] init];
-    //[PM ClearDB];
-    //[self loadSqlStoriesIntoTable];
+    [self initialPopulateFeeds];
+    //[PM ClearStories];
+    self.orderBy = 1;
+    [self loadSqlStoriesIntoTable];
     //[self refresh];
 }
 
 - (void)initialPopulateFeeds
 {
-    Feed *vikesFeed = [[Feed alloc] initWithName:@"Vikes Geek" url:@"http://vikesgeek.blogspot.com/feeds/posts/default" type:1];
-    Feed *rayFeed = [[Feed alloc] initWithName:@"Ray Wenderlich" url:@"http://feeds.feedburner.com/RayWenderlich" type:1];
-    Feed *vegasStartupsFeed = [[Feed alloc] initWithName:@"Las Vegas Startups" url:@"http://feeds.feedburner.com/LasVegasStartups" type:1];
-    Feed *thansCornerFeed = [[Feed alloc] initWithName:@"ThansCorner" url:@"http://www.thanscorner.info/rss" type:1];
-    Feed *dodgyCoderFeed = [[Feed alloc] initWithName:@"Dodgy Coder" url:@"http://www.dodgycoder.net/feeds/posts/default?alt=rss" type:1];
-    Feed *xkcdFeed = [[Feed alloc] initWithName:@"xkcd" url:@"http://xkcd.com/rss.xml" type:1];
-    Feed *engadgetFeed = [[Feed alloc] initWithName:@"Engadget" url:@"http://www.engadget.com/rss.xml" type:1];
+    Feed *vikesFeed = [[Feed alloc] initWithName:@"Vikes Geek" 
+                                             url:@"http://vikesgeek.blogspot.com/feeds/posts/default" 
+                                            type:1
+                                            rank:1];
+    Feed *rayFeed = [[Feed alloc] initWithName:@"Ray Wenderlich" 
+                                           url:@"http://feeds.feedburner.com/RayWenderlich" 
+                                          type:1
+                                          rank:1];
+    Feed *vegasStartupsFeed = [[Feed alloc] initWithName:@"Las Vegas Startups" 
+                                                     url:@"http://feeds.feedburner.com/LasVegasStartups" 
+                                                    type:1
+                                                    rank:1];
+    Feed *thansCornerFeed = [[Feed alloc] initWithName:@"ThansCorner" 
+                                                   url:@"http://www.thanscorner.info/feed" 
+                                                  type:1
+                                                  rank:1];
+    Feed *dodgyCoderFeed = [[Feed alloc] initWithName:@"Dodgy Coder" 
+                                                  url:@"http://www.dodgycoder.net/feeds/posts/default?alt=rss" 
+                                                 type:1
+                                                 rank:1];
+    Feed *xkcdFeed = [[Feed alloc] initWithName:@"xkcd" 
+                                            url:@"http://xkcd.com/rss.xml" 
+                                           type:1
+                                           rank:1];
+    Feed *engadgetFeed = [[Feed alloc] initWithName:@"Engadget" 
+                                                url:@"http://www.engadget.com/rss.xml" 
+                                               type:1
+                                               rank:1];
+    Feed *lifehackerFeed = [[Feed alloc] initWithName:@"Lifehacker" 
+                                                  url:@"http://lifehacker.com/top/index.xml" 
+                                                 type:1
+                                                 rank:1];
     
-    self.feeds = [NSMutableArray arrayWithObjects:vikesFeed, 
-                  rayFeed,
-                  vegasStartupsFeed,
-                  thansCornerFeed,
-                  dodgyCoderFeed,
-                  xkcdFeed,
-                  engadgetFeed,
-                  nil];   
+    Feed *tenxSDFeed = [[Feed alloc] initWithName:@"10x Software Development" 
+                                              url:@"http://feeds.feedburner.com/10xSoftwareDevelopment" 
+                                             type:1 
+                                             rank:1];
+    
+    Feed *digitalPhotoSchoolFeed = [[Feed alloc] initWithName:@"Digital Photography School" 
+                                                          url:@"http://feeds.feedburner.com/DigitalPhotographySchool" 
+                                                         type:1 
+                                                         rank:1];
+    
+    Feed *valleyWagFeed = [[Feed alloc] initWithName:@"Gawker: Valleywag" 
+                                                 url:@"http://feeds.gawker.com/valleywag/full" 
+                                                type:1 
+                                                rank:1];
+    
+    Feed *graphJamFeed = [[Feed alloc] initWithName:@"GraphJam" 
+                                                url:@"http://feeds.feedburner.com/GraphJam" 
+                                               type:1 
+                                               rank:1];
+    Feed *joelOnSoftwareFeed = [[Feed alloc] initWithName:@"Joel on Software" 
+                                                      url:@"http://www.joelonsoftware.com/rss.xml" 
+                                                     type:1 
+                                                     rank:1];
+//    Feed * = [[Feed alloc] initWithName:@"" 
+//                                    url:@"" 
+//                                   type:1 
+//                                   rank:10];
+    [PM ClearFeeds];
+    [PM AddFeed:vikesFeed];
+    [PM AddFeed:engadgetFeed];
+    [PM AddFeed:vegasStartupsFeed];
+    [PM AddFeed:rayFeed];
+    [PM AddFeed:dodgyCoderFeed];
+    [PM AddFeed:xkcdFeed];
+    [PM AddFeed:thansCornerFeed];
+    [PM AddFeed:lifehackerFeed];
+    [PM AddFeed:tenxSDFeed];
+    [PM AddFeed:digitalPhotoSchoolFeed];
+    [PM AddFeed:valleyWagFeed];
+    [PM AddFeed:graphJamFeed];
+    [PM AddFeed:joelOnSoftwareFeed];
+    
+    
+    self.feeds = PM.feeds; 
 }
 
 - (void)updatePromptText
 {
-    NSLog([NSString stringWithFormat:@"%i",self.outstandingFeedsToParse]);
+    NSLog(@"%@", [NSString stringWithFormat:@"%i",self.outstandingFeedsToParse]);
     int numStories = self.allEntries.count;
     self.labelCount.text = [NSString stringWithFormat:@"%i Stories",numStories];
     if(self.outstandingFeedsToParse < 1)
@@ -100,14 +164,11 @@
 
 - (void) viewWillAppear:(BOOL)animated
 {
-    //[self.navigationController setNavigationBarHidden:YES animated:animated];
-//    [self.tableView reloadData];
     [super viewWillAppear:animated];
 }
 
 - (void) viewWillDisappear:(BOOL)animated
 {
-    //[self.navigationController setNavigationBarHidden:NO animated:animated];
     [super viewWillDisappear:animated];
 }
 
@@ -116,21 +177,45 @@
     // Release anything that's not essential, such as cached data
 }
 
+
+
 - (void)loadSqlStoriesIntoTable
 {
-    self.allEntries = PM.stories;
-    for (Story *entry in self.allEntries) {
-        if(![self.allEntries containsObject:entry])
-        {
-            [self.tableView insertRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:0 inSection:0]] withRowAnimation:UITableViewRowAnimationRight];
+    NSMutableArray *entries = [PM GetAllStories:0];
+    NSMutableArray *feeds = [PM GetAllFeeds];
+    
+    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+        
+        for (Feed *feed in feeds) {
+            int newRank = [self ComputeFeedRank:feed];
+            feed.rank = newRank;
+            [PM SetFeedRank:feed.feedID toRank:newRank];
         }
-    }
-    [self updatePromptText];
+        
+        for (Story *entry in entries) {
+            entry.rank = [self ComputeStoryRank:entry];
+        }
+        
+        for (Story *entry in entries) {
+            int insertIdx = [self.allEntries indexForInsertingObject:entry sortedUsingBlock:^(id a, id b) {
+                Story *entry1 = (Story *) a;
+                Story *entry2 = (Story *) b;;
+                return [self compareStory:entry1 withStory:entry2];
+            }];     
+            if(entry != nil)
+            {
+                [self.allEntries insertObject:entry atIndex:insertIdx];
+                [self.tableView insertRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:insertIdx inSection:0]] withRowAnimation:UITableViewRowAnimationRight];
+            }
+        }  
+        [self.tableView reloadData];
+        [self updatePromptText];
+    }];
 }
 
 - (void)refresh {
     NSLog(@"Refresh - loading feed stories");
-    NSLog([NSString stringWithFormat:@"%i",self.outstandingFeedsToParse]);
+    NSLog(@"%@", [NSString stringWithFormat:@"%i",self.outstandingFeedsToParse]);
     lowerLimitDate = [NSDate dateWithTimeIntervalSinceNow:-1*60*60*24*2];
     for (Feed *feed in _feeds) {
         self.outstandingFeedsToParse++;
@@ -142,40 +227,156 @@
     [self updatePromptText];
 }
 
+- (int)GetFeedIDFromURL:(NSURL *)url
+{
+    NSString *urlString = url.absoluteString;
+    Feed *feed  = [PM GetFeedByURLPath:urlString];
+    return feed.feedID;
+}
+
+- (int)ComputeFeedRank:(Feed *)feed
+{
+    if(feed.feedID == 4)
+        feed.feedID = 4;
+    
+    if(feed.feedID == 8)
+        feed.feedID = 8;
+    
+    if(feed == nil)
+        return 0;
+    
+    int rank = 0;
+
+    //Total number of feed stories
+    int numFeedStoriesTotal = [PM GetNumFeedStories:feed.feedID];
+    
+    //Total days since the feed's first post (on record)
+    NSDate *earliestDate = [PM GetEarliestFeedStoryCreatedDate:feed.feedID];
+    int numDaysSinceFirstFeedPost = [self NumberOfDaysBetweenDate:earliestDate andSecondDate:[NSDate date]];
+    
+    //Total number of feed stories per day (on average) + 1 to include today's stories
+    float numFeedStoriesPerDay = (float)numFeedStoriesTotal / (numDaysSinceFirstFeedPost + 1);
+    
+    int rankFromNumStoriesPerDay = 0;
+    if(numFeedStoriesPerDay > 0)
+        rankFromNumStoriesPerDay = (int)1/numFeedStoriesPerDay;
+    if(rankFromNumStoriesPerDay > 10)
+        rankFromNumStoriesPerDay = 10;
+    rank = rank + rankFromNumStoriesPerDay;
+    return rank;
+}
+
+- (int)ComputeStoryRank:(Story *)story
+{
+    int rank;
+    Feed *storyFeed = [PM GetFeedByID:story.feedID];
+    
+    int feedRank = storyFeed.rank;
+    
+    //Total number of feed stories
+    int numFeedStoriesTotal = [PM GetNumFeedStories:story.feedID];
+    
+    //Total days since the feed's first post (on record)
+    NSDate *earliestDate = [PM GetEarliestFeedStoryCreatedDate:story.feedID];
+    int numDaysSinceFirstFeedPost = [self NumberOfDaysBetweenDate:earliestDate andSecondDate:[NSDate date]];
+    
+    //Total number of feed stories per day (on average) + 1 to include today's stories
+    float numFeedStoriesPerDay = (float)numFeedStoriesTotal / (numDaysSinceFirstFeedPost + 1);
+    
+    
+    //Days since created
+    int numDaysSinceCreated = [self NumberOfDaysBetweenDate:story.dateCreated andSecondDate:[NSDate date]];
+    NSLog(@"%i",numDaysSinceCreated);
+    
+    if(numDaysSinceCreated > 10)
+        numDaysSinceCreated = 10;
+    
+    int rankFromNumDaysSinceCreated = 10-numDaysSinceCreated;
+    
+    
+    //Consider Feed 
+    
+    rank = feedRank + rankFromNumDaysSinceCreated;
+    NSLog(@"ID: %i, Rank: %i, F-rank: %i, 10-NumDays: %i",story.storyID,rank,feedRank,rankFromNumDaysSinceCreated);
+    return rank;
+}
+
+
 - (void)requestFinished:(ASIHTTPRequest *)request {
     [_queue addOperationWithBlock:^{
-        
+        int blogID = 1;
+        blogID = [self GetFeedIDFromURL:[request url]];
+        NSLog(request.url.absoluteString);
         NSError *error;
         GDataXMLDocument *doc = [[GDataXMLDocument alloc] initWithData:[request responseData] 
                                                                options:0 error:&error];
-        if (doc == nil) { 
+        if (doc == nil) {
             NSLog(@"Failed to parse %@", request.url);
         } else {
             
             NSMutableArray *entries = [NSMutableArray array];
             
-            [self parseFeed:doc.rootElement entries:entries];                
+            [self parseFeed:doc.rootElement entries:entries blogID:blogID];                
+            
+            Feed *thisFeed = [PM GetFeedByID:blogID];
+            [PM SetFeedRank:blogID toRank:[self ComputeFeedRank:thisFeed]];
             
             [[NSOperationQueue mainQueue] addOperationWithBlock:^{
                 for (Story *entry in entries) {
                     int insertIdx = [_allEntries indexForInsertingObject:entry sortedUsingBlock:^(id a, id b) {
                         Story *entry1 = (Story *) a;
                         Story *entry2 = (Story *) b;
-                        return [entry1.dateCreated compare:entry2.dateCreated];
+                        return [self compareStory:entry1 withStory:entry2];
                     }];     
                     if(entry != nil)
                     {
                         [_allEntries insertObject:entry atIndex:insertIdx];
                         [self.tableView insertRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:insertIdx inSection:0]] withRowAnimation:UITableViewRowAnimationRight];
-                        [self updatePromptText];
                     }
                 }  
             }];
         }
         self.outstandingFeedsToParse--;
         [self updatePromptText];
+        //if(self.outstandingFeedsToParse < 1)
+        //    [self loadSqlStoriesIntoTable];
     }];
     
+}
+
+- (NSComparisonResult)compareStory:(Story *)entry1 withStory:(Story *)entry2
+{
+    NSComparisonResult result;
+    
+    if(self.orderBy == 0)
+    {
+        result = [entry1.dateCreated compare:entry2.dateCreated];
+    }
+    else if(self.orderBy == 1)
+    {
+        if(entry1.rank > entry2.rank)
+            result = NSOrderedDescending;
+        else if(entry1.rank < entry2.rank)
+            result = NSOrderedAscending;
+        else
+            result = [entry1.dateCreated compare:entry2.dateCreated];
+    }
+    else if(self.orderBy == 2)
+    {
+        result = [entry1.title compare:entry2.title];
+    }
+    else
+    {
+        result = NSOrderedAscending;
+    }
+    
+    return result;
+}
+
+- (void)StoryRetrievalComplete
+{
+    [self updatePromptText];
+    [self loadSqlStoriesIntoTable];
 }
 
 - (void)testPrint:(GDataXMLDocument *)doc
@@ -194,17 +395,19 @@
     }
 }
 
-- (void)parseFeed:(GDataXMLElement *)rootElement entries:(NSMutableArray *)entries {   
+- (void)parseFeed:(GDataXMLElement *)rootElement entries:(NSMutableArray *)entries blogID:(int)blogID {   
     if ([rootElement.name compare:@"rss"] == NSOrderedSame) {
-        [self parseRss:rootElement entries:entries];
+        [self parseRss:rootElement entries:entries blogID:blogID];
     } else if ([rootElement.name compare:@"feed"] == NSOrderedSame) {                       
-        [self parseAtom:rootElement entries:entries];
+        [self parseAtom:rootElement entries:entries blogID:blogID];
     } else {
         NSLog(@"Unsupported root element: %@", rootElement.name);
     }    
 }
 
-- (void)parseRss:(GDataXMLElement *)rootElement entries:(NSMutableArray *)entries {
+- (void)parseRss:(GDataXMLElement *)rootElement 
+         entries:(NSMutableArray *)entries 
+          blogID:(int)blogID{
     
     NSArray *channels = [rootElement elementsForName:@"channel"];
     for (GDataXMLElement *channel in channels) {            
@@ -218,7 +421,8 @@
             Story *entry = [self parseItemToStory:item 
                                     withBlogTitle:blogTitle 
                                          itemType:1 
-                                    alwaysInclude:(storyCount < alwaysIncludeCount)];
+                                    alwaysInclude:(storyCount < alwaysIncludeCount)
+                            blogID:blogID];
             
             if(entry == nil)
                 return;
@@ -239,6 +443,7 @@
               withBlogTitle:(NSString *)blogTitle 
                    itemType:(int)type
               alwaysInclude:(bool)alwaysInclude
+                     blogID:(int)blogID
 {
     //Type is an enumaration:  1 => RSS  2 => Atom
     
@@ -297,25 +502,31 @@
                                          isRead:NO 
                                       imagePath:@"" 
                                      isFavorite:NO 
-                                           rank:0 
+                                           rank:0
                                         isDirty:NO
-                                        storyID:0];
+                                        storyID:0
+                                         feedID:blogID];
+    
+    entry.rank = [self ComputeStoryRank:entry];
     return entry;
 }
 
-- (void)parseAtom:(GDataXMLElement *)rootElement entries:(NSMutableArray *)entries {
+- (void)parseAtom:(GDataXMLElement *)rootElement 
+          entries:(NSMutableArray *)entries 
+           blogID:(int)blogID
+{
     
     NSString *blogTitle = [rootElement valueForChild:@"title"];                    
     
     NSArray *items = [rootElement elementsForName:@"entry"];
-    bool alwaysInclude = YES;
     int storyCount = 0;
     for (GDataXMLElement *item in items) {
         storyCount++;
         Story *entry = [self parseItemToStory:item 
                                 withBlogTitle:blogTitle 
                                      itemType:2 
-                                alwaysInclude:(storyCount == alwaysIncludeCount)];
+                                alwaysInclude:(storyCount == alwaysIncludeCount)
+                        blogID:blogID];
         if(entry == nil)
             return;
         
@@ -323,7 +534,7 @@
         if(!storyExists)
         {
             entry = [PM AddStoryAndGetNewStory:entry];
-            [entries addObject:entry];
+            //[entries addObject:entry];
         }
         
     }      
@@ -353,7 +564,7 @@
 	UITableViewCell *cell = [tableView 
                              dequeueReusableCellWithIdentifier:@"StoryCell"];
 	Story *story = [self.allEntries objectAtIndex:indexPath.row];
-    
+    //[story Print];
     UIColor *textColor;
     if(story.isRead)
         textColor = [UIColor grayColor];
@@ -363,11 +574,57 @@
     cell.textLabel.textColor = textColor;
     cell.detailTextLabel.textColor = textColor;
     
+    Feed *parentFeed = [PM GetFeedByID:story.feedID];
     
-	cell.textLabel.text = [NSString stringWithFormat:@"%i - %@",story.storyID, story.title];
-	cell.detailTextLabel.text = story.source;
+    //Actually set the text here
+    UILabel *titleLabel = (UILabel *)[cell viewWithTag:100];
+	titleLabel.text = [NSString stringWithFormat:@"%i - %@",story.storyID, story.title];
+    
+	UILabel *subtitleLabel = (UILabel *)[cell viewWithTag:101];
+	subtitleLabel.text = story.source;
+    
+	UILabel *rankLabel = (UILabel *)[cell viewWithTag:102];
+	rankLabel.text = [NSString stringWithFormat:@"Rank: %i",story.rank];
+    
+	//UILabel *createdLabel = (UILabel *)[cell viewWithTag:103];
+	//createdLabel.text = [story GetDateCreatedString];
+    
+	//UILabel *retrievedLabel = (UILabel *)[cell viewWithTag:104];
+	//retrievedLabel.text = [story GetDateRetrievedString];
+    
+	//UILabel *feedNumReadLabel = (UILabel *)[cell viewWithTag:103];
+	//feedNumReadLabel.text = [NSString stringWithFormat:@"%i",numFeedStoriesTotal];
+    
+	//UILabel *feedNumPerDayLabel = (UILabel *)[cell viewWithTag:104];
+	//feedNumPerDayLabel.text =  [NSString stringWithFormat:@"%.2f",numFeedStoriesPerDay];
+    
+    //Update colors based on isRead
+    rankLabel.textColor = textColor;
+    titleLabel.textColor = textColor;
+    subtitleLabel.textColor = textColor;
+    //createdLabel.textColor = textColor;
+    //retrievedLabel.textColor = textColor;
     
     return cell;
+}
+
+- (int)NumberOfDaysBetweenDate:(NSDate *)firstDate andSecondDate:(NSDate *)secondDate
+{
+    NSDate *fromDate;
+    NSDate *toDate;
+    
+    
+    NSCalendar *calendar = [NSCalendar currentCalendar];
+    
+    [calendar rangeOfUnit:NSDayCalendarUnit startDate:&fromDate
+                 interval:NULL forDate:firstDate];
+    [calendar rangeOfUnit:NSDayCalendarUnit startDate:&toDate
+                 interval:NULL forDate:secondDate];
+    
+    NSDateComponents *difference = [calendar components:NSDayCalendarUnit
+                                               fromDate:fromDate toDate:toDate options:0];
+    
+    return [difference day];
 }
 
 //Send the cell-specific information to the detail view in a Story object
@@ -395,6 +652,7 @@
         
         feedView.feeds = self.feeds;
         feedView.parentTableView = self;
+        feedView.PM = PM;
     }
 }
  
@@ -448,7 +706,6 @@
         nextRow = self.selectedRow;
     else
         nextRow = self.selectedRow + 1;   
-    NSLog([NSString stringWithFormat:@"Cur: %i   Next:  %i",self.selectedRow,nextRow]);
     self.selectedRow = nextRow;
 }
 
@@ -473,10 +730,15 @@
 }
 
 - (IBAction)btnClear:(id)sender {
-    [PM ClearDB];
+    [PM ClearStories];
     self.allEntries = [NSMutableArray array];
     [self.tableView reloadData];
     [self updatePromptText];
+}
+
+- (IBAction)btnReFeed:(id)sender {
+    [PM ClearFeeds];
+    [self initialPopulateFeeds];
 }
 - (IBAction)btnRefresh:(id)sender {
     [self refresh];

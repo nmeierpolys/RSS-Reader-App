@@ -21,6 +21,7 @@
     int alwaysIncludeCount;
     int outstandingFeedsToParse;
     int selectedRow;
+    int orderBy;
 }
 
 @property (weak, nonatomic) IBOutlet UIView *btnGET;
@@ -32,6 +33,7 @@
 @property (weak, nonatomic) IBOutlet UINavigationItem *toolbar;
 - (IBAction)btnRefresh:(id)sender;
 - (IBAction)btnClear:(id)sender;
+- (IBAction)btnReFeed:(id)sender;
 @property (weak, nonatomic) Persistence *PM;
 
 @property (retain) NSMutableArray *allEntries;
@@ -41,6 +43,7 @@
 @property int alwaysIncludeCount;
 @property int outstandingFeedsToParse;
 @property int selectedRow;
+@property int orderBy;
 
 - (IBAction)btnGetPressed:(id)sender;
 - (void)testPopulate;
@@ -50,4 +53,5 @@
 - (Story *)GetSelectedStory;
 - (void)SwitchToPreviousStory;
 - (void)SwitchToNextStory;
+- (int)GetFeedIDFromURL:(NSURL *)url;
 @end
