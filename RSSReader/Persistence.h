@@ -36,10 +36,14 @@
 - (bool)StoryExistsInDB:(Story *)testStory;
 - (void)MarkStoryAsRead:(int)storyID;
 - (bool)initializeDatabaseWithDB:(sqlite3 *)localDB;
+- (NSMutableArray *)GetAllStories:(int)order whereClause:(NSString *)whereString;
 - (NSMutableArray *)GetAllStories:(int)order;
+- (NSMutableArray *)GetAllUnreadStories:(int)order;
+- (NSMutableArray *)GetTopUnreadStories:(int)order numStories:(int)numStories;
 - (void)DeleteStory:(Story *)story;
-- (int)GetNumFeedStories:(int)feedID;
+- (int)GetNumFeedStories:(int)feedID limitedToRead:(bool)isRead;
 - (NSDate *)GetEarliestFeedStoryCreatedDate:(int)feedID;
+- (void)SetStoryRank:(int)storyID toRank:(int)rank;
 
 //Feed Stuffs
 - (void)AddFeed:(Feed *)newFeed;

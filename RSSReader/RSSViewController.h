@@ -22,6 +22,7 @@
     int outstandingFeedsToParse;
     int selectedRow;
     int orderBy;
+    int numStoriesToShow;
 }
 
 @property (weak, nonatomic) IBOutlet UIView *btnGET;
@@ -44,6 +45,7 @@
 @property int outstandingFeedsToParse;
 @property int selectedRow;
 @property int orderBy;
+@property int numStoriesToShow;
 
 - (IBAction)btnGetPressed:(id)sender;
 - (void)testPopulate;

@@ -336,7 +336,7 @@
                                 <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="URL" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" id="tgp-M0-f5O">
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="Date" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" id="tgp-M0-f5O">
                                 <rect key="frame" x="5" y="38" width="310" height="21"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="12"/>
@@ -368,6 +368,7 @@
                     <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
                     <connections>
                         <outlet property="labelAuthor" destination="SV0-Il-1Tf" id="GgX-ca-QY0"/>
+                        <outlet property="labelDateCreated" destination="tgp-M0-f5O" id="WQQ-U5-C8Y"/>
                         <outlet property="labelTitle" destination="ZeM-Ns-i41" id="SVJ-UK-8KI"/>
                         <outlet property="labelURL" destination="tgp-M0-f5O" id="wL0-3Q-02Q"/>
                         <outlet property="webView" destination="1xt-Sn-dXe" id="Bhm-7U-j6W"/>
@@ -377,54 +378,6 @@
             <point key="canvasLocation" x="753" y="105"/>
         </scene>
     </scenes>
-    <classes>
-        <class className="FeedDetailViewController" superclassName="UIViewController">
-            <source key="sourceIdentifier" type="project" relativePath="./Classes/FeedDetailViewController.h"/>
-            <relationships>
-                <relationship kind="action" name="btnClose:"/>
-                <relationship kind="outlet" name="textName" candidateClass="UITextField"/>
-                <relationship kind="outlet" name="textURL" candidateClass="UITextField"/>
-            </relationships>
-        </class>
-        <class className="FeedsTestViewController" superclassName="UITableViewController">
-            <source key="sourceIdentifier" type="project" relativePath="./Classes/FeedsTestViewController.h"/>
-            <relationships>
-                <relationship kind="action" name="btnEdit:"/>
-                <relationship kind="outlet" name="btnEditOutlet" candidateClass="UIBarButtonItem"/>
-            </relationships>
-        </class>
-        <class className="RSSViewController" superclassName="UITableViewController">
-            <source key="sourceIdentifier" type="project" relativePath="./Classes/RSSViewController.h"/>
-            <relationships>
-                <relationship kind="action" name="btnClear:"/>
-                <relationship kind="action" name="btnGetPressed:"/>
-                <relationship kind="action" name="btnReFeed:"/>
-                <relationship kind="action" name="btnRefresh:"/>
-                <relationship kind="outlet" name="btnGET" candidateClass="UIView"/>
-                <relationship kind="outlet" name="labelCount" candidateClass="UILabel"/>
-                <relationship kind="outlet" name="labelStatus" candidateClass="UILabel"/>
-                <relationship kind="outlet" name="textBody" candidateClass="UITextView"/>
-                <relationship kind="outlet" name="textTitle" candidateClass="UITextField"/>
-                <relationship kind="outlet" name="toolbar" candidateClass="UINavigationItem"/>
-            </relationships>
-        </class>
-        <class className="StoryDetailViewController" superclassName="UIViewController">
-            <source key="sourceIdentifier" type="project" relativePath="./Classes/StoryDetailViewController.h"/>
-            <relationships>
-                <relationship kind="action" name="btnNext:"/>
-                <relationship kind="action" name="btnPrevious:"/>
-                <relationship kind="outlet" name="labelAuthor" candidateClass="UILabel"/>
-                <relationship kind="outlet" name="labelBlogTitle" candidateClass="UILabel"/>
-                <relationship kind="outlet" name="labelDateCreated" candidateClass="UILabel"/>
-                <relationship kind="outlet" name="labelDateRetrieved" candidateClass="UILabel"/>
-                <relationship kind="outlet" name="labelRead" candidateClass="UILabel"/>
-                <relationship kind="outlet" name="labelTitle" candidateClass="UILabel"/>
-                <relationship kind="outlet" name="labelURL" candidateClass="UILabel"/>
-                <relationship kind="outlet" name="textBody" candidateClass="UITextView"/>
-                <relationship kind="outlet" name="webView" candidateClass="UIWebView"/>
-            </relationships>
-        </class>
-    </classes>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
         <simulatedStatusBarMetrics key="statusBar"/>
         <simulatedOrientationMetrics key="orientation"/>

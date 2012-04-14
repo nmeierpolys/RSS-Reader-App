@@ -15,6 +15,8 @@
     int type;
     int rank;
     int timesRead;
+    NSDate *dateAdded;
+    
 }
 
 @property (retain) NSString *name;
@@ -23,6 +25,7 @@
 @property int rank;
 @property int timesRead;
 @property int feedID;
+@property (nonatomic, copy) NSDate *dateAdded;
 
 - (id)initWithName:(NSString *)newName
                url:(NSString *)newUrl

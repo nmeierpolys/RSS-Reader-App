@@ -16,6 +16,7 @@
 @synthesize rank = _rank;
 @synthesize timesRead = _timesRead;
 @synthesize feedID = _feedID;
+@synthesize dateAdded = _dateAdded;
 
 
 - (id)init
@@ -28,6 +29,7 @@
         self.rank = 0;
         self.timesRead = 0;
         self.feedID = 0;
+        self.dateAdded = [[NSDate alloc] init];
     }
     
     return self;
@@ -45,6 +47,7 @@
     self.rank = 0;
     self.timesRead = 0;
     self.feedID = 0;
+    self.dateAdded = [NSDate date];
     
     return self;
 }
@@ -62,6 +65,7 @@
     self.rank = newRank;
     self.timesRead = 0;
     self.feedID = 0;
+    self.dateAdded = [NSDate date];
     
     return self;
 }
@@ -81,6 +85,7 @@
     self.rank = newRank;
     self.timesRead = newTimesRead;
     self.feedID = newFeedID;
+    self.dateAdded = [NSDate date];
     
     return self;
 }

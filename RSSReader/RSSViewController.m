@@ -38,6 +38,7 @@
 @synthesize outstandingFeedsToParse = _outstandingFeedsToParse;
 @synthesize selectedRow = _selectedRow;
 @synthesize orderBy = _orderBy;
+@synthesize numStoriesToShow = _numStoriesToShow;
 
 - (void)viewDidLoad
 {
@@ -51,99 +52,121 @@
     self.feeds = [NSMutableArray array];
     [self updatePromptText];
     self.queue = [[NSOperationQueue alloc] init];
-    alwaysIncludeCount = 4;
+    alwaysIncludeCount = 10;
     PM = [[Persistence alloc] init];
     [self initialPopulateFeeds];
     //[PM ClearStories];
     self.orderBy = 1;
+    self.numStoriesToShow = 100;
     [self loadSqlStoriesIntoTable];
     //[self refresh];
 }
 
 - (void)initialPopulateFeeds
 {
-    Feed *vikesFeed = [[Feed alloc] initWithName:@"Vikes Geek" 
-                                             url:@"http://vikesgeek.blogspot.com/feeds/posts/default" 
-                                            type:1
-                                            rank:1];
-    Feed *rayFeed = [[Feed alloc] initWithName:@"Ray Wenderlich" 
-                                           url:@"http://feeds.feedburner.com/RayWenderlich" 
-                                          type:1
-                                          rank:1];
-    Feed *vegasStartupsFeed = [[Feed alloc] initWithName:@"Las Vegas Startups" 
-                                                     url:@"http://feeds.feedburner.com/LasVegasStartups" 
-                                                    type:1
-                                                    rank:1];
-    Feed *thansCornerFeed = [[Feed alloc] initWithName:@"ThansCorner" 
-                                                   url:@"http://www.thanscorner.info/feed" 
-                                                  type:1
-                                                  rank:1];
-    Feed *dodgyCoderFeed = [[Feed alloc] initWithName:@"Dodgy Coder" 
-                                                  url:@"http://www.dodgycoder.net/feeds/posts/default?alt=rss" 
-                                                 type:1
-                                                 rank:1];
-    Feed *xkcdFeed = [[Feed alloc] initWithName:@"xkcd" 
-                                            url:@"http://xkcd.com/rss.xml" 
-                                           type:1
-                                           rank:1];
-    Feed *engadgetFeed = [[Feed alloc] initWithName:@"Engadget" 
-                                                url:@"http://www.engadget.com/rss.xml" 
-                                               type:1
-                                               rank:1];
-    Feed *lifehackerFeed = [[Feed alloc] initWithName:@"Lifehacker" 
-                                                  url:@"http://lifehacker.com/top/index.xml" 
-                                                 type:1
-                                                 rank:1];
-    
-    Feed *tenxSDFeed = [[Feed alloc] initWithName:@"10x Software Development" 
-                                              url:@"http://feeds.feedburner.com/10xSoftwareDevelopment" 
-                                             type:1 
-                                             rank:1];
-    
-    Feed *digitalPhotoSchoolFeed = [[Feed alloc] initWithName:@"Digital Photography School" 
-                                                          url:@"http://feeds.feedburner.com/DigitalPhotographySchool" 
-                                                         type:1 
-                                                         rank:1];
-    
-    Feed *valleyWagFeed = [[Feed alloc] initWithName:@"Gawker: Valleywag" 
-                                                 url:@"http://feeds.gawker.com/valleywag/full" 
-                                                type:1 
-                                                rank:1];
-    
-    Feed *graphJamFeed = [[Feed alloc] initWithName:@"GraphJam" 
-                                                url:@"http://feeds.feedburner.com/GraphJam" 
-                                               type:1 
-                                               rank:1];
-    Feed *joelOnSoftwareFeed = [[Feed alloc] initWithName:@"Joel on Software" 
-                                                      url:@"http://www.joelonsoftware.com/rss.xml" 
-                                                     type:1 
-                                                     rank:1];
-//    Feed * = [[Feed alloc] initWithName:@"" 
-//                                    url:@"" 
-//                                   type:1 
-//                                   rank:10];
     [PM ClearFeeds];
-    [PM AddFeed:vikesFeed];
-    [PM AddFeed:engadgetFeed];
-    [PM AddFeed:vegasStartupsFeed];
-    [PM AddFeed:rayFeed];
-    [PM AddFeed:dodgyCoderFeed];
-    [PM AddFeed:xkcdFeed];
-    [PM AddFeed:thansCornerFeed];
-    [PM AddFeed:lifehackerFeed];
-    [PM AddFeed:tenxSDFeed];
-    [PM AddFeed:digitalPhotoSchoolFeed];
-    [PM AddFeed:valleyWagFeed];
-    [PM AddFeed:graphJamFeed];
-    [PM AddFeed:joelOnSoftwareFeed];
-    
-    
+    [PM AddFeed:[[Feed alloc] initWithName:@"Vikes Geek" 
+                                       url:@"http://vikesgeek.blogspot.com/feeds/posts/default" 
+                                      type:1
+                                      rank:1]];
+    [PM AddFeed:[[Feed alloc] initWithName:@"Ray Wenderlich" 
+                                       url:@"http://feeds.feedburner.com/RayWenderlich" 
+                                      type:1
+                                      rank:1]];
+    [PM AddFeed:[[Feed alloc] initWithName:@"Las Vegas Startups" 
+                                       url:@"http://feeds.feedburner.com/LasVegasStartups" 
+                                      type:1
+                                      rank:1]];
+    [PM AddFeed:[[Feed alloc] initWithName:@"ThansCorner" 
+                                       url:@"http://www.thanscorner.info/feed" 
+                                      type:1
+                                      rank:1]];
+    [PM AddFeed:[[Feed alloc] initWithName:@"Dodgy Coder" 
+                                       url:@"http://www.dodgycoder.net/feeds/posts/default?alt=rss" 
+                                      type:1
+                                      rank:1]];
+    [PM AddFeed:[[Feed alloc] initWithName:@"xkcd" 
+                                       url:@"http://xkcd.com/rss.xml" 
+                                      type:1
+                                      rank:1]];
+    [PM AddFeed:[[Feed alloc] initWithName:@"Engadget" 
+                                       url:@"http://www.engadget.com/rss.xml" 
+                                      type:1
+                                      rank:1]];
+    [PM AddFeed:[[Feed alloc] initWithName:@"Lifehacker" 
+                                       url:@"http://lifehacker.com/top/index.xml" 
+                                      type:1
+                                      rank:1]];
+    [PM AddFeed:[[Feed alloc] initWithName:@"10x Software Development" 
+                                       url:@"http://feeds.feedburner.com/10xSoftwareDevelopment" 
+                                      type:1 
+                                      rank:1]];
+    [PM AddFeed:[[Feed alloc] initWithName:@"Digital Photography School" 
+                                       url:@"http://feeds.feedburner.com/DigitalPhotographySchool" 
+                                      type:1 
+                                        rank:1]];
+    [PM AddFeed:[[Feed alloc] initWithName:@"Gawker: Valleywag" 
+                                       url:@"http://feeds.gawker.com/valleywag/full" 
+                                      type:1 
+                                      rank:1]];
+    [PM AddFeed:[[Feed alloc] initWithName:@"GraphJam" 
+                                       url:@"http://feeds.feedburner.com/GraphJam" 
+                                      type:1 
+                                      rank:1]];
+    [PM AddFeed:[[Feed alloc] initWithName:@"Joel on Software" 
+                                       url:@"http://www.joelonsoftware.com/rss.xml" 
+                                      type:1 
+                                      rank:1]];
+    [PM AddFeed:[[Feed alloc] initWithName:@"Ars Technica" 
+                                       url:@"http://feeds.arstechnica.com/arstechnica/index/" 
+                                      type:1 
+                                      rank:1]];
+    [PM AddFeed:[[Feed alloc] initWithName:@"Geeking with Greg" 
+                                       url:@"http://glinden.blogspot.com/feeds/posts/default" 
+                                      type:1 
+                                      rank:1]];
+    [PM AddFeed:[[Feed alloc] initWithName:@"Money and Investing" 
+                                       url:@"http://feeds.feedburner.com/MoneyAndInvesting" 
+                                      type:1 
+                                      rank:1]];
+    [PM AddFeed:[[Feed alloc] initWithName:@"Official Google Blog" 
+                                       url:@"http://googleblog.blogspot.com/feeds/posts/default" 
+                                      type:1 
+                                      rank:1]];
+    [PM AddFeed:[[Feed alloc] initWithName:@"St. Olaf News Releases" 
+                                       url:@"http://fusion.stolaf.edu/news/index.cfm?fuseaction=RSS" 
+                                      type:1 
+                                      rank:1]];
+    [PM AddFeed:[[Feed alloc] initWithName:@"TechCrunch" 
+                                       url:@"http://feeds.feedburner.com/Techcrunch" 
+                                      type:1 
+                                      rank:1]];
+    [PM AddFeed:[[Feed alloc] initWithName:@"The Happiness Project" 
+                                       url:@"http://feeds.feedburner.com/TheHappinessProject" 
+                                      type:1 
+                                      rank:1]];
+    [PM AddFeed:[[Feed alloc] initWithName:@"The Long Now Blog" 
+                                       url:@"http://blog.longnow.org/feed/" 
+                                      type:1 
+                                      rank:1]];
+    [PM AddFeed:[[Feed alloc] initWithName:@"Very Small Array" 
+                                       url:@"http://www.verysmallarray.com/?feed=rss2" 
+                                      type:1 
+                                      rank:1]];
+    [PM AddFeed:[[Feed alloc] initWithName:@"UW Engineering" 
+                                       url:@"http://www.engr.wisc.edu/news/feeds/RR.xml" 
+                                      type:1 
+                                      rank:1]];
+    [PM AddFeed:[[Feed alloc] initWithName:@"Hacker News Summary"
+                                       url:@"http://fulltextrssfeed.com/news.ycombinator.com/rss" 
+                                      type:1 
+                                      rank:1]];
     self.feeds = PM.feeds; 
 }
 
 - (void)updatePromptText
 {
-    NSLog(@"%@", [NSString stringWithFormat:@"%i",self.outstandingFeedsToParse]);
+    NSLog(@"# Stories:  %@", [NSString stringWithFormat:@"%i",self.outstandingFeedsToParse]);
     int numStories = self.allEntries.count;
     self.labelCount.text = [NSString stringWithFormat:@"%i Stories",numStories];
     if(self.outstandingFeedsToParse < 1)
@@ -181,11 +204,44 @@
 
 - (void)loadSqlStoriesIntoTable
 {
-    NSMutableArray *entries = [PM GetAllStories:0];
+    NSMutableArray *entries = [PM GetTopUnreadStories:self.orderBy numStories:self.numStoriesToShow];
     NSMutableArray *feeds = [PM GetAllFeeds];
     
-    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-        
+    bool addStoryViaInsert = false;
+    
+    if(addStoryViaInsert)
+    {
+        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+            
+            for (Feed *feed in feeds) {
+                int newRank = [self ComputeFeedRank:feed];
+                feed.rank = newRank;
+                [PM SetFeedRank:feed.feedID toRank:newRank];
+            }
+            
+            for (Story *entry in entries) {
+                entry.rank = [self ComputeStoryRank:entry];
+                [PM SetStoryRank:entry.storyID toRank:entry.rank];
+            }
+            
+            for (Story *entry in entries) {
+                int insertIdx = [self.allEntries indexForInsertingObject:entry sortedUsingBlock:^(id a, id b) {
+                    Story *entry1 = (Story *) a;
+                    Story *entry2 = (Story *) b;;
+                    return [self compareStory:entry1 withStory:entry2];
+                }];     
+                if(entry != nil)
+                {
+                    [self.allEntries insertObject:entry atIndex:insertIdx];
+                    [self.tableView insertRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:insertIdx inSection:0]] withRowAnimation:UITableViewRowAnimationRight];
+                }
+            }  
+            [self.tableView reloadData];
+            [self updatePromptText];
+        }];
+    }
+    else 
+    {
         for (Feed *feed in feeds) {
             int newRank = [self ComputeFeedRank:feed];
             feed.rank = newRank;
@@ -194,23 +250,12 @@
         
         for (Story *entry in entries) {
             entry.rank = [self ComputeStoryRank:entry];
+            [PM SetStoryRank:entry.storyID toRank:entry.rank];
         }
-        
-        for (Story *entry in entries) {
-            int insertIdx = [self.allEntries indexForInsertingObject:entry sortedUsingBlock:^(id a, id b) {
-                Story *entry1 = (Story *) a;
-                Story *entry2 = (Story *) b;;
-                return [self compareStory:entry1 withStory:entry2];
-            }];     
-            if(entry != nil)
-            {
-                [self.allEntries insertObject:entry atIndex:insertIdx];
-                [self.tableView insertRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:insertIdx inSection:0]] withRowAnimation:UITableViewRowAnimationRight];
-            }
-        }  
+        self.allEntries = entries;
         [self.tableView reloadData];
         [self updatePromptText];
-    }];
+    }
 }
 
 - (void)refresh {
@@ -236,19 +281,13 @@
 
 - (int)ComputeFeedRank:(Feed *)feed
 {
-    if(feed.feedID == 4)
-        feed.feedID = 4;
-    
-    if(feed.feedID == 8)
-        feed.feedID = 8;
-    
     if(feed == nil)
         return 0;
     
     int rank = 0;
 
     //Total number of feed stories
-    int numFeedStoriesTotal = [PM GetNumFeedStories:feed.feedID];
+    int numFeedStoriesTotal = [PM GetNumFeedStories:feed.feedID limitedToRead:NO];
     
     //Total days since the feed's first post (on record)
     NSDate *earliestDate = [PM GetEarliestFeedStoryCreatedDate:feed.feedID];
@@ -262,7 +301,25 @@
         rankFromNumStoriesPerDay = (int)1/numFeedStoriesPerDay;
     if(rankFromNumStoriesPerDay > 10)
         rankFromNumStoriesPerDay = 10;
-    rank = rank + rankFromNumStoriesPerDay;
+    else if((rankFromNumStoriesPerDay < 1) && (rankFromNumStoriesPerDay > 0))
+        rankFromNumStoriesPerDay = 1;
+    
+    
+    //Total number of read stories
+    int numReadStories = [PM GetNumFeedStories:feed.feedID limitedToRead:true];
+    
+    float fractionRead;
+    if(numFeedStoriesTotal > 0)
+        fractionRead = numReadStories / numFeedStoriesTotal;
+    int rankFromFractionRead = fractionRead * 10;
+    
+    
+    //Bonus for lots read
+    int rankFromBonusForLotsRead = 0;
+    if(numReadStories > 10)
+        rankFromBonusForLotsRead = 5;
+    
+    rank = rank + rankFromNumStoriesPerDay + rankFromFractionRead;
     return rank;
 }
 
@@ -274,7 +331,7 @@
     int feedRank = storyFeed.rank;
     
     //Total number of feed stories
-    int numFeedStoriesTotal = [PM GetNumFeedStories:story.feedID];
+    int numFeedStoriesTotal = [PM GetNumFeedStories:story.feedID limitedToRead:NO];
     
     //Total days since the feed's first post (on record)
     NSDate *earliestDate = [PM GetEarliestFeedStoryCreatedDate:story.feedID];
@@ -286,7 +343,7 @@
     
     //Days since created
     int numDaysSinceCreated = [self NumberOfDaysBetweenDate:story.dateCreated andSecondDate:[NSDate date]];
-    NSLog(@"%i",numDaysSinceCreated);
+    //NSLog(@"%i",numDaysSinceCreated);
     
     if(numDaysSinceCreated > 10)
         numDaysSinceCreated = 10;
@@ -296,8 +353,8 @@
     
     //Consider Feed 
     
-    rank = feedRank + rankFromNumDaysSinceCreated;
-    NSLog(@"ID: %i, Rank: %i, F-rank: %i, 10-NumDays: %i",story.storyID,rank,feedRank,rankFromNumDaysSinceCreated);
+    rank = feedRank + rankFromNumDaysSinceCreated*2;
+    //NSLog(@"ID: %i, Rank: %i, F-rank: %i, 10-NumDays: %i",story.storyID,rank,feedRank,rankFromNumDaysSinceCreated);
     return rank;
 }
 
@@ -306,7 +363,7 @@
     [_queue addOperationWithBlock:^{
         int blogID = 1;
         blogID = [self GetFeedIDFromURL:[request url]];
-        NSLog(request.url.absoluteString);
+        //NSLog(request.url.absoluteString);
         NSError *error;
         GDataXMLDocument *doc = [[GDataXMLDocument alloc] initWithData:[request responseData] 
                                                                options:0 error:&error];
@@ -332,6 +389,8 @@
                     {
                         [_allEntries insertObject:entry atIndex:insertIdx];
                         [self.tableView insertRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:insertIdx inSection:0]] withRowAnimation:UITableViewRowAnimationRight];
+                        
+                        [self updatePromptText];
                     }
                 }  
             }];
@@ -659,6 +718,9 @@
 - (void)MarkStoryAsRead:(Story *)story
 {
     [PM MarkStoryAsRead:story.storyID];
+    Feed *storyFeed = [PM GetFeedByID:story.feedID];
+    storyFeed.timesRead++;
+    storyFeed.rank = [self ComputeFeedRank:storyFeed];
     story.isRead = true;
 }
 
