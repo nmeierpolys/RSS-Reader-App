@@ -17,6 +17,8 @@
 #import "FeedsViewController.h"
 #import "FeedsTestViewController.h"
 #import "Feed.h"
+#import "TwitterEngine.h"
+#import "MessageUI/MessageUI.h"
 
 @interface RSSViewController ()
 
@@ -33,38 +35,122 @@
 @synthesize feeds = _feeds;
 @synthesize queue = _queue;
 @synthesize PM = _PM;
+@synthesize labelLastUpdated = _labelLastUpdated;
 @synthesize lowerLimitDate;
 @synthesize alwaysIncludeCount = _alwaysIncludeCount;
 @synthesize outstandingFeedsToParse = _outstandingFeedsToParse;
 @synthesize selectedRow = _selectedRow;
 @synthesize orderBy = _orderBy;
 @synthesize numStoriesToShow = _numStoriesToShow;
+@synthesize currentRangeLowestRank = _currentRangeLowestRank;
+@synthesize currentRangeEarliest = _currentRangeEarliest;
+@synthesize lastUpdated = _lastUpdated;
+@synthesize numDaysToShow = _numDaysToShow;
+@synthesize stopLoading = _stopLoading;
+@synthesize twitterEngine = _twitterEngine;
+@synthesize twitterFeed = _twitterFeed;
 
 - (void)viewDidLoad
 {
     [super viewDidLoad]; 
     
 	// Do any additional setup after loading the view, typically from a nib.
-    tempStory = [[Story alloc] init];
     
-    self.title = @"Feeds";
-    self.allEntries = [NSMutableArray array];
+    self.title = @"Stories";
+    _allEntries = [NSMutableArray array];
     self.feeds = [NSMutableArray array];
     [self updatePromptText];
     self.queue = [[NSOperationQueue alloc] init];
     alwaysIncludeCount = 10;
     PM = [[Persistence alloc] init];
-    [self initialPopulateFeeds];
+    //[self initialPopulateFeeds];
     //[PM ClearStories];
     self.orderBy = 1;
     self.numStoriesToShow = 100;
-    [self loadSqlStoriesIntoTable];
+    self.numDaysToShow = 3;
+    twitterEngine = [[TwitterEngine alloc] init];
+    hasInitialized = false;
+    self.feeds = [PM GetAllFeeds];
+    
+    //[self.twitterEngine fetchDataWithSelector:@selector(AddTweetAsStory:) withCaller:self];
     //[self refresh];
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
+    if(hasInitialized)
+        return;
+    hasInitialized = true;
+    [self loadSqlStoriesIntoTable];
+}
+
+- (void)InitializeTwitterFeed
+{
+    self.twitterFeed = [PM GetFeedByURLPath:@"Twitter"];
+    if(self.twitterFeed == nil)
+    {
+        self.twitterFeed = [[Feed alloc] initWithName:@"Twitter" url:@"Twitter" type:2];
+        [PM AddFeed:self.twitterFeed];
+        self.twitterFeed = [PM GetLastFeed];
+        [self UpdateFeedRank:self.twitterFeed];
+        [PM SetFeedRank:self.twitterFeed.feedID toRank:self.twitterFeed.rank];
+    }
+}
+
+- (void)AddTweetAsStory:(Story *)tweetStory
+{
+    tweetStory.feedID = self.twitterFeed.feedID;
+    
+    if(![PM StoryExistsInDB:tweetStory])
+    {
+        tweetStory = [PM AddStoryAndGetNewStory:tweetStory];
+        [self UpdateStoryRank:tweetStory];
+        
+        [self insertOrderedStoryWithAnimation:tweetStory];
+    }
+    if(twitterEngine.requestCompleted)
+    {
+        if(self.outstandingFeedsToParse > 0)
+            self.outstandingFeedsToParse--;
+        [self updatePromptText];
+    }
+    
+}
+
+- (void)initialPopulateStephFeeds
+{
+    [PM ClearFeeds];
+    [PM AddFeed:[[Feed alloc] initWithName:@"Apartment Therapy" 
+                                       url:@"http://feeds.apartmenttherapy.com/apartmenttherapy/main" 
+                                      type:1
+                                      rank:1]];
+    [PM AddFeed:[[Feed alloc] initWithName:@"IKEA Hackers" 
+                                       url:@"http://feeds.feedburner.com/Ikeahacker" 
+                                      type:1
+                                      rank:1]];
+    [PM AddFeed:[[Feed alloc] initWithName:@"Lifehacker" 
+                                       url:@"http://lifehacker.com/top/index.xml" 
+                                      type:1
+                                      rank:1]];
+    [PM AddFeed:[[Feed alloc] initWithName:@"People.com" 
+                                       url:@"http://rss.people.com/web/people/rss/topheadlines/index.xml" 
+                                      type:1
+                                      rank:1]];
+    [PM AddFeed:[[Feed alloc] initWithName:@"Hacker News Summary"
+                                       url:@"http://fulltextrssfeed.com/news.ycombinator.com/rss" 
+                                      type:1 
+                                      rank:1]];
+    [PM AddFeed:[[Feed alloc] initWithName:@"xkcd" 
+                                       url:@"http://xkcd.com/rss.xml" 
+                                      type:1
+                                      rank:1]];
+    self.feeds = PM.feeds; 
 }
 
 - (void)initialPopulateFeeds
 {
     [PM ClearFeeds];
+    [self InitializeTwitterFeed];
     [PM AddFeed:[[Feed alloc] initWithName:@"Vikes Geek" 
                                        url:@"http://vikesgeek.blogspot.com/feeds/posts/default" 
                                       type:1
@@ -134,7 +220,7 @@
                                       type:1 
                                       rank:1]];
     [PM AddFeed:[[Feed alloc] initWithName:@"St. Olaf News Releases" 
-                                       url:@"http://fusion.stolaf.edu/news/index.cfm?fuseaction=RSS" 
+                                       url:@"http://www.stolaf.edu/news/index.cfm?fuseaction=RSS" 
                                       type:1 
                                       rank:1]];
     [PM AddFeed:[[Feed alloc] initWithName:@"TechCrunch" 
@@ -166,13 +252,18 @@
 
 - (void)updatePromptText
 {
-    NSLog(@"# Stories:  %@", [NSString stringWithFormat:@"%i",self.outstandingFeedsToParse]);
-    int numStories = self.allEntries.count;
+    int numStories = _allEntries.count;
     self.labelCount.text = [NSString stringWithFormat:@"%i Stories",numStories];
     if(self.outstandingFeedsToParse < 1)
         self.labelStatus.text = @"";
     else
         self.labelStatus.text = @"Loading..";
+    
+    if(self.outstandingFeedsToParse < 1)
+    {
+        [self.pullToReloadHeaderView setLastUpdatedDate: [NSDate date]];
+        [self.pullToReloadHeaderView finishReloading:self.tableView animated:YES];
+    }
 }
 
 - (void)enteringBackground
@@ -207,34 +298,23 @@
     NSMutableArray *entries = [PM GetTopUnreadStories:self.orderBy numStories:self.numStoriesToShow];
     NSMutableArray *feeds = [PM GetAllFeeds];
     
-    bool addStoryViaInsert = false;
+    bool addStoryViaInsert = true;
     
     if(addStoryViaInsert)
     {
         [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-            
             for (Feed *feed in feeds) {
-                int newRank = [self ComputeFeedRank:feed];
-                feed.rank = newRank;
-                [PM SetFeedRank:feed.feedID toRank:newRank];
+                [self UpdateFeedRank:feed];
+                [PM SetFeedRank:feed.feedID toRank:feed.rank];
             }
             
             for (Story *entry in entries) {
-                entry.rank = [self ComputeStoryRank:entry];
-                [PM SetStoryRank:entry.storyID toRank:entry.rank];
+                [self UpdateStoryRank:entry];
+                //[PM SetStoryRank:entry.storyID toRank:entry.rank];
             }
             
             for (Story *entry in entries) {
-                int insertIdx = [self.allEntries indexForInsertingObject:entry sortedUsingBlock:^(id a, id b) {
-                    Story *entry1 = (Story *) a;
-                    Story *entry2 = (Story *) b;;
-                    return [self compareStory:entry1 withStory:entry2];
-                }];     
-                if(entry != nil)
-                {
-                    [self.allEntries insertObject:entry atIndex:insertIdx];
-                    [self.tableView insertRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:insertIdx inSection:0]] withRowAnimation:UITableViewRowAnimationRight];
-                }
+                [self insertOrderedStoryWithAnimation:entry];
             }  
             [self.tableView reloadData];
             [self updatePromptText];
@@ -243,32 +323,64 @@
     else 
     {
         for (Feed *feed in feeds) {
-            int newRank = [self ComputeFeedRank:feed];
-            feed.rank = newRank;
-            [PM SetFeedRank:feed.feedID toRank:newRank];
+            [self UpdateFeedRank:feed];
+            [PM SetFeedRank:feed.feedID toRank:feed.rank];
         }
         
         for (Story *entry in entries) {
-            entry.rank = [self ComputeStoryRank:entry];
-            [PM SetStoryRank:entry.storyID toRank:entry.rank];
+            [self UpdateStoryRank:entry];
+            //[PM SetStoryRank:entry.storyID toRank:entry.rank];
         }
-        self.allEntries = entries;
+        _allEntries = entries;
         [self.tableView reloadData];
         [self updatePromptText];
     }
 }
 
+-(void)insertOrderedStoryWithAnimation:(Story *)newStory
+{
+    if((newStory != nil) && (![_allEntries containsObject:newStory]))
+    {   
+        int insertIdx = [_allEntries indexForInsertingObject:newStory sortedUsingBlock:^(id a, id b) {
+            return [self compareStory:(Story *)a withStory:(Story *)b];
+        }];     
+        [_allEntries insertObject:newStory atIndex:insertIdx];
+        //NSLog(newStory.title);
+        [self.tableView insertRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:insertIdx inSection:0]] withRowAnimation:UITableViewRowAnimationRight];
+        [self updatePromptText];
+    }
+}
+
+-(void) pullDownToReloadAction {	
+    [self performSelector:@selector(refresh)];
+}
+
 - (void)refresh {
-    NSLog(@"Refresh - loading feed stories");
-    NSLog(@"%@", [NSString stringWithFormat:@"%i",self.outstandingFeedsToParse]);
-    lowerLimitDate = [NSDate dateWithTimeIntervalSinceNow:-1*60*60*24*2];
+    //Update lastUpdated property
+    self.stopLoading = false;
+    self.lastUpdated = [NSDate date];
+    
+    //Set earliest date to pick up stories from
+    lowerLimitDate = [NSDate dateWithTimeIntervalSinceNow:-1*60*60*24*numDaysToShow];
+    
+    //Kick off request for each feed
     for (Feed *feed in _feeds) {
         self.outstandingFeedsToParse++;
-        NSURL *url = [NSURL URLWithString:feed.url];
-        ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
-        [request setDelegate:self];
-        [_queue addOperation:request];
+        if(feed.type == 2)
+        {
+            self.outstandingFeedsToParse--;
+            //[PM SetFeedRank:self.twitterFeed.feedID toRank:[self ComputeFeedRank:self.twitterFeed]];
+            //[twitterEngine fetchDataWithSelector:@selector(AddTweetAsStory:) withCaller:self count:60];
+        }
+        else {
+            NSURL *url = [NSURL URLWithString:feed.url];
+            ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
+            [request setDelegate:self];
+            [_queue addOperation:request];
+        }
     }    
+    
+    //Update story count and 'Loading' string labels
     [self updatePromptText];
 }
 
@@ -279,7 +391,7 @@
     return feed.feedID;
 }
 
-- (int)ComputeFeedRank:(Feed *)feed
+- (void)UpdateFeedRank:(Feed *)feed
 {
     if(feed == nil)
         return 0;
@@ -306,12 +418,13 @@
     
     
     //Total number of read stories
-    int numReadStories = [PM GetNumFeedStories:feed.feedID limitedToRead:true];
+    int numReadStories = [PM GetNumFeedStories:feed.feedID limitedToRead:YES];
     
     float fractionRead;
     if(numFeedStoriesTotal > 0)
-        fractionRead = numReadStories / numFeedStoriesTotal;
-    int rankFromFractionRead = fractionRead * 10;
+        fractionRead = (float)numReadStories / numFeedStoriesTotal;
+    int rankFromFractionRead = fractionRead * 20;
+    //NSLog(@"NumRead:%i  NumTotal:%i",numReadStories,numFeedStoriesTotal);
     
     
     //Bonus for lots read
@@ -319,11 +432,19 @@
     if(numReadStories > 10)
         rankFromBonusForLotsRead = 5;
     
-    rank = rank + rankFromNumStoriesPerDay + rankFromFractionRead;
-    return rank;
+    //Amount of time spent reading
+    int totalSecondsRead = [PM GetTotalFeedReadTime:feed.feedID];
+    int rankFromTotalSecondsRead = totalSecondsRead / 10;
+    
+    feed.rank = rank + rankFromNumStoriesPerDay + rankFromFractionRead + rankFromTotalSecondsRead;
+    
+    //NSLog(@"Num/Day:%i  FractionRead:%i  SecRead:%i  Total:%i",
+    //      rankFromNumStoriesPerDay,
+      //    rankFromFractionRead,
+        //  rankFromTotalSecondsRead);
 }
 
-- (int)ComputeStoryRank:(Story *)story
+- (void)UpdateStoryRank:(Story *)story
 {
     int rank;
     Feed *storyFeed = [PM GetFeedByID:story.feedID];
@@ -343,7 +464,6 @@
     
     //Days since created
     int numDaysSinceCreated = [self NumberOfDaysBetweenDate:story.dateCreated andSecondDate:[NSDate date]];
-    //NSLog(@"%i",numDaysSinceCreated);
     
     if(numDaysSinceCreated > 10)
         numDaysSinceCreated = 10;
@@ -353,53 +473,64 @@
     
     //Consider Feed 
     
-    rank = feedRank + rankFromNumDaysSinceCreated*2;
+    story.rank = feedRank + rankFromNumDaysSinceCreated*2;
     //NSLog(@"ID: %i, Rank: %i, F-rank: %i, 10-NumDays: %i",story.storyID,rank,feedRank,rankFromNumDaysSinceCreated);
-    return rank;
+    //return rank;
+}
+
+- (void)sortArray
+{
+    [_allEntries sortUsingComparator:(NSComparator)^(id a, id b) {
+        Story *first = (Story*)a;
+        Story *second = (Story*)b;
+        NSComparisonResult result = [first compare:second withMode:self.orderBy];
+        return result;
+    }];
+}
+
+- (void)updateArrayRanks
+{
+    int numStories = _allEntries.count;
+    Story *thisStory;
+    for (int i=0; i<numStories; i++) {
+        thisStory = [_allEntries objectAtIndex:i];
+        [self UpdateStoryRank:thisStory];
+    }
 }
 
 
 - (void)requestFinished:(ASIHTTPRequest *)request {
-    [_queue addOperationWithBlock:^{
         int blogID = 1;
         blogID = [self GetFeedIDFromURL:[request url]];
-        //NSLog(request.url.absoluteString);
         NSError *error;
         GDataXMLDocument *doc = [[GDataXMLDocument alloc] initWithData:[request responseData] 
                                                                options:0 error:&error];
-        if (doc == nil) {
-            NSLog(@"Failed to parse %@", request.url);
-        } else {
-            
-            NSMutableArray *entries = [NSMutableArray array];
-            
-            [self parseFeed:doc.rootElement entries:entries blogID:blogID];                
-            
-            Feed *thisFeed = [PM GetFeedByID:blogID];
-            [PM SetFeedRank:blogID toRank:[self ComputeFeedRank:thisFeed]];
-            
-            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                for (Story *entry in entries) {
-                    int insertIdx = [_allEntries indexForInsertingObject:entry sortedUsingBlock:^(id a, id b) {
-                        Story *entry1 = (Story *) a;
-                        Story *entry2 = (Story *) b;
-                        return [self compareStory:entry1 withStory:entry2];
-                    }];     
-                    if(entry != nil)
-                    {
-                        [_allEntries insertObject:entry atIndex:insertIdx];
-                        [self.tableView insertRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:insertIdx inSection:0]] withRowAnimation:UITableViewRowAnimationRight];
-                        
-                        [self updatePromptText];
-                    }
-                }  
-            }];
+        
+        if(!self.stopLoading)
+        {
+            if (doc == nil) {
+                NSLog(@"Failed to parse %@", request.url);
+            } else {
+                
+                NSMutableArray *entries = [[NSMutableArray alloc] init];
+                //NSMutableArray *entries = [NSMutableArray array];
+                
+                [self parseFeed:doc.rootElement entries:entries blogID:blogID];                
+                
+                Feed *thisFeed = [PM GetFeedByID:blogID];
+                [self UpdateFeedRank:thisFeed];
+                [PM SetFeedRank:blogID toRank:thisFeed.rank];
+                
+                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                    //NSLog(@"%i",blogID);
+                    for (Story *entry in entries) {
+                        [self insertOrderedStoryWithAnimation:entry];
+                    }  
+                }];
+            }
         }
         self.outstandingFeedsToParse--;
         [self updatePromptText];
-        //if(self.outstandingFeedsToParse < 1)
-        //    [self loadSqlStoriesIntoTable];
-    }];
     
 }
 
@@ -449,7 +580,6 @@
         if (titles.count > 0) {
             GDataXMLElement *title = (GDataXMLElement *) [titles objectAtIndex:0];
             
-            NSLog(@"title is %@", title.stringValue);
         }
     }
 }
@@ -470,7 +600,7 @@
     
     NSArray *channels = [rootElement elementsForName:@"channel"];
     for (GDataXMLElement *channel in channels) {            
-        
+        //NSLog(@"--%i",blogID);
         NSString *blogTitle = [channel valueForChild:@"title"];                    
         
         NSArray *items = [channel elementsForName:@"item"];
@@ -482,7 +612,7 @@
                                          itemType:1 
                                     alwaysInclude:(storyCount < alwaysIncludeCount)
                             blogID:blogID];
-            
+            //NSLog(entry.title);
             if(entry == nil)
                 return;
             
@@ -564,9 +694,9 @@
                                            rank:0
                                         isDirty:NO
                                         storyID:0
-                                         feedID:blogID];
-    
-    entry.rank = [self ComputeStoryRank:entry];
+                                         feedID:blogID
+                    durationRead:0];
+    [self UpdateStoryRank:entry];
     return entry;
 }
 
@@ -603,7 +733,6 @@
 - (void)requestFailed:(ASIHTTPRequest *)request {
     
     NSError *error = [request error];
-    //NSLog(@"Error: %@", error);
     self.outstandingFeedsToParse--;
 }
 
@@ -617,53 +746,97 @@
 {
     return [_allEntries count];
 }
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath 
+{
+	Story *story = [_allEntries objectAtIndex:indexPath.row];
+    
+    if([story.source compare:@"Twitter"] == NSOrderedSame)
+    {
+        return 100;
+    }
+    else 
+    {
+        return 60;
+    }
+}
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-	UITableViewCell *cell = [tableView 
-                             dequeueReusableCellWithIdentifier:@"StoryCell"];
-	Story *story = [self.allEntries objectAtIndex:indexPath.row];
-    //[story Print];
-    UIColor *textColor;
-    if(story.isRead)
-        textColor = [UIColor grayColor];
-    else
-        textColor = [UIColor blackColor];
-    
-    cell.textLabel.textColor = textColor;
-    cell.detailTextLabel.textColor = textColor;
-    
-    Feed *parentFeed = [PM GetFeedByID:story.feedID];
-    
-    //Actually set the text here
-    UILabel *titleLabel = (UILabel *)[cell viewWithTag:100];
-	titleLabel.text = [NSString stringWithFormat:@"%i - %@",story.storyID, story.title];
-    
-	UILabel *subtitleLabel = (UILabel *)[cell viewWithTag:101];
-	subtitleLabel.text = story.source;
-    
-	UILabel *rankLabel = (UILabel *)[cell viewWithTag:102];
-	rankLabel.text = [NSString stringWithFormat:@"Rank: %i",story.rank];
-    
-	//UILabel *createdLabel = (UILabel *)[cell viewWithTag:103];
-	//createdLabel.text = [story GetDateCreatedString];
-    
-	//UILabel *retrievedLabel = (UILabel *)[cell viewWithTag:104];
-	//retrievedLabel.text = [story GetDateRetrievedString];
-    
-	//UILabel *feedNumReadLabel = (UILabel *)[cell viewWithTag:103];
-	//feedNumReadLabel.text = [NSString stringWithFormat:@"%i",numFeedStoriesTotal];
-    
-	//UILabel *feedNumPerDayLabel = (UILabel *)[cell viewWithTag:104];
-	//feedNumPerDayLabel.text =  [NSString stringWithFormat:@"%.2f",numFeedStoriesPerDay];
-    
-    //Update colors based on isRead
-    rankLabel.textColor = textColor;
-    titleLabel.textColor = textColor;
-    subtitleLabel.textColor = textColor;
-    //createdLabel.textColor = textColor;
-    //retrievedLabel.textColor = textColor;
-    
+    UITableViewCell *cell;
+	Story *story = [_allEntries objectAtIndex:indexPath.row];
+    if([story.source compare:@"Twitter"] == NSOrderedSame)
+    {
+        cell = [tableView dequeueReusableCellWithIdentifier:@"StoryCellTwitter"];
+        UIColor *textColor;
+        if(story.isRead)
+            textColor = [UIColor grayColor];
+        else
+            textColor = [UIColor blackColor];
+        
+        cell.textLabel.textColor = textColor;
+        cell.detailTextLabel.textColor = textColor;
+        
+        //Actually set the text here
+        UILabel *titleLabel = (UILabel *)[cell viewWithTag:100];
+        titleLabel.text = story.title;
+        
+        UILabel *rankLabel = (UILabel *)[cell viewWithTag:102];
+        rankLabel.text = [NSString stringWithFormat:@"%i",story.rank];
+        
+        UILabel *authorLabel = (UILabel *)[cell viewWithTag:103];
+        authorLabel.text = [@"@" stringByAppendingString:story.author];
+        
+        UILabel *createdLabel = (UILabel *)[cell viewWithTag:104];
+        createdLabel.text = [story GetDateCreatedString];
+        
+        //Update colors based on isRead
+        rankLabel.textColor = textColor;
+        titleLabel.textColor = textColor;
+        authorLabel.textColor = textColor;
+        createdLabel.textColor = textColor;
+    }
+    else 
+    {
+        cell = [tableView dequeueReusableCellWithIdentifier:@"StoryCellRSS"];
+        UIColor *textColor;
+        if(story.isRead)
+            textColor = [UIColor grayColor];
+        else
+            textColor = [UIColor blackColor];
+        
+        cell.textLabel.textColor = textColor;
+        cell.detailTextLabel.textColor = textColor;
+        
+        //Actually set the text here
+        UILabel *titleLabel = (UILabel *)[cell viewWithTag:100];
+        titleLabel.text = [NSString stringWithFormat:@"%@",story.title];
+        
+        UILabel *subtitleLabel = (UILabel *)[cell viewWithTag:101];
+        subtitleLabel.text = story.source;
+        
+        UILabel *rankLabel = (UILabel *)[cell viewWithTag:102];
+        rankLabel.text = [NSString stringWithFormat:@"%i",story.rank];
+        
+        UILabel *createdLabel = (UILabel *)[cell viewWithTag:104];
+        createdLabel.text = [story GetDateCreatedString];
+        
+        //UILabel *retrievedLabel = (UILabel *)[cell viewWithTag:104];
+        //retrievedLabel.text = [story GetDateRetrievedString];
+        
+        //UILabel *feedNumReadLabel = (UILabel *)[cell viewWithTag:103];
+        //feedNumReadLabel.text = [NSString stringWithFormat:@"%i",numFeedStoriesTotal];
+        
+        //UILabel *feedNumPerDayLabel = (UILabel *)[cell viewWithTag:104];
+        //feedNumPerDayLabel.text =  [NSString stringWithFormat:@"%.2f",numFeedStoriesPerDay];
+        
+        //Update colors based on isRead
+        rankLabel.textColor = textColor;
+        titleLabel.textColor = textColor;
+        subtitleLabel.textColor = textColor;
+        createdLabel.textColor = textColor;
+        //retrievedLabel.textColor = textColor;
+    }
+        
     return cell;
 }
 
@@ -686,6 +859,57 @@
     return [difference day];
 }
 
+-(void)sendStoryViaEmail:(Story *)storyToSend 
+{
+    if(storyToSend == nil)
+        return;
+    
+    MFMailComposeViewController *mailer = [[MFMailComposeViewController alloc] init];
+    mailer.mailComposeDelegate = self;
+    
+    [mailer setSubject:[NSString stringWithFormat:@"Read this: %@",storyToSend.title]];
+    
+    NSArray *toRecipients = [NSArray arrayWithObjects:@"nmeierpolys@gmail.com", nil];
+    [mailer setToRecipients:toRecipients];
+    
+    // Fill out the email body text
+    NSString *header = @"\n\nSent from ReadFeeder on iPhone.";
+    NSString *emailBody = [NSString stringWithFormat:@"%@\n\n<br><br><b>%@</b><br>%@\n\n<br><br>%@",header,storyToSend.title,[storyToSend GetDateCreatedString],storyToSend.body];
+    
+    //[NSString stringWithFormat:@"%@\n\n&lt;h3&gt;Sent from &lt;a href = '%@'&gt;ReadFeeder&lt;/a&gt; on iPhone. &lt;a href = '%@'&gt;Download&lt;/a&gt; yours from AppStore now!&lt;/h3&gt;", content, pageLink, iTunesLink];
+    
+    [mailer setMessageBody:emailBody isHTML:YES]; // depends. Mostly YES, unless you want to send it as plain text (boring)
+    
+    mailer.navigationBar.barStyle = UIBarStyleBlack; // choose your style, unfortunately, Translucent colors behave quirky.
+    
+    [self presentModalViewController:mailer animated:YES];    
+}
+
+- (void)mailComposeController:(MFMailComposeViewController*)controller didFinishWithResult:(MFMailComposeResult)result error:(NSError*)error 
+{	
+    NSString *message;
+	switch (result)
+	{
+		case MFMailComposeResultCancelled:
+			message = @"Cancelled";
+			break;
+		case MFMailComposeResultSaved:
+			message = @"Saved";
+			break;
+		case MFMailComposeResultSent:
+			message = @"Sent";
+			break;
+		case MFMailComposeResultFailed:
+			message = @"Failed";
+			break;
+		default:
+			message = @"Sent";
+			break;
+	}
+    
+	[self dismissModalViewControllerAnimated:YES];
+}
+
 //Send the cell-specific information to the detail view in a Story object
 -(void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender{
     if([[segue identifier] isEqualToString:@"StoryDetail"]){
@@ -699,7 +923,7 @@
         if (detailStory == nil)
             return;
         
-        [self MarkStoryAsRead:detailStory];
+        //[self MarkStoryAsRead:detailStory];
         [self.tableView reloadData];
         
         //Set the story object on the detail view
@@ -714,14 +938,36 @@
         feedView.PM = PM;
     }
 }
- 
-- (void)MarkStoryAsRead:(Story *)story
+- (void)MarkCurrentStoryAsReadWithOpenedDate:(NSDate *)openedDate
 {
+    [self MarkStoryAsRead:[self GetSelectedStory] withOpenedDate:openedDate];
+}
+ 
+- (void)MarkStoryAsRead:(Story *)story withOpenedDate:(NSDate *)openedDate
+{
+    //Mark as read
     [PM MarkStoryAsRead:story.storyID];
+    story.isRead = true;
+    
+    //Update Feed rank
     Feed *storyFeed = [PM GetFeedByID:story.feedID];
     storyFeed.timesRead++;
-    storyFeed.rank = [self ComputeFeedRank:storyFeed];
-    story.isRead = true;
+    [self UpdateFeedRank:storyFeed];
+    [PM SetFeedRank:storyFeed.feedID toRank:storyFeed.rank];
+    
+    //Set duration read
+    if(openedDate != nil)
+    {
+        NSTimeInterval diff = [openedDate timeIntervalSinceDate:[NSDate date]];
+        int durationRead = -(int)diff;
+        [PM SetStoryDurationRead:story.storyID toDuration:durationRead];
+    }
+    
+    //Update Story rank
+    [self UpdateStoryRank:story];
+    [PM SetStoryRank:story.storyID toRank:story.rank];
+    
+    [self.tableView reloadData];
 }
 
 - (void)MarkSelectedStoryAsRead
@@ -743,7 +989,7 @@
 
 - (Story *)GetSelectedStory
 {   
-    Story *selectedStory = [self.allEntries objectAtIndex:self.selectedRow];
+    Story *selectedStory = [_allEntries objectAtIndex:self.selectedRow];
     
     return selectedStory;
 }
@@ -764,11 +1010,20 @@
 {   
     [self MarkSelectedStoryAsRead];
     int nextRow;
-    if((self.selectedRow + 2) > (self.allEntries.count))
+    if((self.selectedRow + 2) > (_allEntries.count))
         nextRow = self.selectedRow;
     else
         nextRow = self.selectedRow + 1;   
     self.selectedRow = nextRow;
+}
+
+- (void)viewWillUnload
+{
+//    NSLog(@"viewWillUnload");
+//    for (Story *entry in _allEntries) {
+//        [self UpdateStoryRank:entry];
+//        [PM SetStoryRank:entry.storyID toRank:entry.rank];
+//    }
 }
 
 - (void)viewDidUnload
@@ -778,8 +1033,18 @@
     [self setToolbar:nil];
     [self setLabelStatus:nil];
     [self setLabelCount:nil];
+    [self setLabelLastUpdated:nil];
     [super viewDidUnload];
     // Release any retained subviews of the main view.
+}
+
+- (void)applicationWillTerminate
+{
+//    NSLog(@"TerminatingView");
+//    for (Story *entry in _allEntries) {
+//        [self UpdateStoryRank:entry];
+//        [PM SetStoryRank:entry.storyID toRank:entry.rank];
+//    }
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
@@ -793,7 +1058,7 @@
 
 - (IBAction)btnClear:(id)sender {
     [PM ClearStories];
-    self.allEntries = [NSMutableArray array];
+    _allEntries = [NSMutableArray array];
     [self.tableView reloadData];
     [self updatePromptText];
 }
@@ -802,6 +1067,26 @@
     [PM ClearFeeds];
     [self initialPopulateFeeds];
 }
+
+- (IBAction)btnLoadMoreStories:(id)sender {
+    [twitterEngine getNextOldestTweets:@selector(AddTweetAsStory:) withCaller:self count:50];
+}
+
+- (IBAction)btnCancelLoad:(id)sender {
+    self.stopLoading = true;
+    [self.pullToReloadHeaderView setLastUpdatedDate: [NSDate date]];
+    [self.pullToReloadHeaderView finishReloading:self.tableView animated:YES];
+}
+
+- (IBAction)btnSort:(id)sender {
+    [self updateArrayRanks];
+    [self sortArray];
+    [self.tableView reloadData];
+}
+
+- (IBAction)btnSend:(id)sender {
+}
+
 - (IBAction)btnRefresh:(id)sender {
     [self refresh];
 }

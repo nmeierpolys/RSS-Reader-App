@@ -7,15 +7,29 @@
 //
 
 #import "RSSAppDelegate.h"
+#import "FlurryAnalytics.h"
 
 @implementation RSSAppDelegate
 
 @synthesize window = _window;
 
+void uncaughtExceptionHandler(NSException *exception) {
+    [FlurryAnalytics logError:@"Uncaught" message:[exception name] exception:exception];
+}
+
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+    //Set up exception handler
+    NSSetUncaughtExceptionHandler(&uncaughtExceptionHandler);
     
-    //UINavigationController *navigationController = (UINavigationController *)_window.rootViewController;
+    //Start Flurry session
+    [FlurryAnalytics startSession:@"3MX1HFVU2NZQA2GUSK96"];
+    
+    //Attach Flurry to log page views on the navigation controller
+    UINavigationController *navigationController = (UINavigationController *)_window.rootViewController;
+    [FlurryAnalytics logAllPageViews:navigationController];
+    
+    
     //UITabBarController *tabController =  (UITabBarController *)[navigationController topViewController];
     
     //rootViewController = tabController.viewControllers.lastObject;
@@ -45,6 +59,13 @@
 
 - (void)applicationWillTerminate:(UIApplication *)application
 {
+    
+    UINavigationController *navigationController = (UINavigationController *)_window.rootViewController;
+    UITabBarController *tabController =  (UITabBarController *)[navigationController topViewController];
+    
+    rootViewController = tabController.viewControllers.lastObject;
+    [rootViewController applicationWillTerminate];
+    NSLog(@"Terminating");
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
 }
 

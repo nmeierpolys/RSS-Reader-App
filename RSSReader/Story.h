@@ -23,6 +23,7 @@
     int rank;
     bool isDirty;
     int feedID;
+    int durationRead;
 }
 
 @property (nonatomic) int storyID;
@@ -39,6 +40,7 @@
 @property (nonatomic) int rank;
 @property (nonatomic) bool isDirty;
 @property (nonatomic) int feedID;
+@property (nonatomic) int durationRead;
 
 
 - (id)init;
@@ -55,7 +57,8 @@
                rank:(int)rank
             isDirty:(bool)isDirty
             storyID:(int)newStoryID
-             feedID:(int)newFeedID;
+             feedID:(int)newFeedID
+       durationRead:(int)newDurationRead;
 - (id)initWithID:(int)newStoryID 
            title:(NSString *)newTitle;
 - (id)initWithDummyInfo;
@@ -66,4 +69,5 @@
 - (NSString *)GetDateRetrievedString;
 - (NSString *)IsCompleteStory;
 - (void)Print;
+- (NSComparisonResult)compare:(Story *)otherObject withMode:(int)mode;
 @end

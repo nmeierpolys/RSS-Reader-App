@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="1.1" toolsVersion="2182" systemVersion="11D50b" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" initialViewController="d0g-70-RAE">
     <dependencies>
+        <deployment defaultVersion="1296" identifier="iOS"/>
         <development defaultVersion="4200" identifier="xcode"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="1179"/>
     </dependencies>
@@ -27,7 +28,7 @@
                     </connections>
                 </navigationController>
             </objects>
-            <point key="canvasLocation" x="-218" y="105"/>
+            <point key="canvasLocation" x="-154" y="105"/>
         </scene>
         <!--Feeds Test View Controller - Feeds-->
         <scene sceneID="wU4-To-9LG">
@@ -138,7 +139,7 @@
                     <navigationItem key="navigationItem" id="QNy-RJ-hce"/>
                 </tableViewController>
             </objects>
-            <point key="canvasLocation" x="747" y="-503"/>
+            <point key="canvasLocation" x="1135" y="105"/>
         </scene>
         <!--Feed Detail View Controller-->
         <scene sceneID="ptq-Jl-io6">
@@ -208,62 +209,55 @@
             <objects>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="76v-My-9b3" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <tableViewController title="Stories" id="7f4-yH-WRB" customClass="RSSViewController" sceneMemberID="viewController">
-                    <tableView key="view" opaque="NO" clipsSubviews="YES" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" alwaysBounceVertical="YES" indicatorStyle="black" dataMode="prototypes" style="plain" rowHeight="72" sectionHeaderHeight="22" sectionFooterHeight="22" id="Bzt-5B-grX">
+                    <tableView key="view" opaque="NO" clipsSubviews="YES" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" alwaysBounceVertical="YES" indicatorStyle="black" dataMode="prototypes" style="plain" rowHeight="58" sectionHeaderHeight="22" sectionFooterHeight="22" id="Bzt-5B-grX">
                         <rect key="frame" x="0.0" y="64" width="320" height="372"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <view key="tableHeaderView" contentMode="top" id="kZ6-lJ-6x8">
-                            <rect key="frame" x="0.0" y="0.0" width="320" height="20"/>
+                            <rect key="frame" x="0.0" y="0.0" width="320" height="19"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <subviews>
-                                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="StoryCount" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" id="FUX-Ee-JxV">
-                                    <rect key="frame" x="5" y="-1" width="70" height="21"/>
+                                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" id="FUX-Ee-JxV">
+                                    <rect key="frame" x="7" y="-2" width="157" height="21"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                    <fontDescription key="fontDescription" type="boldSystem" pointSize="12"/>
+                                    <fontDescription key="fontDescription" type="boldSystem" pointSize="13"/>
                                     <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                     <nil key="highlightedColor"/>
                                 </label>
-                                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="Pull down to refresh" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" id="16b-5z-9az">
-                                    <rect key="frame" x="91" y="-1" width="138" height="21"/>
+                                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="Label" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" id="xwg-c6-Mr1">
+                                    <rect key="frame" x="172" y="-2" width="142" height="21"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                    <fontDescription key="fontDescription" type="system" pointSize="12"/>
-                                    <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
+                                    <fontDescription key="fontDescription" type="boldSystem" pointSize="13"/>
+                                    <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                     <nil key="highlightedColor"/>
                                 </label>
                             </subviews>
-                            <color key="backgroundColor" red="0.81078040081521741" green="0.81078040081521741" blue="0.81078040081521741" alpha="1" colorSpace="calibratedRGB"/>
+                            <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                         </view>
                         <prototypes>
-                            <tableViewCell contentMode="scaleToFill" selectionStyle="blue" accessoryType="disclosureIndicator" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="StoryCellRSS" rowHeight="59" id="LBg-tb-Iqf">
-                                <rect key="frame" x="0.0" y="42" width="320" height="59"/>
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="blue" accessoryType="disclosureIndicator" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="StoryCell" rowHeight="58" id="LBg-tb-Iqf">
+                                <rect key="frame" x="0.0" y="41" width="320" height="58"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
-                                    <rect key="frame" x="0.0" y="0.0" width="300" height="58"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="300" height="57"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" tag="100" contentMode="left" text="Title" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="none" minimumFontSize="12" id="jqU-uf-QBm">
-                                            <rect key="frame" x="8" y="0.0" width="275" height="38"/>
+                                            <rect key="frame" x="8" y="0.0" width="275" height="37"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                             <fontDescription key="fontDescription" type="boldSystem" pointSize="13"/>
                                             <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                             <color key="highlightedColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                         </label>
                                         <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" tag="101" contentMode="left" text="Subtitle" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" id="78h-uU-6S2">
-                                            <rect key="frame" x="8" y="37" width="117" height="21"/>
+                                            <rect key="frame" x="8" y="36" width="214" height="21"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="12"/>
                                             <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                             <color key="highlightedColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                         </label>
-                                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" tag="102" contentMode="left" text="Rank" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" adjustsFontSizeToFit="NO" id="nJ8-Cx-CAS">
-                                            <rect key="frame" x="128" y="37" width="45" height="21"/>
-                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                            <fontDescription key="fontDescription" type="system" pointSize="12"/>
-                                            <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
-                                            <color key="highlightedColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                        </label>
-                                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" tag="104" contentMode="left" text="DateCreated" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" id="c3n-XA-jEj">
-                                            <rect key="frame" x="181" y="37" width="119" height="21"/>
+                                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" tag="102" contentMode="left" text="Rank" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" adjustsFontSizeToFit="NO" id="nJ8-Cx-CAS">
+                                            <rect key="frame" x="230" y="34" width="65" height="21"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="12"/>
                                             <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
@@ -274,52 +268,6 @@
                                 </view>
                                 <connections>
                                     <segue destination="9u3-iJ-z45" kind="push" identifier="StoryDetail" id="3ld-ln-TLU"/>
-                                </connections>
-                            </tableViewCell>
-                            <tableViewCell contentMode="scaleToFill" selectionStyle="blue" accessoryType="disclosureIndicator" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="StoryCellTwitter" rowHeight="92" id="3wF-g1-kd5">
-                                <rect key="frame" x="0.0" y="101" width="320" height="92"/>
-                                <autoresizingMask key="autoresizingMask"/>
-                                <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
-                                    <rect key="frame" x="0.0" y="0.0" width="300" height="91"/>
-                                    <autoresizingMask key="autoresizingMask"/>
-                                    <subviews>
-                                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" tag="100" contentMode="left" text="Title" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="none" minimumFontSize="12" id="gsi-yi-vwB">
-                                            <rect key="frame" x="10" y="35" width="284" height="56"/>
-                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                            <fontDescription key="fontDescription" type="boldSystem" pointSize="13"/>
-                                            <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
-                                            <color key="highlightedColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                        </label>
-                                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" tag="102" contentMode="left" text="Rank" textAlignment="right" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" minimumFontSize="10" adjustsFontSizeToFit="NO" id="rYY-2C-6Vw">
-                                            <rect key="frame" x="128" y="3" width="44" height="27"/>
-                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                            <fontDescription key="fontDescription" type="system" pointSize="12"/>
-                                            <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
-                                            <color key="highlightedColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                        </label>
-                                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" tag="103" contentMode="left" text="Author" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" id="2yN-UM-Tmv">
-                                            <rect key="frame" x="34" y="6" width="93" height="21"/>
-                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                            <fontDescription key="fontDescription" type="system" pointSize="12"/>
-                                            <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
-                                            <color key="highlightedColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                        </label>
-                                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" image="gears.png" id="5ip-p0-zyj">
-                                            <rect key="frame" x="3" y="5" width="36" height="31"/>
-                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                        </imageView>
-                                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" tag="104" contentMode="left" text="DateCreated" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" id="YxT-9b-nxc">
-                                            <rect key="frame" x="180" y="6" width="120" height="21"/>
-                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                            <fontDescription key="fontDescription" type="system" pointSize="12"/>
-                                            <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
-                                            <color key="highlightedColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                        </label>
-                                    </subviews>
-                                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                                </view>
-                                <connections>
-                                    <segue destination="9u3-iJ-z45" kind="push" identifier="StoryDetail" id="MPv-Tu-bvj"/>
                                 </connections>
                             </tableViewCell>
                         </prototypes>
@@ -341,16 +289,6 @@
                             </connections>
                         </barButtonItem>
                         <barButtonItem style="plain" systemItem="flexibleSpace" id="zMn-iV-KEh"/>
-                        <barButtonItem title="Sort" id="4z7-bi-xvw">
-                            <connections>
-                                <action selector="btnSort:" destination="7f4-yH-WRB" id="yOk-Ti-mFR"/>
-                            </connections>
-                        </barButtonItem>
-                        <barButtonItem title="Mas" id="Fxx-wb-mzT">
-                            <connections>
-                                <action selector="btnLoadMoreStories:" destination="7f4-yH-WRB" id="RE0-aj-qXc"/>
-                            </connections>
-                        </barButtonItem>
                         <barButtonItem systemItem="trash" id="9A7-re-bG5">
                             <connections>
                                 <action selector="btnClear:" destination="7f4-yH-WRB" id="TNq-od-goK"/>
@@ -358,21 +296,16 @@
                         </barButtonItem>
                     </toolbarItems>
                     <navigationItem key="navigationItem" title="Stories" id="QdP-fw-awp">
-                        <barButtonItem key="leftBarButtonItem" systemItem="action" id="Qg0-rV-3eq">
+                        <barButtonItem key="rightBarButtonItem" systemItem="refresh" id="iIe-X6-b4e">
                             <connections>
-                                <action selector="btnSend:" destination="7f4-yH-WRB" id="EKu-9v-pJX"/>
-                            </connections>
-                        </barButtonItem>
-                        <barButtonItem key="rightBarButtonItem" systemItem="stop" id="DYf-J8-3XP">
-                            <connections>
-                                <action selector="btnCancelLoad:" destination="7f4-yH-WRB" id="P7g-kI-HLb"/>
+                                <action selector="btnRefresh:" destination="7f4-yH-WRB" id="kho-At-mOw"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
                     <simulatedToolbarMetrics key="simulatedBottomBarMetrics" barStyle="blackOpaque"/>
                     <connections>
                         <outlet property="labelCount" destination="FUX-Ee-JxV" id="vif-f8-mkp"/>
-                        <outlet property="labelLastUpdated" destination="16b-5z-9az" id="W6S-xx-nAX"/>
+                        <outlet property="labelStatus" destination="xwg-c6-Mr1" id="FY1-Cj-LQQ"/>
                         <outlet property="toolbar" destination="QdP-fw-awp" id="5oU-RI-gLp"/>
                         <outlet property="view" destination="Bzt-5B-grX" id="r2l-1d-Uom"/>
                     </connections>
@@ -397,7 +330,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="Author" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" id="SV0-Il-1Tf">
-                                <rect key="frame" x="5" y="20" width="310" height="21"/>
+                                <rect key="frame" x="5" y="20" width="140" height="21"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="12"/>
                                 <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
@@ -431,18 +364,13 @@
                             </connections>
                         </barButtonItem>
                     </toolbarItems>
-                    <navigationItem key="navigationItem" id="sgN-Jt-vbo">
-                        <barButtonItem key="rightBarButtonItem" systemItem="action" id="M97-OP-d1k">
-                            <connections>
-                                <action selector="btnSend:" destination="9u3-iJ-z45" id="rZ7-AI-EWF"/>
-                            </connections>
-                        </barButtonItem>
-                    </navigationItem>
+                    <navigationItem key="navigationItem" id="sgN-Jt-vbo"/>
                     <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
                     <connections>
                         <outlet property="labelAuthor" destination="SV0-Il-1Tf" id="GgX-ca-QY0"/>
                         <outlet property="labelDateCreated" destination="tgp-M0-f5O" id="WQQ-U5-C8Y"/>
                         <outlet property="labelTitle" destination="ZeM-Ns-i41" id="SVJ-UK-8KI"/>
+                        <outlet property="labelURL" destination="tgp-M0-f5O" id="wL0-3Q-02Q"/>
                         <outlet property="webView" destination="1xt-Sn-dXe" id="Bhm-7U-j6W"/>
                     </connections>
                 </viewController>
@@ -450,15 +378,9 @@
             <point key="canvasLocation" x="753" y="105"/>
         </scene>
     </scenes>
-    <resources>
-        <image name="gears.png" width="64" height="64"/>
-    </resources>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
         <simulatedStatusBarMetrics key="statusBar"/>
         <simulatedOrientationMetrics key="orientation"/>
         <simulatedScreenMetrics key="destination"/>
     </simulatedMetricsContainer>
-    <inferredMetricsTieBreakers>
-        <segue reference="3ld-ln-TLU"/>
-    </inferredMetricsTieBreakers>
 </document>

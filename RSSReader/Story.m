@@ -24,6 +24,7 @@
 @synthesize rank = _rank;
 @synthesize isDirty = _isDirty;
 @synthesize feedID = _feedID;
+@synthesize durationRead = _durationRead;
 
 
 - (id)init
@@ -50,6 +51,7 @@
             isDirty:(bool)newIsDirty
             storyID:(int)newStoryID
              feedID:(int)newFeedID
+       durationRead:(int)newDurationRead
 {
     if(self = [super init])
     {
@@ -67,6 +69,7 @@
         self.rank = newRank;
         self.isDirty = newIsDirty;
         self.feedID = newFeedID;
+        self.durationRead = newDurationRead;
     }
     
     return self;
@@ -122,6 +125,7 @@
     self.rank = 15;
     self.isDirty = YES;
     self.feedID = 0;
+    self.durationRead = 0;
 }
 
 - (void)PopulateEmptyData
@@ -141,6 +145,7 @@
     self.rank = 0;
     self.isDirty = NO;
     self.feedID = 0;
+    self.durationRead = 0;
 }
 
 - (NSString *)GetDateCreatedString
@@ -219,9 +224,26 @@
     outString = [outString stringByAppendingFormat:@"\n    Rank: %i",self.rank];
     outString = [outString stringByAppendingFormat:@"\n    Dirty?: %i",self.isDirty];
     outString = [outString stringByAppendingFormat:@"\n    FeedID: %i",self.feedID];
+    outString = [outString stringByAppendingFormat:@"\n    DurationRead: %i",self.durationRead];
      
     
     NSLog(@"%@", outString);
 }
+
+- (NSComparisonResult)compare:(Story *)otherObject withMode:(int)mode{
+    if(mode==0)
+    {
+        return [self.dateCreated compare:otherObject.dateCreated];
+    }
+    else if(mode==1)
+    {
+        return (self.rank < otherObject.rank);
+    }
+    else 
+    {
+        return NSOrderedAscending;
+    }
+}
+
 
 @end

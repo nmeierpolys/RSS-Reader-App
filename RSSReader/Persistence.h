@@ -42,6 +42,7 @@
 - (NSMutableArray *)GetTopUnreadStories:(int)order numStories:(int)numStories;
 - (void)DeleteStory:(Story *)story;
 - (int)GetNumFeedStories:(int)feedID limitedToRead:(bool)isRead;
+- (int)GetTotalFeedReadTime:(int)feedID;
 - (NSDate *)GetEarliestFeedStoryCreatedDate:(int)feedID;
 - (void)SetStoryRank:(int)storyID toRank:(int)rank;
 
@@ -54,6 +55,7 @@
 - (void)ClearFeeds;
 - (void)DeleteFeed:(Feed *)feed;
 - (void)SetFeedRank:(int)feedID toRank:(int)rank;
+- (void)SetStoryDurationRead:(int)storyID toDuration:(int)duration;
 - (NSMutableArray *)GetAllFeeds;
 
 @end

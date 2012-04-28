@@ -31,10 +31,25 @@
 		F120AA82151F898400CD4345 /* Feed.m in Sources */ = {isa = PBXBuildFile; fileRef = F120AA81151F898400CD4345 /* Feed.m */; };
 		F120AA85151F991100CD4345 /* FeedDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F120AA84151F991100CD4345 /* FeedDetailViewController.m */; };
 		F120AA88151F9EDA00CD4345 /* ToRemoveViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F120AA87151F9EDA00CD4345 /* ToRemoveViewController.m */; };
+		F1258E59153FBF34003EBD13 /* libFlurryAnalytics.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F1258E58153FBF34003EBD13 /* libFlurryAnalytics.a */; };
 		F126F70F151AC3E900BF54EF /* Persistence.m in Sources */ = {isa = PBXBuildFile; fileRef = F126F70E151AC3E900BF54EF /* Persistence.m */; };
 		F126F711151AC50900BF54EF /* libsqlite3.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = F126F710151AC50900BF54EF /* libsqlite3.0.dylib */; };
-		F126F71B151AD3AA00BF54EF /* stories.sqlite in Resources */ = {isa = PBXBuildFile; fileRef = F126F71A151AD3AA00BF54EF /* stories.sqlite */; };
+		F128FE0B154A575400CBE5AE /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F128FE0A154A575400CBE5AE /* MessageUI.framework */; };
+		F12E9CE715433879000B2B0D /* gears.png in Resources */ = {isa = PBXBuildFile; fileRef = F12E9CE615433879000B2B0D /* gears.png */; };
+		F136D3FF153B9668009BAE1D /* pullToReloadTableViewTestAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F136D3F8153B9668009BAE1D /* pullToReloadTableViewTestAppDelegate.m */; };
+		F136D400153B9668009BAE1D /* RootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F136D3FA153B9668009BAE1D /* RootViewController.m */; };
+		F136D401153B9668009BAE1D /* UIPullToReloadHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = F136D3FC153B9668009BAE1D /* UIPullToReloadHeaderView.m */; };
+		F136D402153B9668009BAE1D /* UIPullToReloadTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F136D3FE153B9668009BAE1D /* UIPullToReloadTableViewController.m */; };
+		F136D403153B96B5009BAE1D /* pullToReloadTableViewTestAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F136D3F8153B9668009BAE1D /* pullToReloadTableViewTestAppDelegate.m */; };
+		F136D404153B96BB009BAE1D /* UIPullToReloadHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = F136D3FC153B9668009BAE1D /* UIPullToReloadHeaderView.m */; };
+		F136D405153B96BE009BAE1D /* UIPullToReloadTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F136D3FE153B9668009BAE1D /* UIPullToReloadTableViewController.m */; };
+		F136D409153BA206009BAE1D /* stories.sqlite in Resources */ = {isa = PBXBuildFile; fileRef = F136D408153BA206009BAE1D /* stories.sqlite */; };
+		F136D40A153BA27C009BAE1D /* stories.sqlite in Resources */ = {isa = PBXBuildFile; fileRef = F136D408153BA206009BAE1D /* stories.sqlite */; };
+		F1A25BCB153D37D700462549 /* Accounts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F1A25BCA153D37D700462549 /* Accounts.framework */; };
+		F1A25BCD153D37DB00462549 /* Twitter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F1A25BCC153D37DB00462549 /* Twitter.framework */; };
+		F1A25BD0153D384300462549 /* TwitterEngine.m in Sources */ = {isa = PBXBuildFile; fileRef = F1A25BCF153D384300462549 /* TwitterEngine.m */; };
 		F1AC823915242AEF005819D8 /* FeedsTestViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F1AC823815242AEF005819D8 /* FeedsTestViewController.m */; };
+		F1D95B7F153A10A100802736 /* MainStoryboard_iPad.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F1D95B7E153A10A100802736 /* MainStoryboard_iPad.storyboard */; };
 		F1E23DE815153553007CD8F7 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F1E23DE715153553007CD8F7 /* UIKit.framework */; };
 		F1E23DEA15153553007CD8F7 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F1E23DE915153553007CD8F7 /* Foundation.framework */; };
 		F1E23DEC15153553007CD8F7 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F1E23DEB15153553007CD8F7 /* CoreGraphics.framework */; };
@@ -42,7 +57,6 @@
 		F1E23DF415153553007CD8F7 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = F1E23DF315153553007CD8F7 /* main.m */; };
 		F1E23DF815153553007CD8F7 /* RSSAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F1E23DF715153553007CD8F7 /* RSSAppDelegate.m */; };
 		F1E23DFB15153553007CD8F7 /* MainStoryboard_iPhone.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F1E23DF915153553007CD8F7 /* MainStoryboard_iPhone.storyboard */; };
-		F1E23DFE15153553007CD8F7 /* MainStoryboard_iPad.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F1E23DFC15153553007CD8F7 /* MainStoryboard_iPad.storyboard */; };
 		F1E23E0115153553007CD8F7 /* RSSViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F1E23E0015153553007CD8F7 /* RSSViewController.m */; };
 		F1E23E0915153553007CD8F7 /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F1E23E0815153553007CD8F7 /* SenTestingKit.framework */; };
 		F1E23E0A15153553007CD8F7 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F1E23DE715153553007CD8F7 /* UIKit.framework */; };
@@ -104,12 +118,29 @@
 		F120AA84151F991100CD4345 /* FeedDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FeedDetailViewController.m; sourceTree = "<group>"; };
 		F120AA86151F9EDA00CD4345 /* ToRemoveViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ToRemoveViewController.h; sourceTree = "<group>"; };
 		F120AA87151F9EDA00CD4345 /* ToRemoveViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ToRemoveViewController.m; sourceTree = "<group>"; };
+		F1258E57153FBF34003EBD13 /* FlurryAnalytics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FlurryAnalytics.h; sourceTree = "<group>"; };
+		F1258E58153FBF34003EBD13 /* libFlurryAnalytics.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libFlurryAnalytics.a; sourceTree = "<group>"; };
 		F126F70D151AC3E900BF54EF /* Persistence.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Persistence.h; sourceTree = "<group>"; };
 		F126F70E151AC3E900BF54EF /* Persistence.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Persistence.m; sourceTree = "<group>"; };
 		F126F710151AC50900BF54EF /* libsqlite3.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.0.dylib; path = usr/lib/libsqlite3.0.dylib; sourceTree = SDKROOT; };
-		F126F71A151AD3AA00BF54EF /* stories.sqlite */ = {isa = PBXFileReference; lastKnownFileType = file; path = stories.sqlite; sourceTree = "<group>"; };
+		F128FE0A154A575400CBE5AE /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MessageUI.framework; path = System/Library/Frameworks/MessageUI.framework; sourceTree = SDKROOT; };
+		F12E9CE615433879000B2B0D /* gears.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = gears.png; sourceTree = "<group>"; };
+		F136D3F7153B9668009BAE1D /* pullToReloadTableViewTestAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = pullToReloadTableViewTestAppDelegate.h; sourceTree = "<group>"; };
+		F136D3F8153B9668009BAE1D /* pullToReloadTableViewTestAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = pullToReloadTableViewTestAppDelegate.m; sourceTree = "<group>"; };
+		F136D3F9153B9668009BAE1D /* RootViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RootViewController.h; sourceTree = "<group>"; };
+		F136D3FA153B9668009BAE1D /* RootViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RootViewController.m; sourceTree = "<group>"; };
+		F136D3FB153B9668009BAE1D /* UIPullToReloadHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIPullToReloadHeaderView.h; sourceTree = "<group>"; };
+		F136D3FC153B9668009BAE1D /* UIPullToReloadHeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIPullToReloadHeaderView.m; sourceTree = "<group>"; };
+		F136D3FD153B9668009BAE1D /* UIPullToReloadTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIPullToReloadTableViewController.h; sourceTree = "<group>"; };
+		F136D3FE153B9668009BAE1D /* UIPullToReloadTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIPullToReloadTableViewController.m; sourceTree = "<group>"; };
+		F136D408153BA206009BAE1D /* stories.sqlite */ = {isa = PBXFileReference; lastKnownFileType = file; path = stories.sqlite; sourceTree = "<group>"; };
+		F1A25BCA153D37D700462549 /* Accounts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accounts.framework; path = System/Library/Frameworks/Accounts.framework; sourceTree = SDKROOT; };
+		F1A25BCC153D37DB00462549 /* Twitter.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Twitter.framework; path = System/Library/Frameworks/Twitter.framework; sourceTree = SDKROOT; };
+		F1A25BCE153D384300462549 /* TwitterEngine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TwitterEngine.h; sourceTree = "<group>"; };
+		F1A25BCF153D384300462549 /* TwitterEngine.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TwitterEngine.m; sourceTree = "<group>"; };
 		F1AC823715242AEF005819D8 /* FeedsTestViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FeedsTestViewController.h; sourceTree = "<group>"; };
 		F1AC823815242AEF005819D8 /* FeedsTestViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FeedsTestViewController.m; sourceTree = "<group>"; };
+		F1D95B7E153A10A100802736 /* MainStoryboard_iPad.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = MainStoryboard_iPad.storyboard; sourceTree = "<group>"; };
 		F1E23DE315153553007CD8F7 /* RSSReader.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RSSReader.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F1E23DE715153553007CD8F7 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		F1E23DE915153553007CD8F7 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -121,7 +152,6 @@
 		F1E23DF615153553007CD8F7 /* RSSAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RSSAppDelegate.h; sourceTree = "<group>"; };
 		F1E23DF715153553007CD8F7 /* RSSAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RSSAppDelegate.m; sourceTree = "<group>"; };
 		F1E23DFA15153553007CD8F7 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = en; path = en.lproj/MainStoryboard_iPhone.storyboard; sourceTree = "<group>"; };
-		F1E23DFD15153553007CD8F7 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = en; path = en.lproj/MainStoryboard_iPad.storyboard; sourceTree = "<group>"; };
 		F1E23DFF15153553007CD8F7 /* RSSViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RSSViewController.h; sourceTree = "<group>"; };
 		F1E23E0015153553007CD8F7 /* RSSViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RSSViewController.m; sourceTree = "<group>"; };
 		F1E23E0715153553007CD8F7 /* RSSReaderTests.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RSSReaderTests.octest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -151,6 +181,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F128FE0B154A575400CBE5AE /* MessageUI.framework in Frameworks */,
+				F1A25BCD153D37DB00462549 /* Twitter.framework in Frameworks */,
+				F1A25BCB153D37D700462549 /* Accounts.framework in Frameworks */,
 				F126F711151AC50900BF54EF /* libsqlite3.0.dylib in Frameworks */,
 				F1E23E5815155482007CD8F7 /* libz.1.2.5.dylib in Frameworks */,
 				F1E23E5615155479007CD8F7 /* MobileCoreServices.framework in Frameworks */,
@@ -159,6 +192,7 @@
 				F1E23DE815153553007CD8F7 /* UIKit.framework in Frameworks */,
 				F1E23DEA15153553007CD8F7 /* Foundation.framework in Frameworks */,
 				F1E23DEC15153553007CD8F7 /* CoreGraphics.framework in Frameworks */,
+				F1258E59153FBF34003EBD13 /* libFlurryAnalytics.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -205,18 +239,48 @@
 			path = RSSReader/ASIHTTPRequest;
 			sourceTree = "<group>";
 		};
+		F1258E56153FBF34003EBD13 /* FlurryAnalytics */ = {
+			isa = PBXGroup;
+			children = (
+				F1258E57153FBF34003EBD13 /* FlurryAnalytics.h */,
+				F1258E58153FBF34003EBD13 /* libFlurryAnalytics.a */,
+			);
+			path = FlurryAnalytics;
+			sourceTree = "<group>";
+		};
 		F126F719151AD39400BF54EF /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				F126F71A151AD3AA00BF54EF /* stories.sqlite */,
+				F136D408153BA206009BAE1D /* stories.sqlite */,
 			);
 			name = Resources;
 			path = RSSReader/Resources;
 			sourceTree = "<group>";
 		};
+		F136D3F6153B9668009BAE1D /* Classes */ = {
+			isa = PBXGroup;
+			children = (
+				F136D3F7153B9668009BAE1D /* pullToReloadTableViewTestAppDelegate.h */,
+				F136D3F8153B9668009BAE1D /* pullToReloadTableViewTestAppDelegate.m */,
+				F136D3F9153B9668009BAE1D /* RootViewController.h */,
+				F136D3FA153B9668009BAE1D /* RootViewController.m */,
+				F136D3FB153B9668009BAE1D /* UIPullToReloadHeaderView.h */,
+				F136D3FC153B9668009BAE1D /* UIPullToReloadHeaderView.m */,
+				F136D3FD153B9668009BAE1D /* UIPullToReloadTableViewController.h */,
+				F136D3FE153B9668009BAE1D /* UIPullToReloadTableViewController.m */,
+			);
+			name = Classes;
+			path = ../../../../Downloads/pullToReloadTableViewTest/Classes;
+			sourceTree = "<group>";
+		};
 		F1E23DD815153553007CD8F7 = {
 			isa = PBXGroup;
 			children = (
+				F128FE0A154A575400CBE5AE /* MessageUI.framework */,
+				F1258E56153FBF34003EBD13 /* FlurryAnalytics */,
+				F1A25BCC153D37DB00462549 /* Twitter.framework */,
+				F1A25BCA153D37D700462549 /* Accounts.framework */,
+				F136D3F6153B9668009BAE1D /* Classes */,
 				F120AA86151F9EDA00CD4345 /* ToRemoveViewController.h */,
 				F120AA87151F9EDA00CD4345 /* ToRemoveViewController.m */,
 				F11EF015151D910300B1456C /* ASIHTTPRequest */,
@@ -257,6 +321,9 @@
 		F1E23DED15153553007CD8F7 /* RSSReader */ = {
 			isa = PBXGroup;
 			children = (
+				F12E9CE615433879000B2B0D /* gears.png */,
+				F1A25BCE153D384300462549 /* TwitterEngine.h */,
+				F1A25BCF153D384300462549 /* TwitterEngine.m */,
 				F126F70D151AC3E900BF54EF /* Persistence.h */,
 				F126F70E151AC3E900BF54EF /* Persistence.m */,
 				F1E23E2A151542DF007CD8F7 /* StoryDetailViewController.h */,
@@ -271,8 +338,8 @@
 				F1E23DF715153553007CD8F7 /* RSSAppDelegate.m */,
 				F120AA83151F991100CD4345 /* FeedDetailViewController.h */,
 				F120AA84151F991100CD4345 /* FeedDetailViewController.m */,
+				F1D95B7E153A10A100802736 /* MainStoryboard_iPad.storyboard */,
 				F1E23DF915153553007CD8F7 /* MainStoryboard_iPhone.storyboard */,
-				F1E23DFC15153553007CD8F7 /* MainStoryboard_iPad.storyboard */,
 				F1E23DFF15153553007CD8F7 /* RSSViewController.h */,
 				F1E23E0015153553007CD8F7 /* RSSViewController.m */,
 				F1E23E641515624B007CD8F7 /* NSArray+Extras.h */,
@@ -399,10 +466,11 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F136D40A153BA27C009BAE1D /* stories.sqlite in Resources */,
 				F1E23DF215153553007CD8F7 /* InfoPlist.strings in Resources */,
 				F1E23DFB15153553007CD8F7 /* MainStoryboard_iPhone.storyboard in Resources */,
-				F1E23DFE15153553007CD8F7 /* MainStoryboard_iPad.storyboard in Resources */,
-				F126F71B151AD3AA00BF54EF /* stories.sqlite in Resources */,
+				F1D95B7F153A10A100802736 /* MainStoryboard_iPad.storyboard in Resources */,
+				F12E9CE715433879000B2B0D /* gears.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -411,6 +479,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F1E23E1315153553007CD8F7 /* InfoPlist.strings in Resources */,
+				F136D409153BA206009BAE1D /* stories.sqlite in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -437,6 +506,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F136D405153B96BE009BAE1D /* UIPullToReloadTableViewController.m in Sources */,
+				F136D404153B96BB009BAE1D /* UIPullToReloadHeaderView.m in Sources */,
+				F136D403153B96B5009BAE1D /* pullToReloadTableViewTestAppDelegate.m in Sources */,
 				F11EF03E151D919100B1456C /* GDataXMLNode.m in Sources */,
 				F11EF03D151D916200B1456C /* Reachability.m in Sources */,
 				F11EF03C151D915E00B1456C /* ASINetworkQueue.m in Sources */,
@@ -461,6 +533,7 @@
 				F120AA85151F991100CD4345 /* FeedDetailViewController.m in Sources */,
 				F120AA88151F9EDA00CD4345 /* ToRemoveViewController.m in Sources */,
 				F1AC823915242AEF005819D8 /* FeedsTestViewController.m in Sources */,
+				F1A25BD0153D384300462549 /* TwitterEngine.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -480,6 +553,10 @@
 				F11EF032151D910300B1456C /* ASIInputStream.m in Sources */,
 				F11EF033151D910300B1456C /* ASINetworkQueue.m in Sources */,
 				F11EF034151D910300B1456C /* Reachability.m in Sources */,
+				F136D3FF153B9668009BAE1D /* pullToReloadTableViewTestAppDelegate.m in Sources */,
+				F136D400153B9668009BAE1D /* RootViewController.m in Sources */,
+				F136D401153B9668009BAE1D /* UIPullToReloadHeaderView.m in Sources */,
+				F136D402153B9668009BAE1D /* UIPullToReloadTableViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -508,14 +585,6 @@
 				F1E23DFA15153553007CD8F7 /* en */,
 			);
 			name = MainStoryboard_iPhone.storyboard;
-			sourceTree = "<group>";
-		};
-		F1E23DFC15153553007CD8F7 /* MainStoryboard_iPad.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				F1E23DFD15153553007CD8F7 /* en */,
-			);
-			name = MainStoryboard_iPad.storyboard;
 			sourceTree = "<group>";
 		};
 		F1E23E1115153553007CD8F7 /* InfoPlist.strings */ = {
@@ -584,6 +653,10 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "RSSReader/RSSReader-Prefix.pch";
 				INFOPLIST_FILE = "RSSReader/RSSReader-Info.plist";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/FlurryAnalytics\"",
+				);
 				OTHER_LDFLAGS = "-lxml2";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
@@ -596,6 +669,10 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "RSSReader/RSSReader-Prefix.pch";
 				INFOPLIST_FILE = "RSSReader/RSSReader-Info.plist";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/FlurryAnalytics\"",
+				);
 				OTHER_LDFLAGS = "-lxml2";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;

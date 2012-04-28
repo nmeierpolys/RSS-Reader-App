@@ -21,13 +21,13 @@
 @synthesize labelURL;
 @synthesize currentStory;
 @synthesize parentTableView;
+@synthesize openedInstant;
 
 - (void)viewDidLoad {
     
     if(currentStory == nil)
         currentStory = [[Story alloc] init];
     [self loadStoryToView];
-    
     //NSURL *url = [NSURL URLWithString:currentStory.url];    
     //[webView loadRequest:[NSURLRequest requestWithURL:url]];
         
@@ -47,6 +47,7 @@
     self.title = currentStory.source;
     
     [webView loadHTMLString:currentStory.body baseURL:nil];
+    self.openedInstant = [NSDate date];
 }
 
 - (void)viewDidUnload {
@@ -61,11 +62,27 @@
     [self setWebView:nil];
     [super viewDidUnload];
 }
+
+- (void)viewWillUnload {
+    
+}
+
+- (void)viewWillDisappear:(BOOL)animated
+{
+    [self.parentTableView MarkCurrentStoryAsReadWithOpenedDate:self.openedInstant];
+}
+
+- (void)viewDidDisappear:(BOOL)animated
+{
+    
+}
+
 - (IBAction)btnPrevious:(id)sender 
 {    
     if(self.parentTableView == nil)
         return;
     
+    [self.parentTableView MarkCurrentStoryAsReadWithOpenedDate:self.openedInstant];
     [self.parentTableView SwitchToPreviousStory];
     currentStory = [self.parentTableView GetSelectedStory];
     [self loadStoryToView];
@@ -76,8 +93,13 @@
     if(self.parentTableView == nil)
         return;
     
+    [self.parentTableView MarkCurrentStoryAsReadWithOpenedDate:self.openedInstant];
     [parentTableView SwitchToNextStory];
     currentStory = [self.parentTableView GetSelectedStory];
     [self loadStoryToView];
+}
+
+- (IBAction)btnSend:(id)sender {
+    [parentTableView sendStoryViaEmail:currentStory];
 }
 @end

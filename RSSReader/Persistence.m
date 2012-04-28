@@ -197,7 +197,7 @@ static NSString * DatabaseLock = nil;
     @synchronized ([Persistence databaseLock]) {
         NSString *queryStr;
         if(isRead)
-            queryStr = @"SELECT count(storyID) FROM story JOIN feed ON story.feedID = ? WHERE isRead=1";
+            queryStr = @"SELECT count(storyID) FROM story WHERE feedID = ? and isRead=1";
         else
             queryStr = @"SELECT count(storyID) FROM story WHERE feedID = ?";
         
@@ -217,6 +217,30 @@ static NSString * DatabaseLock = nil;
         sqlite3_finalize(statement);
         
         return numStories;
+    }
+}
+
+- (int)GetTotalFeedReadTime:(int)feedID
+{ 
+    @synchronized ([Persistence databaseLock]) {
+        NSString *queryStr = @"SELECT sum(durationRead) FROM story WHERE feedID = ?";
+        
+        const char *sql = [queryStr UTF8String];
+        sqlite3_stmt *statement;
+        
+        int totalDurationRead = 0;
+        if (sqlite3_prepare_v2(database, sql, -1, &statement, NULL) == SQLITE_OK)
+        {
+            sqlite3_bind_int(statement, 1, feedID);
+            
+            if (sqlite3_step(statement) == SQLITE_ROW) {
+                totalDurationRead = sqlite3_column_int(statement, 0);
+            }
+        }
+        
+        sqlite3_finalize(statement);
+        
+        return totalDurationRead;
     }
 }
 
@@ -304,7 +328,7 @@ static NSString * DatabaseLock = nil;
         if(!storyID)
             return nil;
         
-        NSString *sqlStr = @"select storyID,title,author,body,source,dateCreated,dateRetrieved,isRead,imagePath,isFavorite,rank,isDirty,feedID from story where storyID = ?";
+        NSString *sqlStr = @"select storyID,title,author,body,source,dateCreated,dateRetrieved,isRead,imagePath,isFavorite,rank,isDirty,feedID,durationRead from story where storyID = ?";
         
         const char *sql = [self GetSqlStringFromNSString:sqlStr];
         
@@ -408,6 +432,7 @@ static NSString * DatabaseLock = nil;
         story.rank = sqlite3_column_int(statement, 10);
         story.isDirty = sqlite3_column_int(statement, 11);
         story.feedID = sqlite3_column_int(statement, 12);
+        story.durationRead = sqlite3_column_int(statement, 13);
     }
     
     sqlite3_finalize(statement);
@@ -601,7 +626,7 @@ static NSString * DatabaseLock = nil;
     @synchronized ([Persistence databaseLock]) {
     [self initializeDatabaseIfNeeded];
     
-    NSString *sqlStr = @"insert into story(title,author,body,source,dateCreated,dateRetrieved,isRead,imagePath,isFavorite,rank,isDirty,feedID) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)";
+    NSString *sqlStr = @"insert into story(title,author,body,source,dateCreated,dateRetrieved,isRead,imagePath,isFavorite,rank,isDirty,feedID,durationRead) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)";
     
     const char *sql = [self GetSqlStringFromNSString:sqlStr];
     sqlite3_stmt *statement;
@@ -673,6 +698,9 @@ static NSString * DatabaseLock = nil;
         //FeedID
         sqlite3_bind_int(statement, 12, newStory.feedID);
         
+        //FeedID
+        sqlite3_bind_int(statement, 13, newStory.durationRead);
+        
         sqlite3_step(statement);
     }
     
@@ -739,6 +767,25 @@ static NSString * DatabaseLock = nil;
         [self initializeDatabaseIfNeeded];
         
         NSString *sqlStr = [NSString stringWithFormat:@"update story set rank=%i where storyID=%i",rank,storyID];
+        
+        const char *sql = [self GetSqlStringFromNSString:sqlStr];
+        sqlite3_stmt *statement;
+        
+        if (sqlite3_prepare_v2(database, sql, -1, &statement, NULL) == SQLITE_OK)
+        {
+            sqlite3_exec(database, sql, nil, nil, nil);
+        }
+        
+        sqlite3_finalize(statement);
+    }
+}
+
+- (void)SetStoryDurationRead:(int)storyID toDuration:(int)duration
+{
+    @synchronized ([Persistence databaseLock]) {
+        [self initializeDatabaseIfNeeded];
+        
+        NSString *sqlStr = [NSString stringWithFormat:@"update story set durationRead=%i where storyID=%i",duration,storyID];
         
         const char *sql = [self GetSqlStringFromNSString:sqlStr];
         sqlite3_stmt *statement;

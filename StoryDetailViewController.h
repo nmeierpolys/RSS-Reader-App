@@ -13,6 +13,7 @@
 @interface StoryDetailViewController : UIViewController {
     Story *currentStory;
     RSSViewController *parentTableView;
+    NSDate *openedInstant;
 }
 @property (weak, nonatomic) IBOutlet UILabel *labelTitle;
 @property (weak, nonatomic) IBOutlet UILabel *labelAuthor;
@@ -26,8 +27,10 @@
 
 - (IBAction)btnPrevious:(id)sender;
 - (IBAction)btnNext:(id)sender;
+- (IBAction)btnSend:(id)sender;
 
 @property (nonatomic, strong) Story *currentStory;
 @property (nonatomic, retain) RSSViewController *parentTableView;
+@property (nonatomic, retain) NSDate *openedInstant;
 
 @end
