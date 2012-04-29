@@ -219,6 +219,7 @@
     newTweetStory.author = userScreenName;
     newTweetStory.title =  body;
     newTweetStory.source = @"Twitter";
+    newTweetStory.url = userScreenName;
     
     NSDateFormatter *df = [[NSDateFormatter alloc] init];
     [df setDateFormat:@"eee MMM dd HH:mm:ss ZZZZ yyyy"];

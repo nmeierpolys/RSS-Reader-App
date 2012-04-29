@@ -39,11 +39,14 @@
 - (NSMutableArray *)GetAllStories:(int)order whereClause:(NSString *)whereString;
 - (NSMutableArray *)GetAllStories:(int)order;
 - (NSMutableArray *)GetAllUnreadStories:(int)order;
-- (NSMutableArray *)GetTopUnreadStories:(int)order numStories:(int)numStories;
+- (NSMutableArray *)GetTopUnreadStories:(int)order numStories:(int)numStories where:(NSString *)whereClause;
 - (void)DeleteStory:(Story *)story;
 - (int)GetNumFeedStories:(int)feedID limitedToRead:(bool)isRead;
+- (int)GetNumFeedStoriesByUrl:(NSString *)url limitedToRead:(bool)isRead;
 - (int)GetTotalFeedReadTime:(int)feedID;
+- (int)GetTotalFeedReadTimeByUrl:(NSString *)url;
 - (NSDate *)GetEarliestFeedStoryCreatedDate:(int)feedID;
+- (NSDate *)GetEarliestFeedStoryCreatedDateByUrl:(NSString *)url;
 - (void)SetStoryRank:(int)storyID toRank:(int)rank;
 
 //Feed Stuffs
@@ -52,6 +55,7 @@
 - (Feed *)GetFeedFromStatement:(sqlite3_stmt *)statement;
 - (Feed *)GetFeedByID:(int)feedID;
 - (Feed *)GetFeedByURLPath:(NSString *)urlPath;
+- (int)GetFeedRankByFeedID:(int)feedID;
 - (void)ClearFeeds;
 - (void)DeleteFeed:(Feed *)feed;
 - (void)SetFeedRank:(int)feedID toRank:(int)rank;

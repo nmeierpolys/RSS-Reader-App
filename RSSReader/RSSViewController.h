@@ -35,6 +35,8 @@
     TwitterEngine *twitterEngine;
     bool insertStoryLocked;
     bool hasInitialized;
+    int maxAllowableStoryTimeRead;
+    Story *oldestStory;
 }
 
 @property (weak, nonatomic) IBOutlet UIView *btnGET;
@@ -52,7 +54,9 @@
 - (IBAction)btnCancelLoad:(id)sender;
 - (IBAction)btnSort:(id)sender;
 - (IBAction)btnSend:(id)sender;
+- (IBAction)swipeCellLeft:(id)sender;
 @property (weak, nonatomic) Persistence *PM;
+@property (weak, nonatomic) Story *oldestStory;
 @property (strong, nonatomic) Feed *twitterFeed;
 @property (weak, nonatomic) TwitterEngine *twitterEngine;
 
@@ -70,6 +74,7 @@
 @property int currentRangeLowestRank;
 @property int numDaysToShow;
 @property bool stopLoading;
+@property int maxAllowableStoryTimeRead;
 
 - (IBAction)btnGetPressed:(id)sender;
 - (void)testPopulate;
@@ -90,7 +95,7 @@
 - (void)directMessagesReceived:(NSArray *)messages forRequest:(NSString *)identifier;
 - (void)userInfoReceived:(NSArray *)userInfo forRequest:(NSString *)identifier;
 - (void)applicationWillTerminate;
-- (void)MarkStoryAsRead:(Story *)story withOpenedDate:(NSDate *)openedDate;
+- (void)MarkStoryAsRead:(Story *)story withOpenedDate:(NSDate *)openedDate noRankUpdate:(bool)noRankUpdate;
 - (void)MarkCurrentStoryAsReadWithOpenedDate:(NSDate *)openedDate;
 -(void)sendStoryViaEmail:(Story *)storyToSend;
 @end
