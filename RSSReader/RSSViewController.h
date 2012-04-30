@@ -39,6 +39,7 @@
     Story *oldestStory;
 }
 
+//IBOutlets
 @property (weak, nonatomic) IBOutlet UIView *btnGET;
 @property (weak, nonatomic) IBOutlet UITextView *textBody;
 @property (weak, nonatomic) IBOutlet UITextField *textTitle;
@@ -46,6 +47,8 @@
 @property (weak, nonatomic) IBOutlet UILabel *labelStatus;
 @property (weak, nonatomic) IBOutlet UILabel *labelLastUpdated;
 @property (weak, nonatomic) IBOutlet UINavigationItem *toolbar;
+
+//Buttons
 - (IBAction)btnRefresh:(id)sender;
 - (IBAction)btnRefresh:(id)sender;
 - (IBAction)btnClear:(id)sender;
@@ -54,12 +57,16 @@
 - (IBAction)btnCancelLoad:(id)sender;
 - (IBAction)btnSort:(id)sender;
 - (IBAction)btnSend:(id)sender;
-- (IBAction)swipeCellLeft:(id)sender;
-@property (weak, nonatomic) Persistence *PM;
-@property (weak, nonatomic) Story *oldestStory;
-@property (strong, nonatomic) Feed *twitterFeed;
-@property (weak, nonatomic) TwitterEngine *twitterEngine;
+- (IBAction)btnGetPressed:(id)sender;
 
+//Other actions
+- (IBAction)swipeCellLeft:(id)sender;
+
+//Properties
+@property (strong, nonatomic) Feed *twitterFeed;
+@property (weak, nonatomic) Persistence *PM;
+@property (weak, nonatomic) TwitterEngine *twitterEngine;
+@property (weak, nonatomic) Story *oldestStory;
 @property (retain) NSMutableArray *allEntries;
 @property (retain) NSMutableArray *feeds;
 @property (retain) NSOperationQueue *queue;
@@ -73,29 +80,51 @@
 @property int numStoriesToShow;
 @property int currentRangeLowestRank;
 @property int numDaysToShow;
-@property bool stopLoading;
 @property int maxAllowableStoryTimeRead;
+@property bool stopLoading;
 
-- (IBAction)btnGetPressed:(id)sender;
-- (void)testPopulate;
-- (void)testPrint:(GDataXMLDocument *)doc;
+//Events
 - (void)enteringBackground;
 - (void)enteringForeground;
-- (Story *)GetSelectedStory;
+- (void)applicationWillTerminate;
+
+//Story management
 - (void)SwitchToPreviousStory;
 - (void)SwitchToNextStory;
-- (int)GetFeedIDFromURL:(NSURL *)url;
+- (void)MarkStoryAsRead:(Story *)story withOpenedDate:(NSDate *)openedDate noRankUpdate:(bool)noRankUpdate;
+- (void)MarkCurrentStoryAsReadWithOpenedDate:(NSDate *)openedDate;
+- (void)sendStoryViaEmail:(Story *)storyToSend;
+
+//Miscellaneous methods
+- (void)testPopulate;
+- (void)testPrint:(GDataXMLDocument *)doc;
 - (void)InitializeTwitterFeed;
 - (void)sortArray;
 - (void)updateArrayRanks;
+- (Story *)GetSelectedStory;
+- (int)GetFeedIDFromURL:(NSURL *)url;
 
+//Asynchronous request
 - (void)requestSucceeded:(NSString *)requestIdentifier;
 - (void)requestFailed:(NSString *)requestIdentifier withError:(NSError *)error;
-- (void)statusesReceived:(NSArray *)statuses forRequest:(NSString *)identifier;
-- (void)directMessagesReceived:(NSArray *)messages forRequest:(NSString *)identifier;
-- (void)userInfoReceived:(NSArray *)userInfo forRequest:(NSString *)identifier;
-- (void)applicationWillTerminate;
-- (void)MarkStoryAsRead:(Story *)story withOpenedDate:(NSDate *)openedDate noRankUpdate:(bool)noRankUpdate;
-- (void)MarkCurrentStoryAsReadWithOpenedDate:(NSDate *)openedDate;
--(void)sendStoryViaEmail:(Story *)storyToSend;
+
+//- (void)statusesReceived:(NSArray *)statuses forRequest:(NSString *)identifier;
+//- (void)directMessagesReceived:(NSArray *)messages forRequest:(NSString *)identifier;
+//- (void)userInfoReceived:(NSArray *)userInfo forRequest:(NSString *)identifier;
+
 @end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

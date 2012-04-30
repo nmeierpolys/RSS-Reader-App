@@ -25,6 +25,8 @@
 @end
 
 @implementation RSSViewController
+
+#pragma mark Properties
 @synthesize labelStatus = _labelStatus;
 @synthesize btnGET = _btnGET;
 @synthesize textBody = _textBody;
@@ -52,6 +54,7 @@
 @synthesize maxAllowableStoryTimeRead = _maxAllowableStoryTimeRead;
 @synthesize oldestStory = _oldestStory;
 
+#pragma mark View methods
 - (void)viewDidLoad
 {
     [super viewDidLoad]; 
@@ -65,8 +68,6 @@
     self.queue = [[NSOperationQueue alloc] init];
     alwaysIncludeCount = 10;
     PM = [[Persistence alloc] init];
-    //[self initialPopulateFeeds];
-    //[PM ClearStories];
     self.orderBy = 1;
     self.numStoriesToShow = 50;
     self.numDaysToShow = 3;
@@ -75,9 +76,6 @@
     self.feeds = [PM GetAllFeeds];
     self.maxAllowableStoryTimeRead = 200;  //Seconds
     [self InitializeTwitterFeed];
-    
-    //[self.twitterEngine fetchDataWithSelector:@selector(AddTweetAsStory:) withCaller:self];
-    //[self refresh];
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -87,6 +85,71 @@
     hasInitialized = true;
     [self loadSqlStoriesIntoTable];
 }
+
+- (void)viewWillUnload
+{
+    //    NSLog(@"viewWillUnload");
+    //    for (Story *entry in _allEntries) {
+    //        [self UpdateStoryRank:entry];
+    //        [PM SetStoryRank:entry.storyID toRank:entry.rank];
+    //    }
+}
+
+- (void)viewDidUnload
+{
+    [self setBtnGET:nil];
+    [self setTextBody:nil];
+    [self setToolbar:nil];
+    [self setLabelStatus:nil];
+    [self setLabelCount:nil];
+    [self setLabelLastUpdated:nil];
+    [super viewDidUnload];
+    // Release any retained subviews of the main view.
+}
+
+- (void) viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+}
+
+- (void) viewWillDisappear:(BOOL)animated
+{
+    [super viewWillDisappear:animated];
+}
+
+#pragma mark App Methods
+
+- (void)applicationWillTerminate
+{
+}
+
+- (void)enteringBackground
+{
+    [PM shutItDown];
+}
+
+- (void)enteringForeground
+{
+    [PM initializeDatabaseIfNeeded];
+}
+
+- (void)didReceiveMemoryWarning {
+    [super didReceiveMemoryWarning]; // Releases the view if it doesn't have a superview
+    // Release anything that's not essential, such as cached data
+}
+
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
+{
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
+        return (interfaceOrientation != UIInterfaceOrientationPortraitUpsideDown);
+    } else {
+        return YES;
+    }
+}
+
+
+
+#pragma mark Initialization
 
 - (void)InitializeTwitterFeed
 {
@@ -99,32 +162,6 @@
         [self UpdateFeedRank:self.twitterFeed];
         [PM SetFeedRank:self.twitterFeed.feedID toRank:self.twitterFeed.rank];
     }
-}
-
-- (void)AddTweetAsStory:(Story *)tweetStory
-{
-    Feed *storyFeed = [PM GetFeedByURLPath:tweetStory.author];
-    if(storyFeed == nil)
-    {
-        storyFeed = [[Feed alloc] initWithName:tweetStory.author url:tweetStory.author type:3];
-        [PM AddFeed:storyFeed];
-    }
-    tweetStory.feedID = storyFeed.feedID;
-    
-    if(![PM StoryExistsInDB:tweetStory])
-    {
-        tweetStory = [PM AddStoryAndGetNewStory:tweetStory];
-        [self UpdateStoryRank:tweetStory];
-        
-        [self insertOrderedStoryWithAnimation:tweetStory];
-    }
-    if(twitterEngine.requestCompleted)
-    {
-        if(self.outstandingFeedsToParse > 0)
-            self.outstandingFeedsToParse--;
-        [self updatePromptText];
-    }
-    
 }
 
 - (void)initialPopulateStephFeeds
@@ -260,6 +297,37 @@
     self.feeds = PM.feeds; 
 }
 
+
+#pragma mark Twitter
+
+- (void)AddTweetAsStory:(Story *)tweetStory
+{
+    Feed *storyFeed = [PM GetFeedByURLPath:tweetStory.author];
+    if(storyFeed == nil)
+    {
+        storyFeed = [[Feed alloc] initWithName:tweetStory.author url:tweetStory.author type:3];
+        [PM AddFeed:storyFeed];
+    }
+    tweetStory.feedID = storyFeed.feedID;
+    
+    if(![PM StoryExistsInDB:tweetStory])
+    {
+        tweetStory = [PM AddStoryAndGetNewStory:tweetStory];
+        [self UpdateStoryRank:tweetStory];
+        
+        [self insertOrderedStoryWithAnimation:tweetStory];
+    }
+    if(twitterEngine.requestCompleted)
+    {
+        if(self.outstandingFeedsToParse > 0)
+            self.outstandingFeedsToParse--;
+        [self updatePromptText];
+    }
+}
+
+
+#pragma mark Update Prompt Text
+
 - (void)updatePromptText
 {
     int numStories = _allEntries.count;
@@ -276,33 +344,9 @@
     }
 }
 
-- (void)enteringBackground
-{
-    [PM shutItDown];
-}
-
-- (void)enteringForeground
-{
-    [PM initializeDatabaseIfNeeded];
-}
-
-- (void) viewWillAppear:(BOOL)animated
-{
-    [super viewWillAppear:animated];
-}
-
-- (void) viewWillDisappear:(BOOL)animated
-{
-    [super viewWillDisappear:animated];
-}
-
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning]; // Releases the view if it doesn't have a superview
-    // Release anything that's not essential, such as cached data
-}
 
 
-
+#pragma mark Story stream management
 - (void)loadSqlStoriesIntoTable
 {
     NSMutableArray *entries = [PM GetTopUnreadStories:self.orderBy numStories:self.numStoriesToShow where:@""];
@@ -320,7 +364,6 @@
             
             for (Story *entry in entries) {
                 [self UpdateStoryRank:entry];
-                //[PM SetStoryRank:entry.storyID toRank:entry.rank];
             }
             
             for (Story *entry in entries) {
@@ -336,14 +379,13 @@
             [self UpdateFeedRank:feed];
             [PM SetFeedRank:feed.feedID toRank:feed.rank];
         }
-    
+        
         for (Story *entry in entries) {
             
             NSLog(@"%i - %i",entry.storyID,entry.rank);
             [self UpdateStoryRank:entry];
-            //[PM SetStoryRank:entry.storyID toRank:entry.rank];
         }
-    
+        
         _allEntries = entries;
         [self.tableView reloadData];
         [self updatePromptText];
@@ -378,48 +420,58 @@
     }
 }
 
--(void) pullDownToReloadAction {	
-    [self performSelector:@selector(refresh)];
-}
-
-- (void)refresh {
-    //Update lastUpdated property
-    self.stopLoading = false;
-    self.lastUpdated = [NSDate date];
-    
-    //Set earliest date to pick up stories from
-    lowerLimitDate = [NSDate dateWithTimeIntervalSinceNow:-1*60*60*24*numDaysToShow];
-    
-    //Kick off request for each feed
-    for (Feed *feed in _feeds) {
-        self.outstandingFeedsToParse++;
-        if(feed.type == 2)
-        {
-        }
-        else {
-            NSURL *url = [NSURL URLWithString:feed.url];
-            ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
-            [request setDelegate:self];
-            [_queue addOperation:request];
-        }
-    }    
-    
-    self.outstandingFeedsToParse--;
-    //[self UpdateFeedRank:self.twitterFeed];
-    //[PM SetFeedRank:self.twitterFeed.feedID toRank:self.twitterFeed.rank];
-    [twitterEngine fetchDataWithSelector:@selector(AddTweetAsStory:) withCaller:self count:50];
-    
-    //Update story count and 'Loading' string labels
-    [self updatePromptText];
-}
-
-- (int)GetFeedIDFromURL:(NSURL *)url
+- (void)sortArray
 {
-    NSString *urlString = url.absoluteString;
-    Feed *feed  = [PM GetFeedByURLPath:urlString];
-    return feed.feedID;
+    [_allEntries sortUsingComparator:(NSComparator)^(id a, id b) {
+        Story *first = (Story*)a;
+        Story *second = (Story*)b;
+        NSComparisonResult result = [first compare:second withMode:self.orderBy];
+        return result;
+    }];
 }
 
+- (void)removeReadStories
+{
+    NSMutableArray *discardedItems = [NSMutableArray array];
+    for(Story* thisStory in _allEntries)
+    {
+        if(thisStory.isRead)
+            [discardedItems addObject:thisStory];
+    }
+    
+    [_allEntries removeObjectsInArray:discardedItems];
+}
+
+- (NSComparisonResult)compareStory:(Story *)entry1 withStory:(Story *)entry2
+{
+    NSComparisonResult result;
+    
+    if(self.orderBy == 0)
+    {
+        result = [entry1.dateCreated compare:entry2.dateCreated];
+    }
+    else if(self.orderBy == 1)
+    {
+        if(entry1.rank > entry2.rank)
+            result = NSOrderedDescending;
+        else if(entry1.rank < entry2.rank)
+            result = NSOrderedAscending;
+        else
+            result = [entry1.dateCreated compare:entry2.dateCreated];
+    }
+    else if(self.orderBy == 2)
+    {
+        result = [entry1.title compare:entry2.title];
+    }
+    else
+    {
+        result = NSOrderedAscending;
+    }
+    
+    return result;
+}
+
+#pragma mark Rank
 - (void)UpdateFeedRank:(Feed *)feed
 {
     if(feed == nil)
@@ -512,22 +564,7 @@
     
     int rankFromNumDaysSinceCreated = 10-numDaysSinceCreated;
     
-    
-    //Consider Feed 
-    
     story.rank = feedRank + rankFromNumDaysSinceCreated*2;
-    //NSLog(@"ID: %i, Rank: %i, F-rank: %i, 10-NumDays: %i",story.storyID,rank,feedRank,rankFromNumDaysSinceCreated);
-    //return rank;
-}
-
-- (void)sortArray
-{
-    [_allEntries sortUsingComparator:(NSComparator)^(id a, id b) {
-        Story *first = (Story*)a;
-        Story *second = (Story*)b;
-        NSComparisonResult result = [first compare:second withMode:self.orderBy];
-        return result;
-    }];
 }
 
 - (void)updateArrayRanks
@@ -540,76 +577,6 @@
     }
 }
 
-
-- (void)requestFinished:(ASIHTTPRequest *)request {
-        int blogID = 1;
-        blogID = [self GetFeedIDFromURL:[request url]];
-        NSError *error;
-        GDataXMLDocument *doc = [[GDataXMLDocument alloc] initWithData:[request responseData] 
-                                                               options:0 error:&error];
-        
-        if(!self.stopLoading)
-        {
-            if (doc == nil) {
-                NSLog(@"Failed to parse %@", request.url);
-            } else {
-                
-                NSMutableArray *entries = [[NSMutableArray alloc] init];
-                //NSMutableArray *entries = [NSMutableArray array];
-                
-                [self parseFeed:doc.rootElement entries:entries blogID:blogID];                
-                
-                Feed *thisFeed = [PM GetFeedByID:blogID];
-                [self UpdateFeedRank:thisFeed];
-                [PM SetFeedRank:blogID toRank:thisFeed.rank];
-                
-                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                    //NSLog(@"%i",blogID);
-                    for (Story *entry in entries) {
-                        [self insertOrderedStoryWithAnimation:entry];
-                    }  
-                }];
-            }
-        }
-        self.outstandingFeedsToParse--;
-        [self updatePromptText];
-    
-}
-
-- (NSComparisonResult)compareStory:(Story *)entry1 withStory:(Story *)entry2
-{
-    NSComparisonResult result;
-    
-    if(self.orderBy == 0)
-    {
-        result = [entry1.dateCreated compare:entry2.dateCreated];
-    }
-    else if(self.orderBy == 1)
-    {
-        if(entry1.rank > entry2.rank)
-            result = NSOrderedDescending;
-        else if(entry1.rank < entry2.rank)
-            result = NSOrderedAscending;
-        else
-            result = [entry1.dateCreated compare:entry2.dateCreated];
-    }
-    else if(self.orderBy == 2)
-    {
-        result = [entry1.title compare:entry2.title];
-    }
-    else
-    {
-        result = NSOrderedAscending;
-    }
-    
-    return result;
-}
-
-- (void)StoryRetrievalComplete
-{
-    [self updatePromptText];
-    [self loadSqlStoriesIntoTable];
-}
 
 - (void)testPrint:(GDataXMLDocument *)doc
 {
@@ -624,6 +591,49 @@
             
         }
     }
+}
+
+
+#pragma mark Parse Feed
+
+- (void)requestFinished:(ASIHTTPRequest *)request {
+    int blogID = 1;
+    blogID = [self GetFeedIDFromURL:[request url]];
+    NSError *error;
+    GDataXMLDocument *doc = [[GDataXMLDocument alloc] initWithData:[request responseData] 
+                                                           options:0 error:&error];
+    
+    if(!self.stopLoading)
+    {
+        if (doc == nil) {
+            NSLog(@"Failed to parse %@", request.url);
+        } else {
+            
+            NSMutableArray *entries = [[NSMutableArray alloc] init];
+            //NSMutableArray *entries = [NSMutableArray array];
+            
+            [self parseFeed:doc.rootElement entries:entries blogID:blogID];                
+            
+            Feed *thisFeed = [PM GetFeedByID:blogID];
+            [self UpdateFeedRank:thisFeed];
+            [PM SetFeedRank:blogID toRank:thisFeed.rank];
+            
+            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                //NSLog(@"%i",blogID);
+                for (Story *entry in entries) {
+                    [self insertOrderedStoryWithAnimation:entry];
+                }  
+            }];
+        }
+    }
+    self.outstandingFeedsToParse--;
+    [self updatePromptText];
+}
+
+- (void)requestFailed:(ASIHTTPRequest *)request {
+    
+    NSError *error = [request error];
+    self.outstandingFeedsToParse--;
 }
 
 - (void)parseFeed:(GDataXMLElement *)rootElement entries:(NSMutableArray *)entries blogID:(int)blogID {   
@@ -667,6 +677,35 @@
             }
         }      
     }
+    
+}
+
+- (void)parseAtom:(GDataXMLElement *)rootElement 
+          entries:(NSMutableArray *)entries 
+           blogID:(int)blogID
+{
+    
+    NSString *blogTitle = [rootElement valueForChild:@"title"];                    
+    
+    NSArray *items = [rootElement elementsForName:@"entry"];
+    int storyCount = 0;
+    for (GDataXMLElement *item in items) {
+        storyCount++;
+        Story *entry = [self parseItemToStory:item 
+                                withBlogTitle:blogTitle 
+                                     itemType:2 
+                                alwaysInclude:(storyCount == alwaysIncludeCount)
+                                       blogID:blogID];
+        if(entry == nil)
+            return;
+        
+        bool storyExists = [PM StoryExistsInDB:entry];
+        if(!storyExists)
+        {
+            entry = [PM AddStoryAndGetNewStory:entry];
+        }
+        
+    }      
     
 }
 
@@ -741,43 +780,9 @@
     return entry;
 }
 
-- (void)parseAtom:(GDataXMLElement *)rootElement 
-          entries:(NSMutableArray *)entries 
-           blogID:(int)blogID
-{
-    
-    NSString *blogTitle = [rootElement valueForChild:@"title"];                    
-    
-    NSArray *items = [rootElement elementsForName:@"entry"];
-    int storyCount = 0;
-    for (GDataXMLElement *item in items) {
-        storyCount++;
-        Story *entry = [self parseItemToStory:item 
-                                withBlogTitle:blogTitle 
-                                     itemType:2 
-                                alwaysInclude:(storyCount == alwaysIncludeCount)
-                        blogID:blogID];
-        if(entry == nil)
-            return;
-        
-        bool storyExists = [PM StoryExistsInDB:entry];
-        if(!storyExists)
-        {
-            entry = [PM AddStoryAndGetNewStory:entry];
-            //[entries addObject:entry];
-        }
-        
-    }      
-    
-}
-
-- (void)requestFailed:(ASIHTTPRequest *)request {
-    
-    NSError *error = [request error];
-    self.outstandingFeedsToParse--;
-}
 
 
+#pragma mark TableView Methods
 - (id)initWithStyle:(UITableViewStyle)style
 {
     return self;
@@ -787,6 +792,7 @@
 {
     return [_allEntries count];
 }
+
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath 
 {
 	Story *story = [_allEntries objectAtIndex:indexPath.row];
@@ -890,24 +896,7 @@
     return cell;
 }
 
-- (void)handleSwipeRTL:(UISwipeGestureRecognizer *)recognizer {
-//    if((recognizer == nil) || (recognizer.view.tag < 1))
-//        return;
-//    int rowIndex = recognizer.view.tag;
-//    Story *swipedStory = [_allEntries objectAtIndex:rowIndex];
-//    NSLog(@"%@",swipedStory.title);
-//    
-//    [self MarkStoryAsRead:swipedStory withOpenedDate:[NSDate date] noRankUpdate:true];
-//    
-//    NSLog(@"Before: %i",_allEntries.count);
-//    [_allEntries removeObjectAtIndex:rowIndex];
-//    NSLog(@"After: %i",_allEntries.count);
-//    [self.tableView reloadData];
-}
-
-- (void)handleSwipeLTR:(UISwipeGestureRecognizer *)recognizer {  
-//    NSLog(@"%d = %d |%i",recognizer.direction,recognizer.state,recognizer.view.tag);
-}
+#pragma mark Helper methods
 
 - (int)NumberOfDaysBetweenDate:(NSDate *)firstDate andSecondDate:(NSDate *)secondDate
 {
@@ -1092,44 +1081,55 @@
     self.selectedRow = nextRow;
 }
 
-- (void)viewWillUnload
+
+- (void)StoryRetrievalComplete
 {
-//    NSLog(@"viewWillUnload");
-//    for (Story *entry in _allEntries) {
-//        [self UpdateStoryRank:entry];
-//        [PM SetStoryRank:entry.storyID toRank:entry.rank];
-//    }
+    [self updatePromptText];
+    [self loadSqlStoriesIntoTable];
 }
 
-- (void)viewDidUnload
-{
-    [self setBtnGET:nil];
-    [self setTextBody:nil];
-    [self setToolbar:nil];
-    [self setLabelStatus:nil];
-    [self setLabelCount:nil];
-    [self setLabelLastUpdated:nil];
-    [super viewDidUnload];
-    // Release any retained subviews of the main view.
+
+- (void)refresh {
+    //Update lastUpdated property
+    self.stopLoading = false;
+    self.lastUpdated = [NSDate date];
+    
+    //Set earliest date to pick up stories from
+    lowerLimitDate = [NSDate dateWithTimeIntervalSinceNow:-1*60*60*24*numDaysToShow];
+    
+    //Kick off request for each feed
+    for (Feed *feed in _feeds) {
+        self.outstandingFeedsToParse++;
+        if(feed.type == 2)
+        {
+        }
+        else {
+            NSURL *url = [NSURL URLWithString:feed.url];
+            ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
+            [request setDelegate:self];
+            [_queue addOperation:request];
+        }
+    }    
+    
+    self.outstandingFeedsToParse--;
+    //[self UpdateFeedRank:self.twitterFeed];
+    //[PM SetFeedRank:self.twitterFeed.feedID toRank:self.twitterFeed.rank];
+    [twitterEngine fetchDataWithSelector:@selector(AddTweetAsStory:) withCaller:self count:50];
+    
+    //Update story count and 'Loading' string labels
+    [self updatePromptText];
 }
 
-- (void)applicationWillTerminate
+- (int)GetFeedIDFromURL:(NSURL *)url
 {
-//    NSLog(@"TerminatingView");
-//    for (Story *entry in _allEntries) {
-//        [self UpdateStoryRank:entry];
-//        [PM SetStoryRank:entry.storyID toRank:entry.rank];
-//    }
+    NSString *urlString = url.absoluteString;
+    Feed *feed  = [PM GetFeedByURLPath:urlString];
+    return feed.feedID;
 }
 
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
-{
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
-        return (interfaceOrientation != UIInterfaceOrientationPortraitUpsideDown);
-    } else {
-        return YES;
-    }
-}
+
+
+#pragma mark Buttons
 
 - (IBAction)btnClear:(id)sender {
     [PM ClearStories];
@@ -1197,18 +1197,6 @@
     [self.pullToReloadHeaderView finishReloading:self.tableView animated:YES];
 }
 
-- (void)removeReadStories
-{
-    NSMutableArray *discardedItems = [NSMutableArray array];
-    for(Story* thisStory in _allEntries)
-    {
-        if(thisStory.isRead)
-            [discardedItems addObject:thisStory];
-    }
-    
-    [_allEntries removeObjectsInArray:discardedItems];
-}
-
 - (IBAction)btnSort:(id)sender {
     [self removeReadStories];
     [self updateArrayRanks];
@@ -1220,11 +1208,38 @@
 - (IBAction)btnSend:(id)sender {
 }
 
+- (IBAction)btnRefresh:(id)sender {
+    [self.tableView reloadData];
+}
+
+
+#pragma mark Other Actions
 - (IBAction)swipeCellLeft:(id)sender {
     
 }
 
-- (IBAction)btnRefresh:(id)sender {
-    [self.tableView reloadData];
+- (void)handleSwipeRTL:(UISwipeGestureRecognizer *)recognizer {
+    //    if((recognizer == nil) || (recognizer.view.tag < 1))
+    //        return;
+    //    int rowIndex = recognizer.view.tag;
+    //    Story *swipedStory = [_allEntries objectAtIndex:rowIndex];
+    //    NSLog(@"%@",swipedStory.title);
+    //    
+    //    [self MarkStoryAsRead:swipedStory withOpenedDate:[NSDate date] noRankUpdate:true];
+    //    
+    //    NSLog(@"Before: %i",_allEntries.count);
+    //    [_allEntries removeObjectAtIndex:rowIndex];
+    //    NSLog(@"After: %i",_allEntries.count);
+    //    [self.tableView reloadData];
 }
+
+- (void)handleSwipeLTR:(UISwipeGestureRecognizer *)recognizer {  
+    //    NSLog(@"%d = %d |%i",recognizer.direction,recognizer.state,recognizer.view.tag);
+}
+
+-(void) pullDownToReloadAction {	
+    [self performSelector:@selector(refresh)];
+}
+
+
 @end
