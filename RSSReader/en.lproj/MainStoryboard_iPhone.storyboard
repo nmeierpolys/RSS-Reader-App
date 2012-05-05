@@ -337,12 +337,17 @@
                                 <segue destination="dKI-bd-ee1" kind="push" identifier="FeedManagement" id="gOG-x6-JaY"/>
                             </connections>
                         </barButtonItem>
-                        <barButtonItem title="ReFeed" id="sUo-Ee-T3D">
+                        <barButtonItem title="ReF" id="sUo-Ee-T3D">
                             <connections>
                                 <action selector="btnReFeed:" destination="7f4-yH-WRB" id="GZ7-1m-aSq"/>
                             </connections>
                         </barButtonItem>
                         <barButtonItem style="plain" systemItem="flexibleSpace" id="zMn-iV-KEh"/>
+                        <barButtonItem systemItem="pause" id="Lc4-Ht-CuY">
+                            <connections>
+                                <action selector="btnDebugInfo:" destination="7f4-yH-WRB" id="rHh-h6-ccc"/>
+                            </connections>
+                        </barButtonItem>
                         <barButtonItem title="Sort" id="4z7-bi-xvw">
                             <connections>
                                 <action selector="btnSort:" destination="7f4-yH-WRB" id="yOk-Ti-mFR"/>
@@ -455,64 +460,6 @@
     <resources>
         <image name="gears.png" width="64" height="64"/>
     </resources>
-    <classes>
-        <class className="FeedDetailViewController" superclassName="UIViewController">
-            <source key="sourceIdentifier" type="project" relativePath="./Classes/FeedDetailViewController.h"/>
-            <relationships>
-                <relationship kind="action" name="btnClose:"/>
-                <relationship kind="outlet" name="textName" candidateClass="UITextField"/>
-                <relationship kind="outlet" name="textURL" candidateClass="UITextField"/>
-            </relationships>
-        </class>
-        <class className="FeedsTestViewController" superclassName="UITableViewController">
-            <source key="sourceIdentifier" type="project" relativePath="./Classes/FeedsTestViewController.h"/>
-            <relationships>
-                <relationship kind="action" name="btnEdit:"/>
-                <relationship kind="outlet" name="btnEditOutlet" candidateClass="UIBarButtonItem"/>
-            </relationships>
-        </class>
-        <class className="RSSViewController" superclassName="UIPullToReloadTableViewController">
-            <source key="sourceIdentifier" type="project" relativePath="./Classes/RSSViewController.h"/>
-            <relationships>
-                <relationship kind="action" name="btnCancelLoad:"/>
-                <relationship kind="action" name="btnClear:"/>
-                <relationship kind="action" name="btnGetPressed:"/>
-                <relationship kind="action" name="btnLoadMoreStories:"/>
-                <relationship kind="action" name="btnReFeed:"/>
-                <relationship kind="action" name="btnRefresh:"/>
-                <relationship kind="action" name="btnSend:"/>
-                <relationship kind="action" name="btnSort:"/>
-                <relationship kind="action" name="swipeCellLeft:"/>
-                <relationship kind="outlet" name="btnGET" candidateClass="UIView"/>
-                <relationship kind="outlet" name="labelCount" candidateClass="UILabel"/>
-                <relationship kind="outlet" name="labelLastUpdated" candidateClass="UILabel"/>
-                <relationship kind="outlet" name="labelStatus" candidateClass="UILabel"/>
-                <relationship kind="outlet" name="textBody" candidateClass="UITextView"/>
-                <relationship kind="outlet" name="textTitle" candidateClass="UITextField"/>
-                <relationship kind="outlet" name="toolbar" candidateClass="UINavigationItem"/>
-            </relationships>
-        </class>
-        <class className="StoryDetailViewController" superclassName="UIViewController">
-            <source key="sourceIdentifier" type="project" relativePath="./Classes/StoryDetailViewController.h"/>
-            <relationships>
-                <relationship kind="action" name="btnNext:"/>
-                <relationship kind="action" name="btnPrevious:"/>
-                <relationship kind="action" name="btnSend:"/>
-                <relationship kind="outlet" name="labelAuthor" candidateClass="UILabel"/>
-                <relationship kind="outlet" name="labelBlogTitle" candidateClass="UILabel"/>
-                <relationship kind="outlet" name="labelDateCreated" candidateClass="UILabel"/>
-                <relationship kind="outlet" name="labelDateRetrieved" candidateClass="UILabel"/>
-                <relationship kind="outlet" name="labelRead" candidateClass="UILabel"/>
-                <relationship kind="outlet" name="labelTitle" candidateClass="UILabel"/>
-                <relationship kind="outlet" name="labelURL" candidateClass="UILabel"/>
-                <relationship kind="outlet" name="textBody" candidateClass="UITextView"/>
-                <relationship kind="outlet" name="webView" candidateClass="UIWebView"/>
-            </relationships>
-        </class>
-        <class className="UIPullToReloadTableViewController" superclassName="UITableViewController">
-            <source key="sourceIdentifier" type="project" relativePath="./Classes/UIPullToReloadTableViewController.h"/>
-        </class>
-    </classes>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
         <simulatedStatusBarMetrics key="statusBar"/>
         <simulatedOrientationMetrics key="orientation"/>

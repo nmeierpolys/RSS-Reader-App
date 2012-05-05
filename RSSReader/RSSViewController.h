@@ -17,6 +17,7 @@
     Story *tempStory;
     NSMutableArray *allEntries;
     NSMutableArray *_feeds;
+    NSMutableArray *requests;
     NSOperationQueue *_queue;
     Persistence *PM;
     NSDate *lowerLimitDate;
@@ -58,6 +59,7 @@
 - (IBAction)btnSort:(id)sender;
 - (IBAction)btnSend:(id)sender;
 - (IBAction)btnGetPressed:(id)sender;
+- (IBAction)btnDebugInfo:(id)sender;
 
 //Other actions
 - (IBAction)swipeCellLeft:(id)sender;
@@ -69,6 +71,7 @@
 @property (weak, nonatomic) Story *oldestStory;
 @property (retain) NSMutableArray *allEntries;
 @property (retain) NSMutableArray *feeds;
+@property (retain) NSMutableArray *requests;
 @property (retain) NSOperationQueue *queue;
 @property (retain) NSDate *lowerLimitDate;
 @property (retain) NSDate *currentRangeEarliest;
