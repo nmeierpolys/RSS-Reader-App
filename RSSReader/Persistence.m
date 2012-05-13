@@ -22,7 +22,7 @@
     {
         [self initializeDatabase];
         //self.stories = [NSMutableArray array];
-        self.feeds = [NSMutableArray array];
+        //self.feeds = [NSMutableArray array];
     }
     
     return self;
@@ -52,12 +52,12 @@ static NSString * DatabaseLock = nil;
 {
     [self createEditableCopyOfDatabaseIfNeeded];
     NSLog(@"Initializing DB");
-    NSMutableArray *storyArray = [[NSMutableArray alloc] init];
+    //NSMutableArray *storyArray = [[NSMutableArray alloc] init];
     //self.stories = storyArray;
     
     
-    NSMutableArray *feedsArray = [[NSMutableArray alloc] init];
-    self.feeds = feedsArray;
+    //NSMutableArray *feedsArray = [[NSMutableArray alloc] init];
+    //self.feeds = feedsArray;
     
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *documentsDirectory = [paths objectAtIndex:0];
@@ -197,6 +197,9 @@ static NSString * DatabaseLock = nil;
             limitString = [NSString stringWithFormat:@"LIMIT %i",numStories]; 
         
         NSString *queryStr = [NSString stringWithFormat:@"SELECT * FROM story JOIN feed on story.feedID=feed.feedID WHERE %@ ORDER BY %@ %@",whereString,orderString,limitString];
+        
+        NSLog(queryStr);
+        
         const char *sql = [queryStr UTF8String];
         sqlite3_stmt *statement;
         
@@ -256,6 +259,10 @@ static NSString * DatabaseLock = nil;
                 story.feedID = sqlite3_column_int(statement, 12);
                 story.durationRead = sqlite3_column_int(statement, 13);
                 
+                temp = (char *)sqlite3_column_text(statement, 14);
+                if(temp != nil)
+                    story.url = [NSString stringWithUTF8String:temp];
+                
                 [storyArray addObject:story];
             }
         }
@@ -312,6 +319,32 @@ static NSString * DatabaseLock = nil;
     return feedArray;
     }
 }
+- (int)GetNumFeedStoriesBySource:(NSString *)source limitedToRead:(bool)isRead
+{ 
+    @synchronized ([Persistence databaseLock]) {
+        NSString *queryStr;
+        if(isRead)
+            queryStr = [NSString stringWithFormat:@"SELECT count(storyID) FROM story WHERE source = '%@' and isRead=1",source];
+        else
+            queryStr = [NSString stringWithFormat:@"SELECT count(storyID) FROM story WHERE source = '%@'",source];
+        
+        const char *sql = [queryStr UTF8String];
+        sqlite3_stmt *statement;
+        
+        int numStories = 0;
+        if (sqlite3_prepare_v2(database, sql, -1, &statement, NULL) == SQLITE_OK)
+        {
+            if (sqlite3_step(statement) == SQLITE_ROW) {
+                numStories = sqlite3_column_int(statement, 0);
+            }
+        }
+        
+        sqlite3_finalize(statement);
+        
+        return numStories;
+    } 
+}
+
 
 - (int)GetNumFeedStoriesByUrl:(NSString *)url limitedToRead:(bool)isRead
 { 
@@ -360,7 +393,6 @@ static NSString * DatabaseLock = nil;
         }
         
         queryStr = [NSString stringWithFormat:@"SELECT count(storyID) FROM story %@",whereStr];
-        NSLog(queryStr);
         const char *sql = [queryStr UTF8String];
         sqlite3_stmt *statement;
         
@@ -536,7 +568,7 @@ static NSString * DatabaseLock = nil;
         if(!storyID)
             return nil;
         
-        NSString *sqlStr = @"select storyID,title,author,body,source,dateCreated,dateRetrieved,isRead,imagePath,isFavorite,rank,isDirty,feedID,durationRead from story where storyID = ?";
+        NSString *sqlStr = @"select storyID,title,author,body,source,dateCreated,dateRetrieved,isRead,imagePath,isFavorite,rank,isDirty,feedID,durationRead,url from story where storyID = ?";
         const char *sql = [self GetSqlStringFromNSString:sqlStr];
         
         sqlite3_stmt *statement;
@@ -586,7 +618,7 @@ static NSString * DatabaseLock = nil;
         [self initializeDatabaseIfNeeded];
         
         if(!feedID)
-            return nil;
+            return 0;
         
         int rank = 0;
         
@@ -701,7 +733,7 @@ static NSString * DatabaseLock = nil;
         story.feedID = sqlite3_column_int(statement, 12);
         story.durationRead = sqlite3_column_int(statement, 13);
         
-        temp = (char *)sqlite3_column_text(statement, 13);
+        temp = (char *)sqlite3_column_text(statement, 14);
         if(temp != nil)
             story.url = [NSString stringWithUTF8String:temp];
     }
@@ -823,8 +855,8 @@ static NSString * DatabaseLock = nil;
         sqlite3_finalize(statement);
         
         newFeed = [self GetLastFeed];
-        if(newFeed != nil)
-            [self.feeds addObject:newFeed];
+        //if(newFeed != nil)
+        //    [self.feeds addObject:newFeed];
     }
 }
 
@@ -903,7 +935,7 @@ static NSString * DatabaseLock = nil;
     @synchronized ([Persistence databaseLock]) {
     [self initializeDatabaseIfNeeded];
     
-    NSString *sqlStr = @"insert into story(title,author,body,source,dateCreated,dateRetrieved,isRead,imagePath,isFavorite,rank,isDirty,feedID,durationRead) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)";
+    NSString *sqlStr = @"insert into story(title,author,body,source,dateCreated,dateRetrieved,isRead,imagePath,isFavorite,rank,isDirty,feedID,durationRead,url) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
     
     const char *sql = [self GetSqlStringFromNSString:sqlStr];
     sqlite3_stmt *statement;
@@ -975,8 +1007,12 @@ static NSString * DatabaseLock = nil;
         //FeedID
         sqlite3_bind_int(statement, 12, newStory.feedID);
         
-        //FeedID
+        //Duration Read
         sqlite3_bind_int(statement, 13, newStory.durationRead);
+        
+        //Story URL
+        temp = [newStory.url UTF8String];
+        sqlite3_bind_text(statement, 14, temp, -1, SQLITE_TRANSIENT);
         
         sqlite3_step(statement);
     }
@@ -1113,7 +1149,7 @@ static NSString * DatabaseLock = nil;
         
         sqlite3_finalize(statement);
         
-        self.feeds = [NSMutableArray array];
+        //self.feeds = [NSMutableArray array];
     }
 }
 
@@ -1135,7 +1171,7 @@ static NSString * DatabaseLock = nil;
         
         sqlite3_finalize(statement);
         
-        [self.feeds removeObject:feed];
+        //[self.feeds removeObject:feed];
     }
 }
 

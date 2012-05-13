@@ -24,6 +24,7 @@
     bool isDirty;
     int feedID;
     int durationRead;
+    int feedRank;
 }
 
 @property (nonatomic) int storyID;
@@ -41,6 +42,7 @@
 @property (nonatomic) bool isDirty;
 @property (nonatomic) int feedID;
 @property (nonatomic) int durationRead;
+@property (nonatomic) int feedRank;
 
 
 - (id)init;
@@ -70,4 +72,5 @@
 - (NSString *)IsCompleteStory;
 - (void)Print;
 - (NSComparisonResult)compare:(Story *)otherObject withMode:(int)mode;
+- (NSString *)BodyWithURLsAsLinks:(NSString *)bodyToParse;;
 @end

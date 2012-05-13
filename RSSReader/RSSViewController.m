@@ -54,6 +54,7 @@
 @synthesize maxAllowableStoryTimeRead = _maxAllowableStoryTimeRead;
 @synthesize oldestStory = _oldestStory;
 @synthesize requests = _requests;
+@synthesize loadingMoreStories = _loadingMoreStories;
 
 #pragma mark View methods
 - (void)viewDidLoad
@@ -72,11 +73,11 @@
     self.orderBy = 1;
     self.numStoriesToShow = 50;
     self.numDaysToShow = 3;
-    twitterEngine = [[TwitterEngine alloc] init];
+    twitterEngine = [[TwitterEngine alloc] initWithCompletedSelector:@selector(twitterIsDone)];
     hasInitialized = false;
     self.feeds = [PM GetAllFeeds];
     self.maxAllowableStoryTimeRead = 200;  //Seconds
-    [self InitializeTwitterFeed];
+    //[self InitializeTwitterFeed];
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -199,94 +200,98 @@
 {
     [PM ClearFeeds];
     [self InitializeTwitterFeed];
-    [PM AddFeed:[[Feed alloc] initWithName:@"Vikes Geek" 
-                                       url:@"http://vikesgeek.blogspot.com/feeds/posts/default" 
-                                      type:1
-                                      rank:1]];
-    [PM AddFeed:[[Feed alloc] initWithName:@"Ray Wenderlich" 
-                                       url:@"http://feeds.feedburner.com/RayWenderlich" 
-                                      type:1
-                                      rank:1]];
-    [PM AddFeed:[[Feed alloc] initWithName:@"Las Vegas Startups" 
-                                       url:@"http://feeds.feedburner.com/LasVegasStartups" 
-                                      type:1
-                                      rank:1]];
-    [PM AddFeed:[[Feed alloc] initWithName:@"ThansCorner" 
-                                       url:@"http://www.thanscorner.info/feed" 
-                                      type:1
-                                      rank:1]];
-    [PM AddFeed:[[Feed alloc] initWithName:@"Dodgy Coder" 
-                                       url:@"http://www.dodgycoder.net/feeds/posts/default?alt=rss" 
-                                      type:1
-                                      rank:1]];
-    [PM AddFeed:[[Feed alloc] initWithName:@"xkcd" 
-                                       url:@"http://xkcd.com/rss.xml" 
-                                      type:1
-                                      rank:1]];
-    [PM AddFeed:[[Feed alloc] initWithName:@"Engadget" 
-                                       url:@"http://www.engadget.com/rss.xml" 
-                                      type:1
-                                      rank:1]];
-    [PM AddFeed:[[Feed alloc] initWithName:@"Lifehacker" 
-                                       url:@"http://lifehacker.com/top/index.xml" 
-                                      type:1
-                                      rank:1]];
-    [PM AddFeed:[[Feed alloc] initWithName:@"10x Software Development" 
-                                       url:@"http://feeds.feedburner.com/10xSoftwareDevelopment" 
-                                      type:1 
-                                      rank:1]];
-    [PM AddFeed:[[Feed alloc] initWithName:@"Digital Photography School" 
-                                       url:@"http://feeds.feedburner.com/DigitalPhotographySchool" 
-                                      type:1 
-                                        rank:1]];
-    [PM AddFeed:[[Feed alloc] initWithName:@"Gawker: Valleywag" 
-                                       url:@"http://feeds.gawker.com/valleywag/full" 
-                                      type:1 
-                                      rank:1]];
-    [PM AddFeed:[[Feed alloc] initWithName:@"GraphJam" 
-                                       url:@"http://feeds.feedburner.com/GraphJam" 
-                                      type:1 
-                                      rank:1]];
-    [PM AddFeed:[[Feed alloc] initWithName:@"Joel on Software" 
-                                       url:@"http://www.joelonsoftware.com/rss.xml" 
-                                      type:1 
-                                      rank:1]];
-    [PM AddFeed:[[Feed alloc] initWithName:@"Ars Technica" 
-                                       url:@"http://feeds.arstechnica.com/arstechnica/index/" 
-                                      type:1 
-                                      rank:1]];
-    [PM AddFeed:[[Feed alloc] initWithName:@"Geeking with Greg" 
-                                       url:@"http://glinden.blogspot.com/feeds/posts/default" 
-                                      type:1 
-                                      rank:1]];
-    [PM AddFeed:[[Feed alloc] initWithName:@"Money and Investing" 
-                                       url:@"http://feeds.feedburner.com/MoneyAndInvesting" 
-                                      type:1 
-                                      rank:1]];
-    [PM AddFeed:[[Feed alloc] initWithName:@"Official Google Blog" 
-                                       url:@"http://googleblog.blogspot.com/feeds/posts/default" 
-                                      type:1 
-                                      rank:1]];
-    [PM AddFeed:[[Feed alloc] initWithName:@"St. Olaf News Releases" 
-                                       url:@"http://www.stolaf.edu/news/index.cfm?fuseaction=RSS" 
-                                      type:1 
-                                      rank:1]];
-    [PM AddFeed:[[Feed alloc] initWithName:@"TechCrunch" 
-                                       url:@"http://feeds.feedburner.com/Techcrunch" 
-                                      type:1 
-                                      rank:1]];
-    [PM AddFeed:[[Feed alloc] initWithName:@"The Happiness Project" 
-                                       url:@"http://feeds.feedburner.com/TheHappinessProject" 
-                                      type:1 
-                                      rank:1]];
-    [PM AddFeed:[[Feed alloc] initWithName:@"The Long Now Blog" 
-                                       url:@"http://blog.longnow.org/feed/" 
-                                      type:1 
-                                      rank:1]];
-    [PM AddFeed:[[Feed alloc] initWithName:@"Very Small Array" 
-                                       url:@"http://www.verysmallarray.com/?feed=rss2" 
-                                      type:1 
-                                      rank:1]];
+    bool showTwitterOnly = true;
+    if(!showTwitterOnly)
+    {
+        [PM AddFeed:[[Feed alloc] initWithName:@"Vikes Geek" 
+                                           url:@"http://vikesgeek.blogspot.com/feeds/posts/default" 
+                                          type:1
+                                          rank:1]];
+        [PM AddFeed:[[Feed alloc] initWithName:@"Ray Wenderlich" 
+                                           url:@"http://feeds.feedburner.com/RayWenderlich" 
+                                          type:1
+                                          rank:1]];
+        [PM AddFeed:[[Feed alloc] initWithName:@"Las Vegas Startups" 
+                                           url:@"http://feeds.feedburner.com/LasVegasStartups" 
+                                          type:1
+                                          rank:1]];
+        [PM AddFeed:[[Feed alloc] initWithName:@"ThansCorner" 
+                                           url:@"http://www.thanscorner.info/feed" 
+                                          type:1
+                                          rank:1]];
+        [PM AddFeed:[[Feed alloc] initWithName:@"Dodgy Coder" 
+                                           url:@"http://www.dodgycoder.net/feeds/posts/default?alt=rss" 
+                                          type:1
+                                          rank:1]];
+        [PM AddFeed:[[Feed alloc] initWithName:@"xkcd" 
+                                           url:@"http://xkcd.com/rss.xml" 
+                                          type:1
+                                          rank:1]];
+        [PM AddFeed:[[Feed alloc] initWithName:@"Engadget" 
+                                           url:@"http://www.engadget.com/rss.xml" 
+                                          type:1
+                                          rank:1]];
+        [PM AddFeed:[[Feed alloc] initWithName:@"Lifehacker" 
+                                           url:@"http://lifehacker.com/top/index.xml" 
+                                          type:1
+                                          rank:1]];
+        [PM AddFeed:[[Feed alloc] initWithName:@"10x Software Development" 
+                                           url:@"http://feeds.feedburner.com/10xSoftwareDevelopment" 
+                                          type:1 
+                                          rank:1]];
+        [PM AddFeed:[[Feed alloc] initWithName:@"Digital Photography School" 
+                                           url:@"http://feeds.feedburner.com/DigitalPhotographySchool" 
+                                          type:1 
+                                            rank:1]];
+        [PM AddFeed:[[Feed alloc] initWithName:@"Gawker: Valleywag" 
+                                           url:@"http://feeds.gawker.com/valleywag/full" 
+                                          type:1 
+                                          rank:1]];
+        [PM AddFeed:[[Feed alloc] initWithName:@"GraphJam" 
+                                           url:@"http://feeds.feedburner.com/GraphJam" 
+                                          type:1 
+                                          rank:1]];
+        [PM AddFeed:[[Feed alloc] initWithName:@"Joel on Software" 
+                                           url:@"http://www.joelonsoftware.com/rss.xml" 
+                                          type:1 
+                                          rank:1]];
+        [PM AddFeed:[[Feed alloc] initWithName:@"Ars Technica" 
+                                           url:@"http://feeds.arstechnica.com/arstechnica/index/" 
+                                          type:1 
+                                          rank:1]];
+        [PM AddFeed:[[Feed alloc] initWithName:@"Geeking with Greg" 
+                                           url:@"http://glinden.blogspot.com/feeds/posts/default" 
+                                          type:1 
+                                          rank:1]];
+        [PM AddFeed:[[Feed alloc] initWithName:@"Money and Investing" 
+                                           url:@"http://feeds.feedburner.com/MoneyAndInvesting" 
+                                          type:1 
+                                          rank:1]];
+        [PM AddFeed:[[Feed alloc] initWithName:@"Official Google Blog" 
+                                           url:@"http://googleblog.blogspot.com/feeds/posts/default" 
+                                          type:1 
+                                          rank:1]];
+        [PM AddFeed:[[Feed alloc] initWithName:@"St. Olaf News Releases" 
+                                           url:@"http://www.stolaf.edu/news/index.cfm?fuseaction=RSS" 
+                                          type:1 
+                                          rank:1]];
+        [PM AddFeed:[[Feed alloc] initWithName:@"TechCrunch" 
+                                           url:@"http://feeds.feedburner.com/Techcrunch" 
+                                          type:1 
+                                          rank:1]];
+        [PM AddFeed:[[Feed alloc] initWithName:@"The Happiness Project" 
+                                           url:@"http://feeds.feedburner.com/TheHappinessProject" 
+                                          type:1 
+                                          rank:1]];
+        [PM AddFeed:[[Feed alloc] initWithName:@"The Long Now Blog" 
+                                           url:@"http://blog.longnow.org/feed/" 
+                                          type:1 
+                                          rank:1]];
+        [PM AddFeed:[[Feed alloc] initWithName:@"Very Small Array" 
+                                           url:@"http://www.verysmallarray.com/?feed=rss2" 
+                                          type:1 
+                                          rank:1]];
+    }
 //    [PM AddFeed:[[Feed alloc] initWithName:@"UW Engineering" 
 //                                       url:@"http://www.engr.wisc.edu/news/feeds/RR.xml" 
 //                                      type:1 
@@ -303,7 +308,6 @@
 
 - (void)AddTweetAsStory:(Story *)tweetStory
 {
-    return;
     Feed *storyFeed = [PM GetFeedByURLPath:tweetStory.author];
     if(storyFeed == nil)
     {
@@ -314,8 +318,8 @@
     
     if(![PM StoryExistsInDB:tweetStory])
     {
-        tweetStory = [PM AddStoryAndGetNewStory:tweetStory];
         [self UpdateStoryRank:tweetStory];
+        tweetStory = [PM AddStoryAndGetNewStory:tweetStory];
         
         [self insertOrderedStoryWithAnimation:tweetStory];
     }
@@ -373,15 +377,17 @@
             }  
             [self.tableView reloadData];
             [self updatePromptText];
+            self.oldestStory = [entries lastObject];
+            [self loadingIsCompleted];
         }];
     }
     else 
     {
-//        for (Feed *feed in feeds) {
-//            [self UpdateFeedRank:feed];
-//            [PM SetFeedRank:feed.feedID toRank:feed.rank];
-//        }
-//        
+        for (Feed *feed in feeds) {
+            [self UpdateFeedRank:feed];
+            [PM SetFeedRank:feed.feedID toRank:feed.rank];
+        }
+        
         //for (Story *entry in entries) {
         //    [self UpdateStoryRank:entry];
         //}
@@ -389,8 +395,9 @@
         _allEntries = entries;
         [self.tableView reloadData];
         [self updatePromptText];
+        self.oldestStory = [entries lastObject];
+        [self loadingIsCompleted];
     }
-    self.oldestStory = [entries lastObject];
 }
 
 -(bool)allEntriesContainsStory:(Story *)storyToFind
@@ -506,15 +513,15 @@
     else if(feed.type == 3)
     {
         //Total number of feed stories
-        numFeedStoriesTotal = [PM GetNumFeedStoriesByUrl:feed.url limitedToRead:NO];
+        numFeedStoriesTotal = [PM GetNumFeedStories:feed.feedID limitedToRead:NO];
         
         //Total days since the feed's first post (on record)
-        earliestDate = [PM GetEarliestFeedStoryCreatedDateByUrl:feed.url];
+        earliestDate = [PM GetEarliestFeedStoryCreatedDate:feed.feedID];
         
         //Total number of read stories
-        numReadStories = [PM GetNumFeedStoriesByUrl:feed.url limitedToRead:YES];
+        numReadStories = [PM GetNumFeedStories:feed.feedID limitedToRead:YES];
         
-        totalSecondsRead = [PM GetTotalFeedReadTimeByUrl:feed.url];
+        totalSecondsRead = [PM GetTotalFeedReadTime:feed.feedID];
     }
     
     numDaysSinceFirstFeedPost = [self NumberOfDaysBetweenDate:earliestDate andSecondDate:[NSDate date]];
@@ -541,7 +548,9 @@
         rankFromBonusForLotsRead = 5;
     
     //Amount of time spent reading
-    int rankFromTotalSecondsRead = totalSecondsRead / 10;
+    int rankFromTotalSecondsRead = (totalSecondsRead / numFeedStoriesTotal) / 5;
+    if(rankFromTotalSecondsRead > 50)
+        rankFromTotalSecondsRead = 50;
     
     feed.rank = rank + rankFromNumStoriesPerDay + rankFromFractionRead + rankFromTotalSecondsRead;
 }
@@ -558,15 +567,35 @@
     //Total number of feed stories per day (on average) + 1 to include today's stories
     //float numFeedStoriesPerDay = (float)numFeedStoriesTotal / (numDaysSinceFirstFeedPost + 1);
     
+    
+    int rankFromNumDateIntervalUnitsSinceCreated;
+    
+    if([story.source compare:@"Twitter"] == NSOrderedSame)
+    {
+        int numHoursSinceCreated = [self NumberOfHoursBetweenDate:story.dateCreated andSecondDate:[NSDate date]];
+        
+        numHoursSinceCreated = abs(numHoursSinceCreated * 2);
+        
+        if(numHoursSinceCreated > 10)
+            numHoursSinceCreated = 10;
+        
+        rankFromNumDateIntervalUnitsSinceCreated = 10-numHoursSinceCreated;
+        NSLog(@"Story: %i:%i\n%@:%@",numHoursSinceCreated,rankFromNumDateIntervalUnitsSinceCreated,story.dateCreated,[NSDate date]);
+    }
+    else
+    {
+        int numDaysSinceCreated = abs([self NumberOfDaysBetweenDate:story.dateCreated andSecondDate:[NSDate date]]);
+        
+        if(numDaysSinceCreated > 10)
+            numDaysSinceCreated = 10;
+        
+        rankFromNumDateIntervalUnitsSinceCreated = 10-numDaysSinceCreated;
+    }
+    
     //Days since created
-    int numDaysSinceCreated = [self NumberOfDaysBetweenDate:story.dateCreated andSecondDate:[NSDate date]];
+    //int numDaysSinceCreated = [self NumberOfDaysBetweenDate:story.dateCreated andSecondDate:[NSDate date]];
     
-    if(numDaysSinceCreated > 10)
-        numDaysSinceCreated = 10;
-    
-    int rankFromNumDaysSinceCreated = 10-numDaysSinceCreated;
-    
-    story.rank = rankFromNumDaysSinceCreated*2;
+    story.rank = rankFromNumDateIntervalUnitsSinceCreated*2;
 }
 
 - (void)updateArrayRanks
@@ -576,7 +605,13 @@
     for (int i=0; i<numStories; i++) {
         thisStory = [_allEntries objectAtIndex:i];
         [self UpdateStoryRank:thisStory];
+        [self SetStoryFeedRank:thisStory];
     }
+}
+
+- (void)SetStoryFeedRank:(Story *)story
+{
+    story.feedRank = [PM GetFeedRankByFeedID:story.feedID];
 }
 
 
@@ -630,7 +665,21 @@
         
         self.outstandingFeedsToParse--;
         if(self.outstandingFeedsToParse < 2)
-            [self performSelector:@selector(refreshTwitter)];
+        {
+            if(self.loadingMoreStories)
+            {
+                [twitterEngine getNextOldestTweets:@selector(AddTweetAsStory:) withCaller:self count:50];
+                self.loadingMoreStories = false;
+            }
+            else
+            {
+                [self performSelector:@selector(refreshTwitter)];
+            }
+        }
+        else 
+        {
+            [self loadingIsCompleted];
+        }
          
         [self updatePromptText];
     }
@@ -670,7 +719,6 @@
                                          itemType:1 
                                     alwaysInclude:(storyCount < alwaysIncludeCount)
                             blogID:blogID];
-            //NSLog(entry.title);
             if(entry == nil)
                 return;
             
@@ -732,6 +780,8 @@
     else
         articleDateString = [item valueForChild:@"updated"];  
     NSDate *articleDate = [NSDate dateFromInternetDateTimeString:articleDateString formatHint:DateFormatHintRFC822];
+    if(articleDate == nil)
+        articleDate = [NSDate dateWithTimeIntervalSinceNow:-1*60*60*24];
     
     //Quit if the article is too early
     if(!alwaysInclude)
@@ -785,6 +835,7 @@
                                         storyID:0
                                          feedID:blogID
                                    durationRead:0];
+    
     return entry;
 }
 
@@ -838,7 +889,6 @@
         titleLabel.text = story.title;
         
         UILabel *rankLabel = (UILabel *)[cell viewWithTag:102];
-        //int rank = story.rank + [PM GetFeedRankByFeedID:story.feedID];
         rankLabel.text = [NSString stringWithFormat:@"%i|%i",story.rank,[PM GetFeedRankByFeedID:story.feedID]];
         
         UILabel *authorLabel = (UILabel *)[cell viewWithTag:103];
@@ -873,7 +923,6 @@
         subtitleLabel.text = story.source;
         
         UILabel *rankLabel = (UILabel *)[cell viewWithTag:102];
-        //int rank = story.rank + [PM GetFeedRankByFeedID:story.feedID];
         rankLabel.text = [NSString stringWithFormat:@"%i|%i",story.rank,[PM GetFeedRankByFeedID:story.feedID]];
         
         UILabel *createdLabel = (UILabel *)[cell viewWithTag:104];
@@ -919,8 +968,9 @@
     int numFeeds = self.feeds.count;
     int outstandingFeedsToParse = self.outstandingFeedsToParse;
     int numPMStories = [PM GetNumFeedStories:0 limitedToRead:0];
-    int numUnreadPMStories = [PM GetNumFeedStories:0 limitedToRead:1];
+    int numReadPMStories = [PM GetNumFeedStories:0 limitedToRead:1];
     int numMyStories = [PM GetNumFeedStories:2 limitedToRead:0];
+    int numTwitterStories = [PM GetNumFeedStoriesByUrl:@"Twitter" limitedToRead:0];
     
     
     debugMsg = [debugMsg stringByAppendingFormat:@"NumStories: %i\n",numStories];
@@ -931,18 +981,49 @@
     debugMsg = [debugMsg stringByAppendingFormat:@"NumFeeds:   %i\n",numFeeds];
     debugMsg = [debugMsg stringByAppendingFormat:@"outFeeds:   %i\n",outstandingFeedsToParse];
     debugMsg = [debugMsg stringByAppendingFormat:@"NumPMStories:  %i\n",numPMStories];
-    debugMsg = [debugMsg stringByAppendingFormat:@"NumUPMStories: %i\n",numUnreadPMStories];
+    debugMsg = [debugMsg stringByAppendingFormat:@"NumUPMStories: %i\n",numReadPMStories];
     debugMsg = [debugMsg stringByAppendingFormat:@"NumMyStories: %i\n",numMyStories];
-    
-    
-    
+    debugMsg = [debugMsg stringByAppendingFormat:@"NumTwitter: %i\n",numTwitterStories];
     
     UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Debug info" 
                                                     message:debugMsg
-                                                   delegate:nil 
+                                                   delegate:self
                                           cancelButtonTitle:@"OK" 
-                                          otherButtonTitles: nil];
+                                          otherButtonTitles: @"Feeds",nil];
     [alert show];
+}
+
+- (void)alertView:(UIAlertView *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
+    // the user clicked one of the OK/Cancel buttons
+    if (buttonIndex == 0)
+    {
+        NSLog(@"OK");
+    }
+    else
+    {
+        NSString *debugMsg = @"";
+        for(Feed *feed in [PM GetAllFeeds])
+        {
+            int feedID = feed.feedID;
+            
+            NSString *feedName = feed.name;
+            if(feedName.length > 10)
+                feedName = [feedName substringToIndex:10];
+            
+            int numFeedStories = [PM GetNumFeedStories:feedID limitedToRead:0];
+            int feedRank = [PM GetFeedRankByFeedID:feedID];
+            
+            debugMsg = [debugMsg stringByAppendingFormat:@"%i:%@:#=%i:R=%i\n",feedID,feedName,numFeedStories,feedRank];
+            
+        }
+        
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Feed info" 
+                                                        message:debugMsg
+                                                       delegate:nil
+                                              cancelButtonTitle:@"OK" 
+                                              otherButtonTitles:nil];
+        [alert show];
+    }
 }
 
 #pragma mark Helper methods
@@ -965,6 +1046,24 @@
     
     return [difference day];
 }
+- (int)NumberOfHoursBetweenDate:(NSDate *)firstDate andSecondDate:(NSDate *)secondDate
+{
+    NSDate *fromDate;
+    NSDate *toDate;
+    
+    
+    NSCalendar *calendar = [NSCalendar currentCalendar];
+    
+    [calendar rangeOfUnit:NSHourCalendarUnit startDate:&fromDate
+                 interval:NULL forDate:firstDate];
+    [calendar rangeOfUnit:NSHourCalendarUnit startDate:&toDate
+                 interval:NULL forDate:secondDate];
+    
+    NSDateComponents *difference = [calendar components:NSHourCalendarUnit
+                                               fromDate:fromDate toDate:toDate options:0];
+    
+    return [difference hour];
+}
 
 -(void)sendStoryViaEmail:(Story *)storyToSend 
 {
@@ -981,7 +1080,7 @@
     
     // Fill out the email body text
     NSString *header = @"\n\nSent from ReadFeeder on iPhone.";
-    NSString *emailBody = [NSString stringWithFormat:@"%@\n\n<br><br><b>%@</b><br>%@\n\n<br><br>%@",header,storyToSend.title,[storyToSend GetDateCreatedString],storyToSend.body];
+    NSString *emailBody = [NSString stringWithFormat:@"%@\n\n<br><br><b><a href=\"%@\">%@</a></b><br>%@\n\n<br><br>%@",header,storyToSend.url,storyToSend.title,[storyToSend GetDateCreatedString],storyToSend.body];
     
     //[NSString stringWithFormat:@"%@\n\n&lt;h3&gt;Sent from &lt;a href = '%@'&gt;ReadFeeder&lt;/a&gt; on iPhone. &lt;a href = '%@'&gt;Download&lt;/a&gt; yours from AppStore now!&lt;/h3&gt;", content, pageLink, iTunesLink];
     
@@ -1175,6 +1274,16 @@
     }];
 }
 
+- (void)loadingIsCompleted
+{
+    [self SortTableView];
+}
+
+- (void)twitterIsDone
+{
+    [self loadingIsCompleted];
+}
+
 - (void)refreshTwitter
 {
     self.outstandingFeedsToParse--;
@@ -1223,8 +1332,8 @@
     {
         int oldestStoryFeedRank = [PM GetFeedRankByFeedID:self.oldestStory.feedID];
         NSLog(@"%i - %i - %@",self.oldestStory.storyID,self.oldestStory.rank+oldestStoryFeedRank,self.oldestStory.GetDateCreatedString);
-        whereClause = [NSString stringWithFormat:@"(story.rank+feed.rank)<=%i and dateCreated<'%@'",self.oldestStory.rank, oldestDateCreatedStr];
-        NSLog(@"%i",[[PM GetAllStories:1] count]);
+        whereClause = [NSString stringWithFormat:@"(story.rank+feed.rank)<=%i and dateCreated<'%@'",self.oldestStory.rank+oldestStoryFeedRank, oldestDateCreatedStr];
+        //NSLog(@"%i",[[PM GetAllStories:1] count]);
     }
 
     //Pull another batch from SQL
@@ -1239,8 +1348,8 @@
     
     [self updatePromptText];
 
-    
     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+        self.loadingMoreStories = true;
         //Load new ones
         self.numDaysToShow = self.numDaysToShow + 3;
         self.lowerLimitDate = [NSDate dateWithTimeIntervalSinceNow:-1*60*60*24*self.numDaysToShow];
@@ -1265,8 +1374,8 @@
 //    
 //    [twitterEngine getNextOldestTweets:@selector(AddTweetAsStory:) withCaller:self count:50];
 //    
-//    //Update story count and 'Loading' string labels
-//    [self updatePromptText];
+    //Update story count and 'Loading' string labels
+    [self updatePromptText];
 }
 
 - (IBAction)btnCancelLoad:(id)sender {
@@ -1276,12 +1385,17 @@
     [self.pullToReloadHeaderView finishReloading:self.tableView animated:YES];
 }
 
-- (IBAction)btnSort:(id)sender {
+- (void)SortTableView
+{
     [self removeReadStories];
     [self updateArrayRanks];
     [self sortArray];
     [self.tableView reloadData];
     [self updatePromptText];
+}
+
+- (IBAction)btnSort:(id)sender {
+    [self SortTableView];
 }
 
 - (IBAction)btnSend:(id)sender {

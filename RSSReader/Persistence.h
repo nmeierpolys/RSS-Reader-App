@@ -43,6 +43,7 @@
 - (void)DeleteStory:(Story *)story;
 - (int)GetNumFeedStories:(int)feedID limitedToRead:(bool)isRead;
 - (int)GetNumFeedStoriesByUrl:(NSString *)url limitedToRead:(bool)isRead;
+- (int)GetNumFeedStoriesBySource:(NSString *)source limitedToRead:(bool)isRead;
 - (int)GetTotalFeedReadTime:(int)feedID;
 - (int)GetTotalFeedReadTimeByUrl:(NSString *)url;
 - (NSDate *)GetEarliestFeedStoryCreatedDate:(int)feedID;

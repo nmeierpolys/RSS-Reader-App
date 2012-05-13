@@ -38,6 +38,8 @@
     bool hasInitialized;
     int maxAllowableStoryTimeRead;
     Story *oldestStory;
+    
+    bool loadingMoreStories;
 }
 
 //IBOutlets
@@ -85,6 +87,7 @@
 @property int numDaysToShow;
 @property int maxAllowableStoryTimeRead;
 @property bool stopLoading;
+@property bool loadingMoreStories;
 
 //Events
 - (void)enteringBackground;
@@ -97,6 +100,7 @@
 - (void)MarkStoryAsRead:(Story *)story withOpenedDate:(NSDate *)openedDate noRankUpdate:(bool)noRankUpdate;
 - (void)MarkCurrentStoryAsReadWithOpenedDate:(NSDate *)openedDate;
 - (void)sendStoryViaEmail:(Story *)storyToSend;
+- (void)twitterIsDone;
 
 //Miscellaneous methods
 - (void)testPopulate;

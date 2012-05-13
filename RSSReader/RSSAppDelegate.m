@@ -8,6 +8,7 @@
 
 #import "RSSAppDelegate.h"
 #import "FlurryAnalytics.h"
+#import "Appirater.h"
 
 @implementation RSSAppDelegate
 
@@ -33,6 +34,7 @@ void uncaughtExceptionHandler(NSException *exception) {
     //UITabBarController *tabController =  (UITabBarController *)[navigationController topViewController];
     
     //rootViewController = tabController.viewControllers.lastObject;
+    [Appirater appLaunched:YES];
     return YES;
 }
 							
@@ -50,6 +52,7 @@ void uncaughtExceptionHandler(NSException *exception) {
 - (void)applicationWillEnterForeground:(UIApplication *)application
 {
     //[rootViewController enteringForeground];
+    [Appirater appEnteredForeground:YES];
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application

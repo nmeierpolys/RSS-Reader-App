@@ -25,6 +25,7 @@
 @synthesize isDirty = _isDirty;
 @synthesize feedID = _feedID;
 @synthesize durationRead = _durationRead;
+@synthesize feedRank = _feedRank;
 
 
 - (id)init
@@ -70,6 +71,7 @@
         self.isDirty = newIsDirty;
         self.feedID = newFeedID;
         self.durationRead = newDurationRead;
+        self.feedRank = 0;
     }
     
     return self;
@@ -126,6 +128,7 @@
     self.isDirty = YES;
     self.feedID = 0;
     self.durationRead = 0;
+    self.feedRank = 0;
 }
 
 - (void)PopulateEmptyData
@@ -146,6 +149,7 @@
     self.isDirty = NO;
     self.feedID = 0;
     self.durationRead = 0;
+    self.feedRank = 0;
 }
 
 - (NSString *)GetDateCreatedString
@@ -237,12 +241,67 @@
     }
     else if(mode==1)
     {
-        return (self.rank < otherObject.rank);
+        return ((self.rank+self.feedRank) < (otherObject.rank + otherObject.feedRank));
     }
     else 
     {
         return NSOrderedAscending;
     }
+}
+
+- (NSString *)BodyWithURLsAsLinks:(NSString *)bodyToParse;
+{
+    if(self.body == nil)
+        return nil;
+    
+    NSString *regexToReplaceRawLinks;
+    NSError *error;
+    NSRegularExpression *regex;
+    NSString *modifiedString;
+    
+    
+    //Replace URLs
+    regexToReplaceRawLinks = @"(\\b(https?):\\/\\/[-A-Z0-9+&@#\\/%?=~_|!:,.;]*[-A-Z0-9+&@#\\/%=~_|])";   
+    
+    error = NULL;
+    regex = [NSRegularExpression regularExpressionWithPattern:regexToReplaceRawLinks
+                                                                           options:NSRegularExpressionCaseInsensitive
+                                                                             error:&error];
+    
+    modifiedString = [regex stringByReplacingMatchesInString:bodyToParse
+                                                               options:0
+                                                                 range:NSMakeRange(0, [bodyToParse length])
+                                                          withTemplate:@"<a href=\"$1\">$1</a>"];
+    
+    //Replace Twitter users
+    regexToReplaceRawLinks = @"@([1-9a-zA-Z_]+)";
+    
+    
+    error = NULL;
+    regex = [NSRegularExpression regularExpressionWithPattern:regexToReplaceRawLinks
+                                                      options:NSRegularExpressionCaseInsensitive
+                                                        error:&error];
+    
+    modifiedString = [regex stringByReplacingMatchesInString:modifiedString
+                                                     options:0
+                                                       range:NSMakeRange(0, [modifiedString length])
+                                                withTemplate:@"<a href=\"http://twitter.com/$1\">@$1</a>"];
+    
+    
+    //Replace Twitter hashtags
+    regexToReplaceRawLinks = @"#([1-9a-zA-Z_]+)";  
+    
+    error = NULL;
+    regex = [NSRegularExpression regularExpressionWithPattern:regexToReplaceRawLinks
+                                                      options:NSRegularExpressionCaseInsensitive
+                                                        error:&error];
+    
+    modifiedString = [regex stringByReplacingMatchesInString:modifiedString
+                                                     options:0
+                                                       range:NSMakeRange(0, [modifiedString length])
+                                                withTemplate:@"<a href=\"http://search.twitter.com/search?q=%23$1\">#$1</a>"];
+    
+    return modifiedString;
 }
 
 

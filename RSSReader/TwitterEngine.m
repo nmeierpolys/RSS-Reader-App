@@ -28,6 +28,8 @@
 @synthesize usernameCache = _usernameCache;
 
 @synthesize requestCompleted = _requestCompleted;
+@synthesize oldestTweetID = _oldestTweetID;
+@synthesize completedSelector = _completedSelector;
 
 - (id)init
 {
@@ -40,6 +42,19 @@
     
     return self;
 }
+
+- (id)initWithCompletedSelector:(SEL)selector
+{
+    if(self = [super init])
+    {
+        self = [self init];
+        self.completedSelector = selector;
+        //[self fetchData];
+    }
+    
+    return self;
+}
+
 - (void)fetchData
 {
     if (_accounts == nil) {
@@ -71,7 +86,7 @@
 
 - (void)getNextOldestTweets:(SEL)selector withCaller:(id)caller count:(int)count
 {
-    [self fetchDataWithSelector:selector withCaller:caller count:count maxID:oldestTweetID];
+    [self fetchDataWithSelector:selector withCaller:caller count:count maxID:self.oldestTweetID];
 }
 
 - (void)fetchDataWithSelector:(SEL)selector withCaller:(id)caller
@@ -177,7 +192,8 @@
                     
                     Story *tweetStory = [self GetStoryFromTweet:[self.timeline objectAtIndex:i]];
                     [caller performSelector:selector withObject:tweetStory];
-                }                
+                }    
+                [caller performSelector:self.completedSelector];
             }
             else {
                 NSString *message = [NSString stringWithFormat:@"Could not parse your timeline: %@", [jsonError localizedDescription]];
@@ -195,8 +211,6 @@
 {
     NSString *text = [tweet objectForKey:@"text"];
     NSString *username = [tweet valueForKeyPath:@"user.name"];
-    
-    NSLog(@"%i - %@: %@",count,username,text);
 }
 
 - (Story *)GetStoryFromTweet:(id)tweet
@@ -207,19 +221,24 @@
     if(tweetID > newestTweetID)
         newestTweetID = tweetID;
     
-    if((tweetID < oldestTweetID) || (oldestTweetID == 0))
-        oldestTweetID = tweetID;
+    if((tweetID < self.oldestTweetID) || (oldestTweetID == 0))
+        self.oldestTweetID = tweetID;
     
+    NSLog(@"%f",oldestTweetID);
     NSString *body = [tweet objectForKey:@"text"];
     NSString *username = [tweet valueForKeyPath:@"user.name"];
     NSString *userScreenName = [tweet valueForKeyPath:@"user.screen_name"];
     NSString *createdDate = [tweet valueForKey:@"created_at"];
+    
+    NSString *url = [NSString stringWithFormat:@"http://twitter.com/%@/status/%@",userScreenName,tweetIDRaw];
+    
+    
     Story *newTweetStory = [[Story alloc] initWithEmpty];
-    newTweetStory.body = body;
+    newTweetStory.body = [newTweetStory BodyWithURLsAsLinks:body];
     newTweetStory.author = userScreenName;
     newTweetStory.title =  body;
     newTweetStory.source = @"Twitter";
-    newTweetStory.url = userScreenName;
+    newTweetStory.url = url;
     
     NSDateFormatter *df = [[NSDateFormatter alloc] init];
     [df setDateFormat:@"eee MMM dd HH:mm:ss ZZZZ yyyy"];

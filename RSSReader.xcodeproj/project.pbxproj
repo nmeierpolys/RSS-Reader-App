@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		F10CB8BB1555E303008B12DD /* Appirater.m in Sources */ = {isa = PBXBuildFile; fileRef = F10CB8B91555E303008B12DD /* Appirater.m */; };
+		F10CB8C61555E68E008B12DD /* Appirater.m in Sources */ = {isa = PBXBuildFile; fileRef = F10CB8B91555E303008B12DD /* Appirater.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		F11EF014151D909600B1456C /* GDataXMLNode.m in Sources */ = {isa = PBXBuildFile; fileRef = F11EF012151D909600B1456C /* GDataXMLNode.m */; };
 		F11EF02C151D910300B1456C /* ASIAuthenticationDialog.m in Sources */ = {isa = PBXBuildFile; fileRef = F11EF017151D910300B1456C /* ASIAuthenticationDialog.m */; };
 		F11EF02D151D910300B1456C /* ASIDataCompressor.m in Sources */ = {isa = PBXBuildFile; fileRef = F11EF01A151D910300B1456C /* ASIDataCompressor.m */; };
@@ -86,6 +88,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		F10CB8B91555E303008B12DD /* Appirater.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Appirater.m; sourceTree = "<group>"; };
+		F10CB8BA1555E303008B12DD /* Appirater.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Appirater.h; sourceTree = "<group>"; };
 		F11EF012151D909600B1456C /* GDataXMLNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = GDataXMLNode.m; path = RSSReader/GDataXMLNode.m; sourceTree = SOURCE_ROOT; };
 		F11EF013151D909600B1456C /* GDataXMLNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GDataXMLNode.h; path = RSSReader/GDataXMLNode.h; sourceTree = SOURCE_ROOT; };
 		F11EF016151D910300B1456C /* ASIAuthenticationDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ASIAuthenticationDialog.h; sourceTree = "<group>"; };
@@ -321,6 +325,8 @@
 		F1E23DED15153553007CD8F7 /* RSSReader */ = {
 			isa = PBXGroup;
 			children = (
+				F10CB8B91555E303008B12DD /* Appirater.m */,
+				F10CB8BA1555E303008B12DD /* Appirater.h */,
 				F12E9CE615433879000B2B0D /* gears.png */,
 				F1A25BCE153D384300462549 /* TwitterEngine.h */,
 				F1A25BCF153D384300462549 /* TwitterEngine.m */,
@@ -506,6 +512,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F10CB8C61555E68E008B12DD /* Appirater.m in Sources */,
 				F136D405153B96BE009BAE1D /* UIPullToReloadTableViewController.m in Sources */,
 				F136D404153B96BB009BAE1D /* UIPullToReloadHeaderView.m in Sources */,
 				F136D403153B96B5009BAE1D /* pullToReloadTableViewTestAppDelegate.m in Sources */,
@@ -557,6 +564,7 @@
 				F136D400153B9668009BAE1D /* RootViewController.m in Sources */,
 				F136D401153B9668009BAE1D /* UIPullToReloadHeaderView.m in Sources */,
 				F136D402153B9668009BAE1D /* UIPullToReloadTableViewController.m in Sources */,
+				F10CB8BB1555E303008B12DD /* Appirater.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

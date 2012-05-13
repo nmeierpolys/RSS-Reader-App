@@ -15,14 +15,18 @@
     double newestTweetID;
     double oldestTweetID;
     bool requestCompleted;
+    SEL completedSelector;
 }
 
 @property (strong, nonatomic) ACAccountStore *accountStore; 
 @property (strong, nonatomic) NSArray *accounts;
 @property (strong, nonatomic) id timeline;
 @property bool requestCompleted;
+@property double oldestTweetID;
+@property SEL completedSelector;
 
 - (id)init;
+- (id)initWithCompletedSelector:(SEL)selector;
 - (void)fetchData;
 - (void)fetchPosts;
 - (void)fetchPostsWithSelector:(SEL)selector withCaller:(id)caller count:(int)count maxID:(double)maxID;
