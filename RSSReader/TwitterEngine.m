@@ -192,8 +192,7 @@
                     
                     Story *tweetStory = [self GetStoryFromTweet:[self.timeline objectAtIndex:i]];
                     [caller performSelector:selector withObject:tweetStory];
-                }    
-                [caller performSelector:self.completedSelector];
+                }
             }
             else {
                 NSString *message = [NSString stringWithFormat:@"Could not parse your timeline: %@", [jsonError localizedDescription]];
@@ -224,12 +223,11 @@
     if((tweetID < self.oldestTweetID) || (oldestTweetID == 0))
         self.oldestTweetID = tweetID;
     
-    NSLog(@"%f",oldestTweetID);
     NSString *body = [tweet objectForKey:@"text"];
     NSString *username = [tweet valueForKeyPath:@"user.name"];
     NSString *userScreenName = [tweet valueForKeyPath:@"user.screen_name"];
     NSString *createdDate = [tweet valueForKey:@"created_at"];
-    
+    NSString *userImage = [tweet valueForKeyPath:@"user.profile_image_url"];
     NSString *url = [NSString stringWithFormat:@"http://twitter.com/%@/status/%@",userScreenName,tweetIDRaw];
     
     
@@ -239,6 +237,7 @@
     newTweetStory.title =  body;
     newTweetStory.source = @"Twitter";
     newTweetStory.url = url;
+    newTweetStory.imagePath = userImage;
     
     NSDateFormatter *df = [[NSDateFormatter alloc] init];
     [df setDateFormat:@"eee MMM dd HH:mm:ss ZZZZ yyyy"];

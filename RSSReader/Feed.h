@@ -16,6 +16,7 @@
     int rank;
     int timesRead;
     NSDate *dateAdded;
+    NSString *image;
     
 }
 
@@ -26,6 +27,7 @@
 @property int timesRead;
 @property int feedID;
 @property (nonatomic, copy) NSDate *dateAdded;
+@property (retain) NSString *image;
 
 - (id)initWithName:(NSString *)newName
                url:(NSString *)newUrl
@@ -40,6 +42,7 @@
               type:(int)newType
               rank:(int)newRank
          timesRead:(int)newTimesRead
-            feedID:(int)newFeedID;
+            feedID:(int)newFeedID
+             image:(NSString *)newImage;
 
 @end

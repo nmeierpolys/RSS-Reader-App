@@ -32,7 +32,6 @@
 		F120AA7E151F897100CD4345 /* FeedsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F120AA7D151F897100CD4345 /* FeedsViewController.m */; };
 		F120AA82151F898400CD4345 /* Feed.m in Sources */ = {isa = PBXBuildFile; fileRef = F120AA81151F898400CD4345 /* Feed.m */; };
 		F120AA85151F991100CD4345 /* FeedDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F120AA84151F991100CD4345 /* FeedDetailViewController.m */; };
-		F120AA88151F9EDA00CD4345 /* ToRemoveViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F120AA87151F9EDA00CD4345 /* ToRemoveViewController.m */; };
 		F1258E59153FBF34003EBD13 /* libFlurryAnalytics.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F1258E58153FBF34003EBD13 /* libFlurryAnalytics.a */; };
 		F126F70F151AC3E900BF54EF /* Persistence.m in Sources */ = {isa = PBXBuildFile; fileRef = F126F70E151AC3E900BF54EF /* Persistence.m */; };
 		F126F711151AC50900BF54EF /* libsqlite3.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = F126F710151AC50900BF54EF /* libsqlite3.0.dylib */; };
@@ -120,8 +119,6 @@
 		F120AA81151F898400CD4345 /* Feed.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Feed.m; sourceTree = "<group>"; };
 		F120AA83151F991100CD4345 /* FeedDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FeedDetailViewController.h; sourceTree = "<group>"; };
 		F120AA84151F991100CD4345 /* FeedDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FeedDetailViewController.m; sourceTree = "<group>"; };
-		F120AA86151F9EDA00CD4345 /* ToRemoveViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ToRemoveViewController.h; sourceTree = "<group>"; };
-		F120AA87151F9EDA00CD4345 /* ToRemoveViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ToRemoveViewController.m; sourceTree = "<group>"; };
 		F1258E57153FBF34003EBD13 /* FlurryAnalytics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FlurryAnalytics.h; sourceTree = "<group>"; };
 		F1258E58153FBF34003EBD13 /* libFlurryAnalytics.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libFlurryAnalytics.a; sourceTree = "<group>"; };
 		F126F70D151AC3E900BF54EF /* Persistence.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Persistence.h; sourceTree = "<group>"; };
@@ -261,7 +258,7 @@
 			path = RSSReader/Resources;
 			sourceTree = "<group>";
 		};
-		F136D3F6153B9668009BAE1D /* Classes */ = {
+		F136D3F6153B9668009BAE1D /* PullToReload */ = {
 			isa = PBXGroup;
 			children = (
 				F136D3F7153B9668009BAE1D /* pullToReloadTableViewTestAppDelegate.h */,
@@ -273,26 +270,18 @@
 				F136D3FD153B9668009BAE1D /* UIPullToReloadTableViewController.h */,
 				F136D3FE153B9668009BAE1D /* UIPullToReloadTableViewController.m */,
 			);
-			name = Classes;
+			name = PullToReload;
 			path = ../../../../Downloads/pullToReloadTableViewTest/Classes;
 			sourceTree = "<group>";
 		};
 		F1E23DD815153553007CD8F7 = {
 			isa = PBXGroup;
 			children = (
-				F128FE0A154A575400CBE5AE /* MessageUI.framework */,
-				F1258E56153FBF34003EBD13 /* FlurryAnalytics */,
-				F1A25BCC153D37DB00462549 /* Twitter.framework */,
-				F1A25BCA153D37D700462549 /* Accounts.framework */,
-				F136D3F6153B9668009BAE1D /* Classes */,
-				F120AA86151F9EDA00CD4345 /* ToRemoveViewController.h */,
-				F120AA87151F9EDA00CD4345 /* ToRemoveViewController.m */,
-				F11EF015151D910300B1456C /* ASIHTTPRequest */,
 				F126F719151AD39400BF54EF /* Resources */,
 				F126F710151AC50900BF54EF /* libsqlite3.0.dylib */,
-				F1E23E5915155918007CD8F7 /* GDataXML */,
 				F1E23DED15153553007CD8F7 /* RSSReader */,
 				F1E23E0E15153553007CD8F7 /* RSSReaderTests */,
+				F1E23E0F15153553007CD8F7 /* Supporting Files */,
 				F1E23DE615153553007CD8F7 /* Frameworks */,
 				F1E23DE415153553007CD8F7 /* Products */,
 			);
@@ -310,7 +299,14 @@
 		F1E23DE615153553007CD8F7 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				F136D3F6153B9668009BAE1D /* PullToReload */,
+				F11EF015151D910300B1456C /* ASIHTTPRequest */,
 				F1E23E5715155482007CD8F7 /* libz.1.2.5.dylib */,
+				F1E23E5915155918007CD8F7 /* GDataXML */,
+				F128FE0A154A575400CBE5AE /* MessageUI.framework */,
+				F1258E56153FBF34003EBD13 /* FlurryAnalytics */,
+				F1A25BCC153D37DB00462549 /* Twitter.framework */,
+				F1A25BCA153D37D700462549 /* Accounts.framework */,
 				F1E23E5515155479007CD8F7 /* MobileCoreServices.framework */,
 				F1E23E5315155472007CD8F7 /* SystemConfiguration.framework */,
 				F1E23E5115155469007CD8F7 /* CFNetwork.framework */,
@@ -377,10 +373,9 @@
 			children = (
 				F1E23E1415153553007CD8F7 /* RSSReaderTests.h */,
 				F1E23E1515153553007CD8F7 /* RSSReaderTests.m */,
-				F1E23E0F15153553007CD8F7 /* Supporting Files */,
 			);
 			path = RSSReaderTests;
-			sourceTree = "<group>";
+			sourceTree = SOURCE_ROOT;
 		};
 		F1E23E0F15153553007CD8F7 /* Supporting Files */ = {
 			isa = PBXGroup;
@@ -389,7 +384,8 @@
 				F1E23E1115153553007CD8F7 /* InfoPlist.strings */,
 			);
 			name = "Supporting Files";
-			sourceTree = "<group>";
+			path = RSSReaderTests;
+			sourceTree = SOURCE_ROOT;
 		};
 		F1E23E5915155918007CD8F7 /* GDataXML */ = {
 			isa = PBXGroup;
@@ -538,7 +534,6 @@
 				F120AA7E151F897100CD4345 /* FeedsViewController.m in Sources */,
 				F120AA82151F898400CD4345 /* Feed.m in Sources */,
 				F120AA85151F991100CD4345 /* FeedDetailViewController.m in Sources */,
-				F120AA88151F9EDA00CD4345 /* ToRemoveViewController.m in Sources */,
 				F1AC823915242AEF005819D8 /* FeedsTestViewController.m in Sources */,
 				F1A25BD0153D384300462549 /* TwitterEngine.m in Sources */,
 			);

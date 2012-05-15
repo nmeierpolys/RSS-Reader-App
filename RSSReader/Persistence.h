@@ -53,6 +53,7 @@
 //Feed Stuffs
 - (void)AddFeed:(Feed *)newFeed;
 - (Feed *)GetLastFeed;
+- (Feed *)AddFeedAndGetNewFeed:(Feed *)newFeed;
 - (Feed *)GetFeedFromStatement:(sqlite3_stmt *)statement;
 - (Feed *)GetFeedByID:(int)feedID;
 - (Feed *)GetFeedByURLPath:(NSString *)urlPath;

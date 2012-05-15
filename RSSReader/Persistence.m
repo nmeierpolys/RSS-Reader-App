@@ -190,18 +190,18 @@ static NSString * DatabaseLock = nil;
         else if(order == 10) //magic;
             orderString = @"magic";
         else 
-            orderString = @"storyID DESC";
+            orderString = @"story.storyID DESC";
         
         NSString *limitString = @"";
         if(numStories > 0)
             limitString = [NSString stringWithFormat:@"LIMIT %i",numStories]; 
         
-        NSString *queryStr = [NSString stringWithFormat:@"SELECT * FROM story JOIN feed on story.feedID=feed.feedID WHERE %@ ORDER BY %@ %@",whereString,orderString,limitString];
-        
-        NSLog(queryStr);
+        NSString *queryStr = [NSString stringWithFormat:@"SELECT storyID,title,author,body,source,dateCreated,dateRetrieved,isRead,imagePath,isFavorite,story.rank,isDirty,story.feedID,durationRead,story.url,feed.feedID,feed.rank FROM story JOIN feed on story.feedID=feed.feedID WHERE %@ ORDER BY %@ %@",whereString,orderString,limitString];
         
         const char *sql = [queryStr UTF8String];
         sqlite3_stmt *statement;
+        
+        NSLog(queryStr);
         
         if (sqlite3_prepare_v2(database, sql, -1, &statement, NULL) == SQLITE_OK)
         {
@@ -263,6 +263,7 @@ static NSString * DatabaseLock = nil;
                 if(temp != nil)
                     story.url = [NSString stringWithUTF8String:temp];
                 
+                NSLog(@"####%@",story.imagePath);
                 [storyArray addObject:story];
             }
         }
@@ -309,6 +310,11 @@ static NSString * DatabaseLock = nil;
                 feed.dateAdded = [self dateFromSQLDateString:dateAddedString];
             }
             
+            temp = (char *)sqlite3_column_text(statement, 7);
+            if(temp != nil)
+                feed.image = [NSString stringWithUTF8String:temp];
+            
+            NSLog(@"%@",feed.name);
             [feedArray addObject:feed];
             
         }
@@ -671,6 +677,10 @@ static NSString * DatabaseLock = nil;
             NSString *dateAddedString = [NSString stringWithUTF8String:temp];
             feed.dateAdded = [self dateFromSQLDateString:dateAddedString];
         }
+        
+        temp = (char *)sqlite3_column_text(statement, 7);
+        if(temp != nil)
+            feed.image = [NSString stringWithUTF8String:temp];
     }
     
     sqlite3_finalize(statement);
@@ -760,7 +770,7 @@ static NSString * DatabaseLock = nil;
         if(!urlPath)
             return nil;
         
-        NSString *sqlStr = @"select feedID,name,url,type,rank,timesRead from feed where url = ?";
+        NSString *sqlStr = @"select feedID,name,url,type,rank,timesRead,dateAdded,image from feed where url = ?";
         
         const char *sql = [self GetSqlStringFromNSString:sqlStr];
         
@@ -788,7 +798,7 @@ static NSString * DatabaseLock = nil;
     if(!feedID)
         return nil;
     
-    NSString *sqlStr = @"select feedID,name,url,type,rank,timesRead from feed where feedID = ?";
+    NSString *sqlStr = @"select feedID,name,url,type,rank,timesRead,dateAdded,image from feed where feedID = ?";
     
     const char *sql = [self GetSqlStringFromNSString:sqlStr];
     
@@ -811,7 +821,7 @@ static NSString * DatabaseLock = nil;
     @synchronized ([Persistence databaseLock]) {
         [self initializeDatabaseIfNeeded];
         
-        NSString *sqlStr = @"insert into feed(name,url,type,rank,timesRead,dateAdded) VALUES(?,?,?,?,?,?)";
+        NSString *sqlStr = @"insert into feed(name,url,type,rank,timesRead,dateAdded,image) VALUES(?,?,?,?,?,?,?)";
         
         const char *sql = [self GetSqlStringFromNSString:sqlStr];
         sqlite3_stmt *statement;
@@ -848,6 +858,10 @@ static NSString * DatabaseLock = nil;
                 temp = [dateString UTF8String];
             }
             sqlite3_bind_text(statement, 6, temp, -1, SQLITE_TRANSIENT);
+            
+            //Image
+            temp = [newFeed.image UTF8String];
+            sqlite3_bind_text(statement, 7, temp, -1, SQLITE_TRANSIENT);
             
             sqlite3_step(statement);
         }
@@ -992,7 +1006,7 @@ static NSString * DatabaseLock = nil;
         sqlite3_bind_int(statement, 7, newStory.isRead);
         
         //ImagePath
-        temp = [newStory.title UTF8String];
+        temp = [newStory.imagePath UTF8String];
         sqlite3_bind_text(statement, 8, temp, -1, SQLITE_TRANSIENT);
         
         //IsFavorite
@@ -1029,6 +1043,12 @@ static NSString * DatabaseLock = nil;
 {
     [self AddStory:newStory];
     return [self GetLastStory];
+}
+
+- (Feed *)AddFeedAndGetNewFeed:(Feed *)newFeed
+{
+    [self AddFeed:newFeed];
+    return [self GetLastFeed];
 }
 
 - (void)MarkStoryAsRead:(int)storyID

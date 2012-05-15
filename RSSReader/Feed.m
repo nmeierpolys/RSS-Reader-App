@@ -17,6 +17,7 @@
 @synthesize timesRead = _timesRead;
 @synthesize feedID = _feedID;
 @synthesize dateAdded = _dateAdded;
+@synthesize image = _image;
 
 
 - (id)init
@@ -30,6 +31,7 @@
         self.timesRead = 0;
         self.feedID = 0;
         self.dateAdded = [[NSDate alloc] init];
+        self.image = @"";
     }
     
     return self;
@@ -48,6 +50,7 @@
     self.timesRead = 0;
     self.feedID = 0;
     self.dateAdded = [NSDate date];
+    self.image = @"";
     
     return self;
 }
@@ -66,6 +69,7 @@
     self.timesRead = 0;
     self.feedID = 0;
     self.dateAdded = [NSDate date];
+    self.image = @"";
     
     return self;
 }
@@ -76,6 +80,7 @@
               rank:(int)newRank
          timesRead:(int)newTimesRead
             feedID:(int)newFeedID
+             image:(NSString *)newImage;
 {
     self = [self init];
     
@@ -86,6 +91,7 @@
     self.timesRead = newTimesRead;
     self.feedID = newFeedID;
     self.dateAdded = [NSDate date];
+    self.image = newImage;
     
     return self;
 }

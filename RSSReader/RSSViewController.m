@@ -193,14 +193,14 @@
                                        url:@"http://xkcd.com/rss.xml" 
                                       type:1
                                       rank:1]];
-    self.feeds = PM.feeds; 
+    self.feeds = [PM GetAllFeeds]; 
 }
 
 - (void)initialPopulateFeeds
 {
     [PM ClearFeeds];
     [self InitializeTwitterFeed];
-    bool showTwitterOnly = true;
+    bool showTwitterOnly = false;
     if(!showTwitterOnly)
     {
         [PM AddFeed:[[Feed alloc] initWithName:@"Vikes Geek" 
@@ -227,10 +227,10 @@
                                            url:@"http://xkcd.com/rss.xml" 
                                           type:1
                                           rank:1]];
-        [PM AddFeed:[[Feed alloc] initWithName:@"Engadget" 
-                                           url:@"http://www.engadget.com/rss.xml" 
-                                          type:1
-                                          rank:1]];
+//        [PM AddFeed:[[Feed alloc] initWithName:@"Engadget" 
+//                                           url:@"http://www.engadget.com/rss.xml" 
+//                                          type:1
+//                                          rank:1]];
         [PM AddFeed:[[Feed alloc] initWithName:@"Lifehacker" 
                                            url:@"http://lifehacker.com/top/index.xml" 
                                           type:1
@@ -300,28 +300,50 @@
                                        url:@"http://fulltextrssfeed.com/news.ycombinator.com/rss" 
                                       type:1 
                                       rank:1]];
-    self.feeds = PM.feeds; 
+    self.feeds = [PM GetAllFeeds];
 }
 
 
 #pragma mark Twitter
 
+- (NSString *)SaveImageAndGetPathFromURLString:(NSString *)urlStr
+{
+    NSURL  *url = [NSURL URLWithString:urlStr];
+    NSData *urlData = [NSData dataWithContentsOfURL:url];
+    NSString *filePath = @"";
+    NSRange rangeOfDelimiter = [urlStr rangeOfString:@"/" options:NSBackwardsSearch];
+    NSString *fileName = [urlStr substringFromIndex:rangeOfDelimiter.location+1];
+    if (urlData)
+    {
+        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+        NSString *documentsDirectory = [paths objectAtIndex:0];  
+        //NSString *
+        filePath = [NSString stringWithFormat:@"%@/%@", documentsDirectory,fileName];
+        [urlData writeToFile:filePath atomically:YES];
+    }
+    return filePath;
+}
+
 - (void)AddTweetAsStory:(Story *)tweetStory
 {
-    Feed *storyFeed = [PM GetFeedByURLPath:tweetStory.author];
+    Feed *storyFeed = [PM GetFeedByID:tweetStory.feedID];
     if(storyFeed == nil)
     {
         storyFeed = [[Feed alloc] initWithName:tweetStory.author url:tweetStory.author type:3];
-        [PM AddFeed:storyFeed];
+        storyFeed.image = [self SaveImageAndGetPathFromURLString:tweetStory.imagePath];
+        storyFeed = [PM AddFeedAndGetNewFeed:storyFeed];
     }
+    
     tweetStory.feedID = storyFeed.feedID;
+    
+    tweetStory.imagePath = storyFeed.image;
     
     if(![PM StoryExistsInDB:tweetStory])
     {
         [self UpdateStoryRank:tweetStory];
         tweetStory = [PM AddStoryAndGetNewStory:tweetStory];
-        
-        [self insertOrderedStoryWithAnimation:tweetStory];
+        [self insertOrderedStoryWithoutAnimation:tweetStory];
+        //[self insertOrderedStoryWithAnimation:tweetStory];
     }
     if(twitterEngine.requestCompleted)
     {
@@ -429,6 +451,23 @@
     }
 }
 
+-(void)insertOrderedStoryWithoutAnimation:(Story *)newStory
+{
+    if((!self.stopLoading) && 
+       (newStory != nil) && 
+       (![self allEntriesContainsStory:newStory]))
+    {   
+        //[self UpdateStoryRank:newStory];
+        int insertIdx = [_allEntries indexForInsertingObject:newStory sortedUsingBlock:^(id a, id b) {
+            return [self compareStory:(Story *)a withStory:(Story *)b];
+        }];     
+        [_allEntries insertObject:newStory atIndex:insertIdx];
+        //[self.tableView insertRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:insertIdx inSection:0]] withRowAnimation:UITableViewRowAnimationRight];
+        [self updatePromptText];
+        [self.tableView reloadData];
+    }
+}
+
 - (void)sortArray
 {
     [_allEntries sortUsingComparator:(NSComparator)^(id a, id b) {
@@ -526,6 +565,9 @@
     
     numDaysSinceFirstFeedPost = [self NumberOfDaysBetweenDate:earliestDate andSecondDate:[NSDate date]];
     
+    if(numFeedStoriesTotal < 1)
+        numFeedStoriesTotal = 1;
+    
     //Total number of feed stories per day (on average) + 1 to include today's stories
     numFeedStoriesPerDay = (float)numFeedStoriesTotal / (numDaysSinceFirstFeedPost + 1);
     
@@ -580,7 +622,7 @@
             numHoursSinceCreated = 10;
         
         rankFromNumDateIntervalUnitsSinceCreated = 10-numHoursSinceCreated;
-        NSLog(@"Story: %i:%i\n%@:%@",numHoursSinceCreated,rankFromNumDateIntervalUnitsSinceCreated,story.dateCreated,[NSDate date]);
+        //NSLog(@"Story: %i:%i\n%@:%@",numHoursSinceCreated,rankFromNumDateIntervalUnitsSinceCreated,story.dateCreated,[NSDate date]);
     }
     else
     {
@@ -634,6 +676,9 @@
 #pragma mark Parse Feed
 
 - (void)requestFinished:(ASIHTTPRequest *)request {
+//    [self performSelectorInBackground: @selector (requestFinishedBackgroundWorker:) withObject:request];
+//}
+//- (void)requestFinishedBackgroundWorker:(ASIHTTPRequest *)request {
     int blogID = 1;
     blogID = [self GetFeedIDFromURL:[request url]];
     NSError *error;
@@ -645,10 +690,7 @@
         if (doc == nil) {
             //NSLog(@"Failed to parse %@", request.url);
         } else {
-            
             NSMutableArray *entries = [[NSMutableArray alloc] init];
-            //NSMutableArray *entries = [NSMutableArray array];
-            
             [self parseFeed:doc.rootElement entries:entries blogID:blogID];                
             
             Feed *thisFeed = [PM GetFeedByID:blogID];
@@ -656,6 +698,8 @@
             [PM SetFeedRank:blogID toRank:thisFeed.rank];
             [[NSOperationQueue mainQueue] addOperationWithBlock:^{
                 for (Story *entry in entries) {
+                    //[self performSelectorOnMainThread:@selector(insertOrderedStoryWithAnimation:) withObject:entry waitUntilDone:YES];
+                    
                     [self insertOrderedStoryWithAnimation:entry];
                 }  
                 [self UpdateFeedRank:thisFeed];
@@ -668,12 +712,16 @@
         {
             if(self.loadingMoreStories)
             {
-                [twitterEngine getNextOldestTweets:@selector(AddTweetAsStory:) withCaller:self count:50];
-                self.loadingMoreStories = false;
+                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                    [twitterEngine getNextOldestTweets:@selector(AddTweetAsStory:) withCaller:self count:50];
+                    self.loadingMoreStories = false;
+                }];
             }
             else
             {
-                [self performSelector:@selector(refreshTwitter)];
+                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                    [self refreshTwitter];
+                }];
             }
         }
         else 
@@ -835,6 +883,7 @@
                                         storyID:0
                                          feedID:blogID
                                    durationRead:0];
+    entry.imagePath = @"n/a";
     
     return entry;
 }
@@ -896,6 +945,10 @@
         
         UILabel *createdLabel = (UILabel *)[cell viewWithTag:104];
         createdLabel.text = [story GetDateCreatedString];
+        
+        UIImageView *storyImageView = (UIImageView *)[cell viewWithTag:105];
+        UIImage *storyImage = [[UIImage alloc] initWithContentsOfFile:story.imagePath];
+        storyImageView.image = storyImage;
         
         //Update colors based on isRead
         rankLabel.textColor = textColor;
@@ -970,7 +1023,7 @@
     int numPMStories = [PM GetNumFeedStories:0 limitedToRead:0];
     int numReadPMStories = [PM GetNumFeedStories:0 limitedToRead:1];
     int numMyStories = [PM GetNumFeedStories:2 limitedToRead:0];
-    int numTwitterStories = [PM GetNumFeedStoriesByUrl:@"Twitter" limitedToRead:0];
+    int numTwitterStories = [PM GetNumFeedStoriesBySource:@"Twitter" limitedToRead:0];
     
     
     debugMsg = [debugMsg stringByAppendingFormat:@"NumStories: %i\n",numStories];
@@ -1276,7 +1329,7 @@
 
 - (void)loadingIsCompleted
 {
-    [self SortTableView];
+    //[self SortTableView];
 }
 
 - (void)twitterIsDone
@@ -1289,6 +1342,7 @@
     self.outstandingFeedsToParse--;
     //[self UpdateFeedRank:self.twitterFeed];
     //[PM SetFeedRank:self.twitterFeed.feedID toRank:self.twitterFeed.rank];
+    
     [twitterEngine fetchDataWithSelector:@selector(AddTweetAsStory:) withCaller:self count:50];
     
     //Update story count and 'Loading' string labels
