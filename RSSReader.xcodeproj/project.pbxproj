@@ -46,6 +46,10 @@
 		F136D405153B96BE009BAE1D /* UIPullToReloadTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F136D3FE153B9668009BAE1D /* UIPullToReloadTableViewController.m */; };
 		F136D409153BA206009BAE1D /* stories.sqlite in Resources */ = {isa = PBXBuildFile; fileRef = F136D408153BA206009BAE1D /* stories.sqlite */; };
 		F136D40A153BA27C009BAE1D /* stories.sqlite in Resources */ = {isa = PBXBuildFile; fileRef = F136D408153BA206009BAE1D /* stories.sqlite */; };
+		F1424D971564A0C800DC04ED /* arrow_up@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F1424D931564A0C800DC04ED /* arrow_up@2x.png */; };
+		F1424D981564A0C800DC04ED /* arrow_down.png in Resources */ = {isa = PBXBuildFile; fileRef = F1424D941564A0C800DC04ED /* arrow_down.png */; };
+		F1424D991564A0C800DC04ED /* arrow_up.png in Resources */ = {isa = PBXBuildFile; fileRef = F1424D951564A0C800DC04ED /* arrow_up.png */; };
+		F1424D9A1564A0C800DC04ED /* arrow_down@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F1424D961564A0C800DC04ED /* arrow_down@2x.png */; };
 		F1A25BCB153D37D700462549 /* Accounts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F1A25BCA153D37D700462549 /* Accounts.framework */; };
 		F1A25BCD153D37DB00462549 /* Twitter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F1A25BCC153D37DB00462549 /* Twitter.framework */; };
 		F1A25BD0153D384300462549 /* TwitterEngine.m in Sources */ = {isa = PBXBuildFile; fileRef = F1A25BCF153D384300462549 /* TwitterEngine.m */; };
@@ -125,7 +129,7 @@
 		F126F70E151AC3E900BF54EF /* Persistence.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Persistence.m; sourceTree = "<group>"; };
 		F126F710151AC50900BF54EF /* libsqlite3.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.0.dylib; path = usr/lib/libsqlite3.0.dylib; sourceTree = SDKROOT; };
 		F128FE0A154A575400CBE5AE /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MessageUI.framework; path = System/Library/Frameworks/MessageUI.framework; sourceTree = SDKROOT; };
-		F12E9CE615433879000B2B0D /* gears.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = gears.png; sourceTree = "<group>"; };
+		F12E9CE615433879000B2B0D /* gears.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = gears.png; path = RSSReader/gears.png; sourceTree = "<group>"; };
 		F136D3F7153B9668009BAE1D /* pullToReloadTableViewTestAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = pullToReloadTableViewTestAppDelegate.h; sourceTree = "<group>"; };
 		F136D3F8153B9668009BAE1D /* pullToReloadTableViewTestAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = pullToReloadTableViewTestAppDelegate.m; sourceTree = "<group>"; };
 		F136D3F9153B9668009BAE1D /* RootViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RootViewController.h; sourceTree = "<group>"; };
@@ -135,6 +139,10 @@
 		F136D3FD153B9668009BAE1D /* UIPullToReloadTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIPullToReloadTableViewController.h; sourceTree = "<group>"; };
 		F136D3FE153B9668009BAE1D /* UIPullToReloadTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIPullToReloadTableViewController.m; sourceTree = "<group>"; };
 		F136D408153BA206009BAE1D /* stories.sqlite */ = {isa = PBXFileReference; lastKnownFileType = file; path = stories.sqlite; sourceTree = "<group>"; };
+		F1424D931564A0C800DC04ED /* arrow_up@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "arrow_up@2x.png"; sourceTree = "<group>"; };
+		F1424D941564A0C800DC04ED /* arrow_down.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = arrow_down.png; sourceTree = "<group>"; };
+		F1424D951564A0C800DC04ED /* arrow_up.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = arrow_up.png; sourceTree = "<group>"; };
+		F1424D961564A0C800DC04ED /* arrow_down@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "arrow_down@2x.png"; sourceTree = "<group>"; };
 		F1A25BCA153D37D700462549 /* Accounts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accounts.framework; path = System/Library/Frameworks/Accounts.framework; sourceTree = SDKROOT; };
 		F1A25BCC153D37DB00462549 /* Twitter.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Twitter.framework; path = System/Library/Frameworks/Twitter.framework; sourceTree = SDKROOT; };
 		F1A25BCE153D384300462549 /* TwitterEngine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TwitterEngine.h; sourceTree = "<group>"; };
@@ -274,14 +282,26 @@
 			path = ../../../../Downloads/pullToReloadTableViewTest/Classes;
 			sourceTree = "<group>";
 		};
+		F1424D921564A08600DC04ED /* Images */ = {
+			isa = PBXGroup;
+			children = (
+				F1424D931564A0C800DC04ED /* arrow_up@2x.png */,
+				F1424D941564A0C800DC04ED /* arrow_down.png */,
+				F1424D951564A0C800DC04ED /* arrow_up.png */,
+				F1424D961564A0C800DC04ED /* arrow_down@2x.png */,
+				F12E9CE615433879000B2B0D /* gears.png */,
+			);
+			name = Images;
+			sourceTree = "<group>";
+		};
 		F1E23DD815153553007CD8F7 = {
 			isa = PBXGroup;
 			children = (
+				F1424D921564A08600DC04ED /* Images */,
 				F126F719151AD39400BF54EF /* Resources */,
-				F126F710151AC50900BF54EF /* libsqlite3.0.dylib */,
 				F1E23DED15153553007CD8F7 /* RSSReader */,
+				F1E23DEE15153553007CD8F7 /* Supporting Files */,
 				F1E23E0E15153553007CD8F7 /* RSSReaderTests */,
-				F1E23E0F15153553007CD8F7 /* Supporting Files */,
 				F1E23DE615153553007CD8F7 /* Frameworks */,
 				F1E23DE415153553007CD8F7 /* Products */,
 			);
@@ -299,6 +319,7 @@
 		F1E23DE615153553007CD8F7 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				F126F710151AC50900BF54EF /* libsqlite3.0.dylib */,
 				F136D3F6153B9668009BAE1D /* PullToReload */,
 				F11EF015151D910300B1456C /* ASIHTTPRequest */,
 				F1E23E5715155482007CD8F7 /* libz.1.2.5.dylib */,
@@ -323,7 +344,6 @@
 			children = (
 				F10CB8B91555E303008B12DD /* Appirater.m */,
 				F10CB8BA1555E303008B12DD /* Appirater.h */,
-				F12E9CE615433879000B2B0D /* gears.png */,
 				F1A25BCE153D384300462549 /* TwitterEngine.h */,
 				F1A25BCF153D384300462549 /* TwitterEngine.m */,
 				F126F70D151AC3E900BF54EF /* Persistence.h */,
@@ -346,7 +366,6 @@
 				F1E23E0015153553007CD8F7 /* RSSViewController.m */,
 				F1E23E641515624B007CD8F7 /* NSArray+Extras.h */,
 				F1E23E651515624B007CD8F7 /* NSArray+Extras.m */,
-				F1E23DEE15153553007CD8F7 /* Supporting Files */,
 				F1AC823715242AEF005819D8 /* FeedsTestViewController.h */,
 				F1AC823815242AEF005819D8 /* FeedsTestViewController.m */,
 				F120AA7C151F897100CD4345 /* FeedsViewController.h */,
@@ -366,11 +385,13 @@
 				F1E23DF515153553007CD8F7 /* RSSReader-Prefix.pch */,
 			);
 			name = "Supporting Files";
+			path = RSSReader;
 			sourceTree = "<group>";
 		};
 		F1E23E0E15153553007CD8F7 /* RSSReaderTests */ = {
 			isa = PBXGroup;
 			children = (
+				F1E23E0F15153553007CD8F7 /* Supporting Files */,
 				F1E23E1415153553007CD8F7 /* RSSReaderTests.h */,
 				F1E23E1515153553007CD8F7 /* RSSReaderTests.m */,
 			);
@@ -473,6 +494,10 @@
 				F1E23DFB15153553007CD8F7 /* MainStoryboard_iPhone.storyboard in Resources */,
 				F1D95B7F153A10A100802736 /* MainStoryboard_iPad.storyboard in Resources */,
 				F12E9CE715433879000B2B0D /* gears.png in Resources */,
+				F1424D971564A0C800DC04ED /* arrow_up@2x.png in Resources */,
+				F1424D981564A0C800DC04ED /* arrow_down.png in Resources */,
+				F1424D991564A0C800DC04ED /* arrow_up.png in Resources */,
+				F1424D9A1564A0C800DC04ED /* arrow_down@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

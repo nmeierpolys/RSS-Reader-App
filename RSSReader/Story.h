@@ -25,6 +25,7 @@
     int feedID;
     int durationRead;
     int feedRank;
+    int feedRankModifier;
 }
 
 @property (nonatomic) int storyID;
@@ -43,6 +44,7 @@
 @property (nonatomic) int feedID;
 @property (nonatomic) int durationRead;
 @property (nonatomic) int feedRank;
+@property (nonatomic) int feedRankModifier;
 
 
 - (id)init;
@@ -60,7 +62,8 @@
             isDirty:(bool)isDirty
             storyID:(int)newStoryID
              feedID:(int)newFeedID
-       durationRead:(int)newDurationRead;
+       durationRead:(int)newDurationRead
+   feedRankModifier:(int)newFeedRankModifier;
 - (id)initWithID:(int)newStoryID 
            title:(NSString *)newTitle;
 - (id)initWithDummyInfo;
@@ -71,6 +74,7 @@
 - (NSString *)GetDateRetrievedString;
 - (NSString *)IsCompleteStory;
 - (void)Print;
+- (NSString *)GetDebugInfo;
 - (NSComparisonResult)compare:(Story *)otherObject withMode:(int)mode;
 - (NSString *)BodyWithURLsAsLinks:(NSString *)bodyToParse;;
 @end

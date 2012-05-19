@@ -26,6 +26,7 @@
 @synthesize feedID = _feedID;
 @synthesize durationRead = _durationRead;
 @synthesize feedRank = _feedRank;
+@synthesize feedRankModifier = _feedRankModifier;
 
 
 - (id)init
@@ -53,6 +54,7 @@
             storyID:(int)newStoryID
              feedID:(int)newFeedID
        durationRead:(int)newDurationRead
+   feedRankModifier:(int)newFeedRankModifier
 {
     if(self = [super init])
     {
@@ -72,6 +74,7 @@
         self.feedID = newFeedID;
         self.durationRead = newDurationRead;
         self.feedRank = 0;
+        self.feedRankModifier = feedRankModifier;
     }
     
     return self;
@@ -129,6 +132,7 @@
     self.feedID = 0;
     self.durationRead = 0;
     self.feedRank = 0;
+    self.feedRankModifier = 0;
 }
 
 - (void)PopulateEmptyData
@@ -150,6 +154,7 @@
     self.feedID = 0;
     self.durationRead = 0;
     self.feedRank = 0;
+    self.feedRankModifier = 0;
 }
 
 - (NSString *)GetDateCreatedString
@@ -212,6 +217,11 @@
 
 - (void)Print
 {
+    NSLog(@"%@",[self GetDebugInfo]);
+}
+
+- (NSString *)GetDebugInfo
+{
     NSString *outString = @"";
     
     outString = [outString stringByAppendingFormat:@"\n    ID: %i",self.storyID];
@@ -229,9 +239,9 @@
     outString = [outString stringByAppendingFormat:@"\n    Dirty?: %i",self.isDirty];
     outString = [outString stringByAppendingFormat:@"\n    FeedID: %i",self.feedID];
     outString = [outString stringByAppendingFormat:@"\n    DurationRead: %i",self.durationRead];
-     
+    outString = [outString stringByAppendingFormat:@"\n    FeedRankMod: %i",self.feedRankModifier];
     
-    NSLog(@"%@", outString);
+    return outString;
 }
 
 - (NSComparisonResult)compare:(Story *)otherObject withMode:(int)mode{

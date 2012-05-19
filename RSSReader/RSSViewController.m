@@ -207,6 +207,10 @@
                                            url:@"http://vikesgeek.blogspot.com/feeds/posts/default" 
                                           type:1
                                           rank:1]];
+        [PM AddFeed:[[Feed alloc] initWithName:@"Vegas Chatter" 
+                                           url:@"http://feeds.feedburner.com/vegaschatter?format=xml" 
+                                          type:1
+                                          rank:1]];
         [PM AddFeed:[[Feed alloc] initWithName:@"Ray Wenderlich" 
                                            url:@"http://feeds.feedburner.com/RayWenderlich" 
                                           type:1
@@ -326,7 +330,8 @@
 
 - (void)AddTweetAsStory:(Story *)tweetStory
 {
-    Feed *storyFeed = [PM GetFeedByID:tweetStory.feedID];
+    //Feed *storyFeed = [PM GetFeedByID:tweetStory.feedID];
+    Feed *storyFeed = [PM GetFeedByURLPath:tweetStory.author];
     if(storyFeed == nil)
     {
         storyFeed = [[Feed alloc] initWithName:tweetStory.author url:tweetStory.author type:3];
@@ -500,8 +505,8 @@
     }
     else if(self.orderBy == 1)
     {
-        int entry1rank = entry1.rank + [PM GetFeedRankByFeedID:entry1.feedID];
-        int entry2rank = entry2.rank + [PM GetFeedRankByFeedID:entry2.feedID];
+        int entry1rank = entry1.rank + [PM GetFeedRankByFeedID:entry1.feedID] + entry1.feedRankModifier;
+        int entry2rank = entry2.rank + [PM GetFeedRankByFeedID:entry2.feedID] + entry2.feedRankModifier;
         if(entry1rank > entry2rank)
             result = NSOrderedDescending;
         else if(entry1rank < entry2rank)
@@ -533,6 +538,9 @@
     float numFeedStoriesPerDay = 0;
     int numReadStories = 0;
     int totalSecondsRead = 0;
+    int sumStoryModifiers = 0;
+    int avgStoryModifier = 0;
+    int rankFromStoryModifier = 0;
     NSDate *earliestDate;
     
     
@@ -594,7 +602,16 @@
     if(rankFromTotalSecondsRead > 50)
         rankFromTotalSecondsRead = 50;
     
-    feed.rank = rank + rankFromNumStoriesPerDay + rankFromFractionRead + rankFromTotalSecondsRead;
+    //Story Modifiers
+    sumStoryModifiers = [PM GetTotalStoryModifiersForFeedByID:feed.feedID];
+    if(numFeedStoriesTotal > 0)
+    {
+        avgStoryModifier = sumStoryModifiers / numFeedStoriesTotal;
+        rankFromStoryModifier = avgStoryModifier * 2;
+    }
+    
+    //Sum up rank
+    feed.rank = rank + rankFromNumStoriesPerDay + rankFromFractionRead + rankFromTotalSecondsRead + rankFromStoryModifier;
 }
 
 - (void)UpdateStoryRank:(Story *)story
@@ -698,9 +715,9 @@
             [PM SetFeedRank:blogID toRank:thisFeed.rank];
             [[NSOperationQueue mainQueue] addOperationWithBlock:^{
                 for (Story *entry in entries) {
-                    //[self performSelectorOnMainThread:@selector(insertOrderedStoryWithAnimation:) withObject:entry waitUntilDone:YES];
+                    [self performSelectorOnMainThread:@selector(insertOrderedStoryWithAnimation:) withObject:entry waitUntilDone:YES];
                     
-                    [self insertOrderedStoryWithAnimation:entry];
+                    //[self insertOrderedStoryWithAnimation:entry];
                 }  
                 [self UpdateFeedRank:thisFeed];
                 [PM SetFeedRank:blogID toRank:thisFeed.rank];
@@ -882,7 +899,8 @@
                                         isDirty:NO
                                         storyID:0
                                          feedID:blogID
-                                   durationRead:0];
+                                   durationRead:0
+                               feedRankModifier:0];
     entry.imagePath = @"n/a";
     
     return entry;
@@ -919,8 +937,6 @@
 {
     UITableViewCell *cell;
 	Story *story = [_allEntries objectAtIndex:indexPath.row];
-    if(story.storyID == 55)
-        story.storyID = story.storyID;
     if([story.source compare:@"Twitter"] == NSOrderedSame)
     {
         cell = [tableView dequeueReusableCellWithIdentifier:@"StoryCellTwitter"];
@@ -938,7 +954,7 @@
         titleLabel.text = story.title;
         
         UILabel *rankLabel = (UILabel *)[cell viewWithTag:102];
-        rankLabel.text = [NSString stringWithFormat:@"%i|%i",story.rank,[PM GetFeedRankByFeedID:story.feedID]];
+        rankLabel.text = [NSString stringWithFormat:@"%i|%i",story.rank+story.feedRankModifier,[PM GetFeedRankByFeedID:story.feedID]];
         
         UILabel *authorLabel = (UILabel *)[cell viewWithTag:103];
         authorLabel.text = [@"@" stringByAppendingString:story.author];
@@ -976,7 +992,7 @@
         subtitleLabel.text = story.source;
         
         UILabel *rankLabel = (UILabel *)[cell viewWithTag:102];
-        rankLabel.text = [NSString stringWithFormat:@"%i|%i",story.rank,[PM GetFeedRankByFeedID:story.feedID]];
+        rankLabel.text = [NSString stringWithFormat:@"%i|%i",story.rank+story.feedRankModifier,[PM GetFeedRankByFeedID:story.feedID]];
         
         UILabel *createdLabel = (UILabel *)[cell viewWithTag:104];
         createdLabel.text = [story GetDateCreatedString];
@@ -998,6 +1014,19 @@
         //retrievedLabel.textColor = textColor;
     }
     
+    UIButton *btnStoryDown = (UIButton *)[cell viewWithTag:106];
+    UIButton *btnStoryUp = (UIButton *)[cell viewWithTag:107];
+    UIButton *btnStoryInfo = (UIButton *)[cell viewWithTag:108];
+    
+    btnStoryUp.tag = story.storyID;
+    btnStoryDown.tag = story.storyID;
+    btnStoryInfo.tag = story.storyID;
+    
+    [btnStoryUp addTarget:self action:@selector(storyUp:event:) forControlEvents:UIControlEventTouchUpInside];
+    [btnStoryDown addTarget:self action:@selector(storyDown:event:) forControlEvents:UIControlEventTouchUpInside];
+    [btnStoryInfo addTarget:self action:@selector(storyInfo:event:) forControlEvents:UIControlEventTouchUpInside];
+
+    
 //    cell.tag = indexPath.row;
 //    UISwipeGestureRecognizer* gestureR;
 //    gestureR = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(handleSwipeRTL:)];
@@ -1010,6 +1039,63 @@
     return cell;
 }
 
+- (Story *)GetStoryForTouchEvent:(id)event
+{
+    NSSet *touches = [event allTouches];
+    UITouch *touch = [touches anyObject];
+    CGPoint currentTouchPosition = [touch locationInView:self.tableView];
+    NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint: currentTouchPosition];
+    if(indexPath == nil)
+        return nil;
+    return [_allEntries objectAtIndex:indexPath.row];
+}
+
+- (void)storyUp:(id)sender event:(id)event
+{
+    Story *tappedStory = [self GetStoryForTouchEvent:event];
+    if (tappedStory != nil)
+    {
+        tappedStory.feedRankModifier++;
+        [PM SetStoryFeedRankModifier:tappedStory.storyID toValue:tappedStory.feedRankModifier];
+        
+        [self UpdateFeedRank:[PM GetFeedByID:tappedStory.feedID]];
+        [self.tableView reloadData];
+    }
+}
+
+- (void)storyDown:(id)sender event:(id)event
+{
+    Story *tappedStory = [self GetStoryForTouchEvent:event];
+    if (tappedStory != nil)
+    {
+        if(tappedStory.feedRankModifier < 1)
+            return;
+        tappedStory.feedRankModifier--;
+        [PM SetStoryFeedRankModifier:tappedStory.storyID toValue:tappedStory.feedRankModifier];
+        
+        [self UpdateFeedRank:[PM GetFeedByID:tappedStory.feedID]];
+        [self.tableView reloadData];
+    }
+}
+
+- (void)storyInfo:(id)sender event:(id)event
+{
+    Story *tappedStory = [self GetStoryForTouchEvent:event];
+    if (tappedStory != nil)
+    {
+        [self ShowAlertMsg:[tappedStory GetDebugInfo] withTitle:[NSString stringWithFormat:@"Story Info:%i", tappedStory.storyID]];
+    }
+}
+
+- (void)ShowAlertMsg:(NSString *)msg withTitle:(NSString *)title
+{
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:title
+                                                    message:msg
+                                                   delegate:self
+                                          cancelButtonTitle:@"OK" 
+                                          otherButtonTitles:nil];
+    [alert show];  
+}
 - (void)ShowDebugAlert
 {
     NSString *debugMsg = @"";
@@ -1229,8 +1315,8 @@
         }
         
         //Update Story rank
-        [self UpdateStoryRank:story];
-        [PM SetStoryRank:story.storyID toRank:story.rank];
+        //[self UpdateStoryRank:story];
+        //[PM SetStoryRank:story.storyID toRank:story.rank];
     }
     [self.tableView reloadData];
 }
@@ -1385,9 +1471,7 @@
     if(self.oldestStory != nil)
     {
         int oldestStoryFeedRank = [PM GetFeedRankByFeedID:self.oldestStory.feedID];
-        NSLog(@"%i - %i - %@",self.oldestStory.storyID,self.oldestStory.rank+oldestStoryFeedRank,self.oldestStory.GetDateCreatedString);
-        whereClause = [NSString stringWithFormat:@"(story.rank+feed.rank)<=%i and dateCreated<'%@'",self.oldestStory.rank+oldestStoryFeedRank, oldestDateCreatedStr];
-        //NSLog(@"%i",[[PM GetAllStories:1] count]);
+        whereClause = [NSString stringWithFormat:@"(story.rank+feed.rank)<=%i and dateCreated<'%@'",self.oldestStory.rank+self.oldestStory.feedRankModifier+oldestStoryFeedRank, oldestDateCreatedStr];
     }
 
     //Pull another batch from SQL
@@ -1496,4 +1580,5 @@
 - (IBAction)btnDebugInfo:(id)sender {
     [self ShowDebugAlert];
 }
+
 @end

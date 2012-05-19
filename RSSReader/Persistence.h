@@ -63,5 +63,7 @@
 - (void)SetFeedRank:(int)feedID toRank:(int)rank;
 - (void)SetStoryDurationRead:(int)storyID toDuration:(int)duration;
 - (NSMutableArray *)GetAllFeeds;
+- (int)GetTotalStoryModifiersForFeedByID:(int)feedID;
+- (void)SetStoryFeedRankModifier:(int)storyID toValue:(int)newRankModifier;
 
 @end

@@ -184,7 +184,7 @@ static NSString * DatabaseLock = nil;
         if(order == 0) //Date
             orderString = @"dateCreated DESC";
         else if(order == 1) //Rank
-            orderString = @"(feed.rank+story.rank) DESC,dateCreated DESC";
+            orderString = @"(feed.rank+story.rank+story.feedRankModifier) DESC,dateCreated DESC";
         else if(order == 2) //alpha;
             orderString = @"title";
         else if(order == 10) //magic;
@@ -196,12 +196,10 @@ static NSString * DatabaseLock = nil;
         if(numStories > 0)
             limitString = [NSString stringWithFormat:@"LIMIT %i",numStories]; 
         
-        NSString *queryStr = [NSString stringWithFormat:@"SELECT storyID,title,author,body,source,dateCreated,dateRetrieved,isRead,imagePath,isFavorite,story.rank,isDirty,story.feedID,durationRead,story.url,feed.feedID,feed.rank FROM story JOIN feed on story.feedID=feed.feedID WHERE %@ ORDER BY %@ %@",whereString,orderString,limitString];
+        NSString *queryStr = [NSString stringWithFormat:@"SELECT storyID,title,author,body,source,dateCreated,dateRetrieved,isRead,imagePath,isFavorite,story.rank,isDirty,story.feedID,durationRead,story.url,feedRankModifier,feed.feedID,feed.rank FROM story JOIN feed on story.feedID=feed.feedID WHERE %@ ORDER BY %@ %@",whereString,orderString,limitString];
         
         const char *sql = [queryStr UTF8String];
         sqlite3_stmt *statement;
-        
-        NSLog(queryStr);
         
         if (sqlite3_prepare_v2(database, sql, -1, &statement, NULL) == SQLITE_OK)
         {
@@ -263,7 +261,8 @@ static NSString * DatabaseLock = nil;
                 if(temp != nil)
                     story.url = [NSString stringWithUTF8String:temp];
                 
-                NSLog(@"####%@",story.imagePath);
+                story.feedRankModifier = sqlite3_column_int(statement, 15);
+                
                 [storyArray addObject:story];
             }
         }
@@ -325,6 +324,8 @@ static NSString * DatabaseLock = nil;
     return feedArray;
     }
 }
+
+
 - (int)GetNumFeedStoriesBySource:(NSString *)source limitedToRead:(bool)isRead
 { 
     @synchronized ([Persistence databaseLock]) {
@@ -351,6 +352,29 @@ static NSString * DatabaseLock = nil;
     } 
 }
 
+- (int)GetTotalStoryModifiersForFeedByID:(int)feedID
+{ 
+    @synchronized ([Persistence databaseLock]) {
+        NSString *queryStr = [NSString stringWithFormat:@"SELECT sum(feedRankModifier) FROM story WHERE feedID = %i",feedID];
+        
+        NSLog(@"%@",queryStr);
+        
+        const char *sql = [queryStr UTF8String];
+        sqlite3_stmt *statement;
+        
+        int feedModifierSum = 0;
+        if (sqlite3_prepare_v2(database, sql, -1, &statement, NULL) == SQLITE_OK)
+        {
+            if (sqlite3_step(statement) == SQLITE_ROW) {
+                feedModifierSum = sqlite3_column_int(statement, 0);
+            }
+        }
+        
+        sqlite3_finalize(statement);
+        
+        return feedModifierSum;
+    } 
+}
 
 - (int)GetNumFeedStoriesByUrl:(NSString *)url limitedToRead:(bool)isRead
 { 
@@ -467,7 +491,6 @@ static NSString * DatabaseLock = nil;
 - (NSDate *)GetEarliestFeedStoryCreatedDateByUrl:(NSString *)url
 { 
     @synchronized ([Persistence databaseLock]) {
-        NSMutableArray *storyArray = [[NSMutableArray alloc] init];
         
         NSString *queryStr = [NSString stringWithFormat:@"SELECT dateCreated FROM story WHERE url = '%@' ORDER BY dateCreated LIMIT 1",url];
         const char *sql = [queryStr UTF8String];
@@ -477,7 +500,7 @@ static NSString * DatabaseLock = nil;
         if (sqlite3_prepare_v2(database, sql, -1, &statement, NULL) == SQLITE_OK)
         {   
             if (sqlite3_step(statement) == SQLITE_ROW) {
-                char *temp = sqlite3_column_text(statement, 0);
+                char *temp = (char *)sqlite3_column_text(statement, 0);
                 NSString *dateRetrievedString = [NSString stringWithUTF8String:temp];
                 
                 earliestDate = [self dateFromSQLDateString:dateRetrievedString];
@@ -493,7 +516,6 @@ static NSString * DatabaseLock = nil;
 - (NSDate *)GetEarliestFeedStoryCreatedDate:(int)feedID
 { 
     @synchronized ([Persistence databaseLock]) {
-    NSMutableArray *storyArray = [[NSMutableArray alloc] init];
     
     NSString *queryStr = [NSString stringWithFormat:@"SELECT dateCreated FROM story WHERE feedID = ? ORDER BY dateCreated LIMIT 1"];
     const char *sql = [queryStr UTF8String];
@@ -505,7 +527,7 @@ static NSString * DatabaseLock = nil;
         sqlite3_bind_int(statement, 1, feedID);
         
         if (sqlite3_step(statement) == SQLITE_ROW) {
-            char *temp = sqlite3_column_text(statement, 0);
+            char *temp = (char *)sqlite3_column_text(statement, 0);
             NSString *dateRetrievedString = [NSString stringWithUTF8String:temp];
             
             earliestDate = [self dateFromSQLDateString:dateRetrievedString];
@@ -574,7 +596,7 @@ static NSString * DatabaseLock = nil;
         if(!storyID)
             return nil;
         
-        NSString *sqlStr = @"select storyID,title,author,body,source,dateCreated,dateRetrieved,isRead,imagePath,isFavorite,rank,isDirty,feedID,durationRead,url from story where storyID = ?";
+        NSString *sqlStr = @"select storyID,title,author,body,source,dateCreated,dateRetrieved,isRead,imagePath,isFavorite,rank,isDirty,feedID,durationRead,url,feedRankModifier from story where storyID = ?";
         const char *sql = [self GetSqlStringFromNSString:sqlStr];
         
         sqlite3_stmt *statement;
@@ -746,6 +768,8 @@ static NSString * DatabaseLock = nil;
         temp = (char *)sqlite3_column_text(statement, 14);
         if(temp != nil)
             story.url = [NSString stringWithUTF8String:temp];
+        
+        story.feedRankModifier = sqlite3_column_int(statement, 15);
     }
     
     sqlite3_finalize(statement);
@@ -869,8 +893,6 @@ static NSString * DatabaseLock = nil;
         sqlite3_finalize(statement);
         
         newFeed = [self GetLastFeed];
-        //if(newFeed != nil)
-        //    [self.feeds addObject:newFeed];
     }
 }
 
@@ -906,8 +928,6 @@ static NSString * DatabaseLock = nil;
     
     @synchronized ([Persistence databaseLock]) {
         [self initializeDatabaseIfNeeded];
-        
-        Story *foundStory = nil;
         
         NSString *sqlStr = @"select count(storyID) from story where title=? and author=? and source=?";
         
@@ -949,7 +969,7 @@ static NSString * DatabaseLock = nil;
     @synchronized ([Persistence databaseLock]) {
     [self initializeDatabaseIfNeeded];
     
-    NSString *sqlStr = @"insert into story(title,author,body,source,dateCreated,dateRetrieved,isRead,imagePath,isFavorite,rank,isDirty,feedID,durationRead,url) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+    NSString *sqlStr = @"insert into story(title,author,body,source,dateCreated,dateRetrieved,isRead,imagePath,isFavorite,rank,isDirty,feedID,durationRead,url,feedRankModifier) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
     
     const char *sql = [self GetSqlStringFromNSString:sqlStr];
     sqlite3_stmt *statement;
@@ -1028,14 +1048,13 @@ static NSString * DatabaseLock = nil;
         temp = [newStory.url UTF8String];
         sqlite3_bind_text(statement, 14, temp, -1, SQLITE_TRANSIENT);
         
+        //Feed Rank Modifier
+        sqlite3_bind_int(statement, 15, newStory.feedRankModifier);
+        
         sqlite3_step(statement);
     }
     
     sqlite3_finalize(statement);
-    
-//    newStory = [self GetLastStory];
-//    if(newStory != nil)
-//        [self.stories addObject:newStory];
     }
 }
 
@@ -1084,8 +1103,6 @@ static NSString * DatabaseLock = nil;
         
         if (sqlite3_prepare_v2(database, sql, -1, &statement, NULL) == SQLITE_OK)
         {
-            //sqlite3_bind_int(statement, 1, rank);
-            //sqlite3_bind_int(statement, 2, feedID);
             sqlite3_exec(database, sql, nil, nil, nil);
         }
         
@@ -1100,6 +1117,25 @@ static NSString * DatabaseLock = nil;
         
         NSString *sqlStr = [NSString stringWithFormat:@"update story set rank=%i where storyID=%i",rank,storyID];
         
+        const char *sql = [self GetSqlStringFromNSString:sqlStr];
+        sqlite3_stmt *statement;
+        
+        if (sqlite3_prepare_v2(database, sql, -1, &statement, NULL) == SQLITE_OK)
+        {
+            sqlite3_exec(database, sql, nil, nil, nil);
+        }
+        
+        sqlite3_finalize(statement);
+    }
+}
+- (void)SetStoryFeedRankModifier:(int)storyID toValue:(int)newRankModifier
+{
+    @synchronized ([Persistence databaseLock]) {
+        [self initializeDatabaseIfNeeded];
+        
+        NSString *sqlStr = [NSString stringWithFormat:@"update story set feedRankModifier=%i where storyID=%i",newRankModifier,storyID];
+        
+        NSLog(@"%@",sqlStr);
         const char *sql = [self GetSqlStringFromNSString:sqlStr];
         sqlite3_stmt *statement;
         
@@ -1147,8 +1183,6 @@ static NSString * DatabaseLock = nil;
         }
         
         sqlite3_finalize(statement);
-        
-        //self.stories = [NSMutableArray array];
     }
 }
 
@@ -1168,8 +1202,6 @@ static NSString * DatabaseLock = nil;
         }
         
         sqlite3_finalize(statement);
-        
-        //self.feeds = [NSMutableArray array];
     }
 }
 
@@ -1190,8 +1222,6 @@ static NSString * DatabaseLock = nil;
         }
         
         sqlite3_finalize(statement);
-        
-        //[self.feeds removeObject:feed];
     }
 }
 
@@ -1212,8 +1242,6 @@ static NSString * DatabaseLock = nil;
         }
         
         sqlite3_finalize(statement);
-        
-        //[self.stories removeObject:story];
     }
 }
 
