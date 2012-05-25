@@ -280,7 +280,7 @@ static NSString * DatabaseLock = nil;
     @synchronized ([Persistence databaseLock]) {
     NSMutableArray *feedArray = [[NSMutableArray alloc] init];
     
-    NSString *queryStr = @"SELECT * FROM feed";
+    NSString *queryStr = @"SELECT * FROM feed where type=1";
     const char *sql = [queryStr UTF8String];
     sqlite3_stmt *statement;
     
@@ -313,7 +313,7 @@ static NSString * DatabaseLock = nil;
             if(temp != nil)
                 feed.image = [NSString stringWithUTF8String:temp];
             
-            NSLog(@"%@",feed.name);
+            //NSLog(@"%@",feed.name);
             [feedArray addObject:feed];
             
         }
@@ -357,7 +357,7 @@ static NSString * DatabaseLock = nil;
     @synchronized ([Persistence databaseLock]) {
         NSString *queryStr = [NSString stringWithFormat:@"SELECT sum(feedRankModifier) FROM story WHERE feedID = %i",feedID];
         
-        NSLog(@"%@",queryStr);
+        //NSLog(@"%@",queryStr);
         
         const char *sql = [queryStr UTF8String];
         sqlite3_stmt *statement;
@@ -1135,7 +1135,7 @@ static NSString * DatabaseLock = nil;
         
         NSString *sqlStr = [NSString stringWithFormat:@"update story set feedRankModifier=%i where storyID=%i",newRankModifier,storyID];
         
-        NSLog(@"%@",sqlStr);
+        //NSLog(@"%@",sqlStr);
         const char *sql = [self GetSqlStringFromNSString:sqlStr];
         sqlite3_stmt *statement;
         

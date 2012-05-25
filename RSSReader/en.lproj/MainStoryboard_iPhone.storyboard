@@ -427,9 +427,10 @@
                         </barButtonItem>
                     </toolbarItems>
                     <navigationItem key="navigationItem" title="Stories" id="QdP-fw-awp">
-                        <barButtonItem key="leftBarButtonItem" systemItem="action" id="Qg0-rV-3eq">
+                        <barButtonItem key="leftBarButtonItem" systemItem="camera" id="Qg0-rV-3eq">
                             <connections>
                                 <action selector="btnSend:" destination="7f4-yH-WRB" id="EKu-9v-pJX"/>
+                                <segue destination="75I-Yz-i8L" kind="push" identifier="openFacebook" id="gJ8-1c-dTi"/>
                             </connections>
                         </barButtonItem>
                         <barButtonItem key="rightBarButtonItem" systemItem="refresh" id="DYf-J8-3XP">
@@ -447,7 +448,51 @@
                     </connections>
                 </tableViewController>
             </objects>
-            <point key="canvasLocation" x="244" y="105"/>
+            <point key="canvasLocation" x="311" y="105"/>
+        </scene>
+        <!--Test View Controller-->
+        <scene sceneID="CPa-PK-gxY">
+            <objects>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Hnp-pT-l4v" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <viewController id="75I-Yz-i8L" customClass="FBTestViewController" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="uJI-p4-Ujw">
+                        <rect key="frame" x="0.0" y="64" width="320" height="372"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" id="qjY-MM-ujS" customClass="FBLoginDialog">
+                                <rect key="frame" x="0.0" y="164" width="320" height="214"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                            </view>
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="Facebook" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" id="NmR-M9-uid">
+                                <rect key="frame" x="122" y="11" width="76" height="21"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="2Nh-TZ-GHD">
+                                <rect key="frame" x="124" y="48" width="72" height="37"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
+                                <state key="normal" title="Load">
+                                    <color key="titleColor" red="0.19607843459999999" green="0.30980393290000002" blue="0.52156865600000002" alpha="1" colorSpace="calibratedRGB"/>
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <state key="highlighted">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="btnLoad:" destination="75I-Yz-i8L" eventType="touchUpInside" id="8sy-Pt-qAM"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                    </view>
+                    <navigationItem key="navigationItem" id="Dd6-jJ-5vB"/>
+                </viewController>
+            </objects>
+            <point key="canvasLocation" x="311" y="724"/>
         </scene>
         <!--Story Detail View Controller-->
         <scene sceneID="ahn-dA-Deq">
@@ -566,70 +611,6 @@
         <image name="arrow_up@2x.png" width="52" height="52"/>
         <image name="gears.png" width="64" height="64"/>
     </resources>
-    <classes>
-        <class className="FeedDetailViewController" superclassName="UIViewController">
-            <source key="sourceIdentifier" type="project" relativePath="./Classes/FeedDetailViewController.h"/>
-            <relationships>
-                <relationship kind="action" name="btnClose:"/>
-                <relationship kind="outlet" name="textName" candidateClass="UITextField"/>
-                <relationship kind="outlet" name="textURL" candidateClass="UITextField"/>
-            </relationships>
-        </class>
-        <class className="FeedsTestViewController" superclassName="UITableViewController">
-            <source key="sourceIdentifier" type="project" relativePath="./Classes/FeedsTestViewController.h"/>
-            <relationships>
-                <relationship kind="action" name="btnEdit:"/>
-                <relationship kind="outlet" name="btnEditOutlet" candidateClass="UIBarButtonItem"/>
-            </relationships>
-        </class>
-        <class className="RSSViewController" superclassName="UIPullToReloadTableViewController">
-            <source key="sourceIdentifier" type="project" relativePath="./Classes/RSSViewController.h"/>
-            <relationships>
-                <relationship kind="action" name="btnCancelLoad:"/>
-                <relationship kind="action" name="btnClear:"/>
-                <relationship kind="action" name="btnDebugInfo:"/>
-                <relationship kind="action" name="btnGetPressed:"/>
-                <relationship kind="action" name="btnLoadMoreStories:"/>
-                <relationship kind="action" name="btnReFeed:"/>
-                <relationship kind="action" name="btnRefresh:"/>
-                <relationship kind="action" name="btnSend:"/>
-                <relationship kind="action" name="btnSort:"/>
-                <relationship kind="action" name="swipeCellLeft:"/>
-                <relationship kind="outlet" name="btnGET" candidateClass="UIView"/>
-                <relationship kind="outlet" name="labelCount" candidateClass="UILabel"/>
-                <relationship kind="outlet" name="labelLastUpdated" candidateClass="UILabel"/>
-                <relationship kind="outlet" name="labelStatus" candidateClass="UILabel"/>
-                <relationship kind="outlet" name="textBody" candidateClass="UITextView"/>
-                <relationship kind="outlet" name="textTitle" candidateClass="UITextField"/>
-                <relationship kind="outlet" name="toolbar" candidateClass="UINavigationItem"/>
-            </relationships>
-        </class>
-        <class className="StoryDetailViewController" superclassName="UIViewController">
-            <source key="sourceIdentifier" type="project" relativePath="./Classes/StoryDetailViewController.h"/>
-            <relationships>
-                <relationship kind="action" name="btnActBack:"/>
-                <relationship kind="action" name="btnActForward:"/>
-                <relationship kind="action" name="btnNext:"/>
-                <relationship kind="action" name="btnPrevious:"/>
-                <relationship kind="action" name="btnSend:"/>
-                <relationship kind="outlet" name="btnBack" candidateClass="UIButton"/>
-                <relationship kind="outlet" name="btnDoSomething" candidateClass="UIBarButtonItem"/>
-                <relationship kind="outlet" name="btnForward" candidateClass="UIButton"/>
-                <relationship kind="outlet" name="labelAuthor" candidateClass="UILabel"/>
-                <relationship kind="outlet" name="labelBlogTitle" candidateClass="UILabel"/>
-                <relationship kind="outlet" name="labelDateCreated" candidateClass="UILabel"/>
-                <relationship kind="outlet" name="labelDateRetrieved" candidateClass="UILabel"/>
-                <relationship kind="outlet" name="labelRead" candidateClass="UILabel"/>
-                <relationship kind="outlet" name="labelTitle" candidateClass="UILabel"/>
-                <relationship kind="outlet" name="labelURL" candidateClass="UILabel"/>
-                <relationship kind="outlet" name="textBody" candidateClass="UITextView"/>
-                <relationship kind="outlet" name="webView" candidateClass="UIWebView"/>
-            </relationships>
-        </class>
-        <class className="UIPullToReloadTableViewController" superclassName="UITableViewController">
-            <source key="sourceIdentifier" type="project" relativePath="./Classes/UIPullToReloadTableViewController.h"/>
-        </class>
-    </classes>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
         <simulatedStatusBarMetrics key="statusBar"/>
         <simulatedOrientationMetrics key="orientation"/>

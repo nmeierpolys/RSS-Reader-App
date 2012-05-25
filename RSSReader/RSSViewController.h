@@ -12,8 +12,9 @@
 #import "Persistence.h"
 #import "UIPullToReloadTableViewController.h"
 #import "TwitterEngine.h"
+#import "FBConnect.h"
 
-@interface RSSViewController : UIPullToReloadTableViewController {
+@interface RSSViewController : UIPullToReloadTableViewController <FBSessionDelegate> {
     Story *tempStory;
     NSMutableArray *allEntries;
     NSMutableArray *_feeds;
@@ -40,6 +41,7 @@
     Story *oldestStory;
     
     bool loadingMoreStories;
+    Facebook *facebook;
 }
 
 //IBOutlets
@@ -50,6 +52,7 @@
 @property (weak, nonatomic) IBOutlet UILabel *labelStatus;
 @property (weak, nonatomic) IBOutlet UILabel *labelLastUpdated;
 @property (weak, nonatomic) IBOutlet UINavigationItem *toolbar;
+@property (nonatomic, retain) Facebook *facebook;
 
 //Buttons
 - (IBAction)btnRefresh:(id)sender;

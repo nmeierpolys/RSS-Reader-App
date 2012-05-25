@@ -243,6 +243,15 @@
     
     return outString;
 }
+- (NSString *)description
+{
+    return [self GetDebugInfo];
+}
+
+- (NSString *)debugDescription
+{
+    return [self GetDebugInfo];
+}
 
 - (NSComparisonResult)compare:(Story *)otherObject withMode:(int)mode{
     if(mode==0)

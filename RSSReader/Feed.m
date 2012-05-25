@@ -95,4 +95,29 @@
     
     return self;
 }
+
+- (NSString *)GetDebugInfo
+{
+    NSString *outString = @"";
+    
+    outString = [outString stringByAppendingFormat:@"\n    ID: %i",self.feedID];
+    outString = [outString stringByAppendingFormat:@"\n    Name: %i",self.name];
+    outString = [outString stringByAppendingFormat:@"\n    Url: %i",self.url];
+    outString = [outString stringByAppendingFormat:@"\n    type: %i",self.type];
+    outString = [outString stringByAppendingFormat:@"\n    Rank: %i",self.rank];
+    outString = [outString stringByAppendingFormat:@"\n    TimesRead: %i",self.timesRead];
+    outString = [outString stringByAppendingFormat:@"\n    DateAdded: %i",self.dateAdded];
+    outString = [outString stringByAppendingFormat:@"\n    Image: %i",self.image];
+    
+    return outString;
+}
+- (NSString *)description
+{
+    return [self GetDebugInfo];
+}
+
+- (NSString *)debugDescription
+{
+    return [self GetDebugInfo];
+}
 @end

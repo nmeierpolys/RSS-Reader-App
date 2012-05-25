@@ -84,23 +84,24 @@
     
 }
 
-- (void)getNextOldestTweets:(SEL)selector withCaller:(id)caller count:(int)count
+- (void)getNextOldestTweets:(SEL)selector withCompletionHandler:(SEL)complSelector withCaller:(id)caller count:(int)count
 {
-    [self fetchDataWithSelector:selector withCaller:caller count:count maxID:self.oldestTweetID];
+    [self fetchDataWithSelector:selector withCompletionHandler:complSelector withCaller:caller count:count maxID:self.oldestTweetID];
 }
 
-- (void)fetchDataWithSelector:(SEL)selector withCaller:(id)caller
+- (void)fetchDataWithSelector:(SEL)selector withCompletionHandler:(SEL)complSelector withCaller:(id)caller
 {
-    [self fetchDataWithSelector:selector withCaller:caller count:10 maxID:20];
+    [self fetchDataWithSelector:selector withCompletionHandler:complSelector withCaller:caller count:10 maxID:20];
 }
 
-- (void)fetchDataWithSelector:(SEL)selector withCaller:(id)caller count:(int)count
+- (void)fetchDataWithSelector:(SEL)selector withCompletionHandler:(SEL)complSelector withCaller:(id)caller count:(int)count
 {
-    [self fetchDataWithSelector:selector withCaller:caller count:count maxID:0];
+    [self fetchDataWithSelector:selector withCompletionHandler:complSelector withCaller:caller count:count maxID:0];
 }
 
-- (void)fetchDataWithSelector:(SEL)selector withCaller:(id)caller count:(int)count maxID:(double)maxID
+- (void)fetchDataWithSelector:(SEL)selector withCompletionHandler:(SEL)complSelector withCaller:(id)caller count:(int)count maxID:(double)maxID
 {
+    self.requestCompleted = false;
     if (_accounts == nil) {
         if (_accountStore == nil) {
             self.accountStore = [[ACAccountStore alloc] init];
@@ -115,15 +116,16 @@
                                                  self.accounts = [self.accountStore
                                                                   accountsWithAccountType:accountTypeTwitter];
                                                  self.account = [self.accounts objectAtIndex:0];
-                                                 [self fetchPostsWithSelector:selector withCaller:caller count:count maxID:maxID];
+                                                 [self fetchPostsWithSelector:selector withCompletionHandler:complSelector withCaller:caller count:count maxID:maxID];
                                              });
                                          }
+                                         [caller performSelector:complSelector];
                                      }];
     }
     else 
     {
         self.account = [self.accounts objectAtIndex:0];
-        [self fetchPostsWithSelector:selector withCaller:caller count:count maxID:maxID];
+        [self fetchPostsWithSelector:selector withCompletionHandler:complSelector withCaller:caller count:count maxID:maxID];
     }
 }
 
@@ -147,7 +149,8 @@
                 self.timeline = jsonResult;
                 for (int i=0; i<[self.timeline count]; i++) {
                     [self actOnTweet:[self.timeline objectAtIndex:i] count:i];
-                }                
+                }         
+                self.requestCompleted = true;
             }
             else {
                 NSString *message = [NSString stringWithFormat:@"Could not parse your timeline: %@", [jsonError localizedDescription]];
@@ -156,13 +159,14 @@
                                            delegate:nil 
                                   cancelButtonTitle:@"Cancel" 
                                   otherButtonTitles:nil] show];
+                self.requestCompleted = true;
             }
         }
     }];
     
 }
 
-- (void)fetchPostsWithSelector:(SEL)selector withCaller:(id)caller count:(int)count maxID:(double)maxID
+- (void)fetchPostsWithSelector:(SEL)selector withCompletionHandler:(SEL)complSelector withCaller:(id)caller count:(int)count maxID:(double)maxID
 {   
     NSURL *url = [NSURL URLWithString:@"https://api.twitter.com/1/statuses/home_timeline.json"];
     
@@ -203,6 +207,8 @@
                                   otherButtonTitles:nil] show];
             }
         }
+        [caller performSelector:complSelector];
+        self.requestCompleted = true;
     }];
 }
 

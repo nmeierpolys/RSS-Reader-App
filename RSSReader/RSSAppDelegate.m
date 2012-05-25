@@ -9,10 +9,12 @@
 #import "RSSAppDelegate.h"
 #import "FlurryAnalytics.h"
 #import "Appirater.h"
+#import "FBConnect.h"
 
 @implementation RSSAppDelegate
 
 @synthesize window = _window;
+@synthesize facebook = _facebook;
 
 void uncaughtExceptionHandler(NSException *exception) {
     [FlurryAnalytics logError:@"Uncaught" message:[exception name] exception:exception];
@@ -34,8 +36,44 @@ void uncaughtExceptionHandler(NSException *exception) {
     //UITabBarController *tabController =  (UITabBarController *)[navigationController topViewController];
     
     //rootViewController = tabController.viewControllers.lastObject;
+    
+    [self loadFacebook];
+    
     [Appirater appLaunched:YES];
     return YES;
+}
+
+- (void)loadFacebook
+{
+    facebook = [[Facebook alloc] initWithAppId:@"209696695817827" andDelegate:self];
+    
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    if ([defaults objectForKey:@"FBAccessTokenKey"] 
+        && [defaults objectForKey:@"FBExpirationDateKey"]) {
+        facebook.accessToken = [defaults objectForKey:@"FBAccessTokenKey"];
+        facebook.expirationDate = [defaults objectForKey:@"FBExpirationDateKey"];
+    }
+    
+    if (![facebook isSessionValid]) {
+        NSArray *permissions = [[NSArray alloc] initWithObjects:
+                                @"user_likes", 
+                                @"read_stream",
+                                nil];
+        [facebook authorize:permissions];
+    }
+}
+
+- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url
+  sourceApplication:(NSString *)sourceApplication annotation:(id)annotation {
+    return [facebook handleOpenURL:url]; 
+}
+
+- (void)fbDidLogin {
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    [defaults setObject:[facebook accessToken] forKey:@"FBAccessTokenKey"];
+    [defaults setObject:[facebook expirationDate] forKey:@"FBExpirationDateKey"];
+    [defaults synchronize];
+    
 }
 							
 - (void)applicationWillResignActive:(UIApplication *)application

@@ -8,12 +8,16 @@
 
 #import <UIKit/UIKit.h>
 #import "RSSViewController.h"
+#import "FBConnect.h"
 
-@interface RSSAppDelegate : UIResponder <UIApplicationDelegate>{
+@interface RSSAppDelegate : UIResponder <UIApplicationDelegate, FBSessionDelegate>{
     
     RSSViewController *rootViewController;
+    Facebook *facebook;
 }
 
 @property (strong, nonatomic) UIWindow *window;
+@property (nonatomic, retain) Facebook *facebook;
+
 
 @end
