@@ -214,8 +214,8 @@
 
 - (void)actOnTweet:(id)tweet count:(int)count
 {
-    NSString *text = [tweet objectForKey:@"text"];
-    NSString *username = [tweet valueForKeyPath:@"user.name"];
+//    NSString *text = [tweet objectForKey:@"text"];
+//    NSString *username = [tweet valueForKeyPath:@"user.name"];
 }
 
 - (Story *)GetStoryFromTweet:(id)tweet
@@ -230,7 +230,7 @@
         self.oldestTweetID = tweetID;
     
     NSString *body = [tweet objectForKey:@"text"];
-    NSString *username = [tweet valueForKeyPath:@"user.name"];
+    //NSString *username = [tweet valueForKeyPath:@"user.name"];
     NSString *userScreenName = [tweet valueForKeyPath:@"user.screen_name"];
     NSString *createdDate = [tweet valueForKey:@"created_at"];
     NSString *userImage = [tweet valueForKeyPath:@"user.profile_image_url"];

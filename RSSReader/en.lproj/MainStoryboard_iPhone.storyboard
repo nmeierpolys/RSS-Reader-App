@@ -309,11 +309,11 @@
                                     <segue destination="9u3-iJ-z45" kind="push" identifier="StoryDetail" id="3ld-ln-TLU"/>
                                 </connections>
                             </tableViewCell>
-                            <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="StoryCellTwitter" rowHeight="92" id="3wF-g1-kd5">
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="blue" accessoryType="disclosureIndicator" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="StoryCellTwitter" rowHeight="92" id="3wF-g1-kd5">
                                 <rect key="frame" x="0.0" y="101" width="320" height="92"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
-                                    <rect key="frame" x="0.0" y="0.0" width="320" height="91"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="300" height="91"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" tag="100" contentMode="left" text="Title" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="none" minimumFontSize="12" adjustsFontSizeToFit="NO" id="gsi-yi-vwB">
@@ -383,7 +383,7 @@
                                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 </view>
                                 <connections>
-                                    <segue destination="9u3-iJ-z45" kind="push" identifier="StoryDetail" id="MPv-Tu-bvj"/>
+                                    <segue destination="9u3-iJ-z45" kind="push" identifier="StoryDetailTwitter" id="MPv-Tu-bvj"/>
                                 </connections>
                             </tableViewCell>
                         </prototypes>
@@ -617,6 +617,6 @@
         <simulatedScreenMetrics key="destination"/>
     </simulatedMetricsContainer>
     <inferredMetricsTieBreakers>
-        <segue reference="3ld-ln-TLU"/>
+        <segue reference="MPv-Tu-bvj"/>
     </inferredMetricsTieBreakers>
 </document>

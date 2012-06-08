@@ -181,7 +181,6 @@
         [webView goForward];
     } else {
         [webView loadRequest:initialURLPressed];
-        NSLog([[initialURLPressed URL] path]);
     }
     //[webView goForward];
     [self UpdateButtons];

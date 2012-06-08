@@ -271,7 +271,10 @@
 - (NSString *)BodyWithURLsAsLinks:(NSString *)bodyToParse;
 {
     if(self.body == nil)
-        return nil;
+        return @"";
+    
+    if((bodyToParse == nil) || (bodyToParse.length > 0))
+        return @"";
     
     NSString *regexToReplaceRawLinks;
     NSError *error;

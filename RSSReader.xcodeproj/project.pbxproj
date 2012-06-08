@@ -53,6 +53,7 @@
 		F1424D981564A0C800DC04ED /* arrow_down.png in Resources */ = {isa = PBXBuildFile; fileRef = F1424D941564A0C800DC04ED /* arrow_down.png */; };
 		F1424D991564A0C800DC04ED /* arrow_up.png in Resources */ = {isa = PBXBuildFile; fileRef = F1424D951564A0C800DC04ED /* arrow_up.png */; };
 		F1424D9A1564A0C800DC04ED /* arrow_down@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F1424D961564A0C800DC04ED /* arrow_down@2x.png */; };
+		F174DF3F157A91BA00987CF7 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F174DF3E157A91BA00987CF7 /* CoreData.framework */; };
 		F1A25BCB153D37D700462549 /* Accounts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F1A25BCA153D37D700462549 /* Accounts.framework */; };
 		F1A25BCD153D37DB00462549 /* Twitter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F1A25BCC153D37DB00462549 /* Twitter.framework */; };
 		F1A25BD0153D384300462549 /* TwitterEngine.m in Sources */ = {isa = PBXBuildFile; fileRef = F1A25BCF153D384300462549 /* TwitterEngine.m */; };
@@ -163,6 +164,7 @@
 		F1424D941564A0C800DC04ED /* arrow_down.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = arrow_down.png; sourceTree = "<group>"; };
 		F1424D951564A0C800DC04ED /* arrow_up.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = arrow_up.png; sourceTree = "<group>"; };
 		F1424D961564A0C800DC04ED /* arrow_down@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "arrow_down@2x.png"; sourceTree = "<group>"; };
+		F174DF3E157A91BA00987CF7 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		F1A25BCA153D37D700462549 /* Accounts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accounts.framework; path = System/Library/Frameworks/Accounts.framework; sourceTree = SDKROOT; };
 		F1A25BCC153D37DB00462549 /* Twitter.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Twitter.framework; path = System/Library/Frameworks/Twitter.framework; sourceTree = SDKROOT; };
 		F1A25BCE153D384300462549 /* TwitterEngine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TwitterEngine.h; sourceTree = "<group>"; };
@@ -210,6 +212,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F174DF3F157A91BA00987CF7 /* CoreData.framework in Frameworks */,
 				F128FE0B154A575400CBE5AE /* MessageUI.framework in Frameworks */,
 				F1A25BCD153D37DB00462549 /* Twitter.framework in Frameworks */,
 				F1A25BCB153D37D700462549 /* Accounts.framework in Frameworks */,
@@ -340,6 +343,7 @@
 		F1E23DD815153553007CD8F7 = {
 			isa = PBXGroup;
 			children = (
+				F174DF3E157A91BA00987CF7 /* CoreData.framework */,
 				F1424D921564A08600DC04ED /* Images */,
 				F126F719151AD39400BF54EF /* Resources */,
 				F1E23DED15153553007CD8F7 /* RSSReader */,

@@ -80,7 +80,6 @@
             title = story;
         }
 
-        
         self.lastDate = dateUpdated;
         
         //Feed
@@ -99,7 +98,7 @@
         
         //Title
         newStory.title = title;
-            
+        
         //Body
         newStory.body = [newStory BodyWithURLsAsLinks:stringToShow];
         
