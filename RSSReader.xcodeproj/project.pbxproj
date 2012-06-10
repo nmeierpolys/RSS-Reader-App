@@ -53,6 +53,7 @@
 		F1424D981564A0C800DC04ED /* arrow_down.png in Resources */ = {isa = PBXBuildFile; fileRef = F1424D941564A0C800DC04ED /* arrow_down.png */; };
 		F1424D991564A0C800DC04ED /* arrow_up.png in Resources */ = {isa = PBXBuildFile; fileRef = F1424D951564A0C800DC04ED /* arrow_up.png */; };
 		F1424D9A1564A0C800DC04ED /* arrow_down@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F1424D961564A0C800DC04ED /* arrow_down@2x.png */; };
+		F15996C615817DF900804FA7 /* FBEngine.m in Sources */ = {isa = PBXBuildFile; fileRef = F15996C515817DF900804FA7 /* FBEngine.m */; };
 		F174DF3F157A91BA00987CF7 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F174DF3E157A91BA00987CF7 /* CoreData.framework */; };
 		F1A25BCB153D37D700462549 /* Accounts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F1A25BCA153D37D700462549 /* Accounts.framework */; };
 		F1A25BCD153D37DB00462549 /* Twitter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F1A25BCC153D37DB00462549 /* Twitter.framework */; };
@@ -164,6 +165,8 @@
 		F1424D941564A0C800DC04ED /* arrow_down.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = arrow_down.png; sourceTree = "<group>"; };
 		F1424D951564A0C800DC04ED /* arrow_up.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = arrow_up.png; sourceTree = "<group>"; };
 		F1424D961564A0C800DC04ED /* arrow_down@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "arrow_down@2x.png"; sourceTree = "<group>"; };
+		F15996C415817DF900804FA7 /* FBEngine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FBEngine.h; sourceTree = "<group>"; };
+		F15996C515817DF900804FA7 /* FBEngine.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FBEngine.m; sourceTree = "<group>"; };
 		F174DF3E157A91BA00987CF7 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		F1A25BCA153D37D700462549 /* Accounts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accounts.framework; path = System/Library/Frameworks/Accounts.framework; sourceTree = SDKROOT; };
 		F1A25BCC153D37DB00462549 /* Twitter.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Twitter.framework; path = System/Library/Frameworks/Twitter.framework; sourceTree = SDKROOT; };
@@ -422,6 +425,8 @@
 				F120AA81151F898400CD4345 /* Feed.m */,
 				F13F0B13156C88A800C379E2 /* FBTestViewController.h */,
 				F13F0B14156C88A800C379E2 /* FBTestViewController.m */,
+				F15996C415817DF900804FA7 /* FBEngine.h */,
+				F15996C515817DF900804FA7 /* FBEngine.m */,
 			);
 			path = RSSReader;
 			sourceTree = "<group>";
@@ -613,6 +618,7 @@
 				F1AC823915242AEF005819D8 /* FeedsTestViewController.m in Sources */,
 				F1A25BD0153D384300462549 /* TwitterEngine.m in Sources */,
 				F13F0B15156C88A800C379E2 /* FBTestViewController.m in Sources */,
+				F15996C615817DF900804FA7 /* FBEngine.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

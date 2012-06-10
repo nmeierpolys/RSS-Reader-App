@@ -20,6 +20,7 @@
 #import "TwitterEngine.h"
 #import "MessageUI/MessageUI.h"
 #import "FBTestViewController.h"
+#import "FBEngine.h"
 
 @interface RSSViewController ()
 
@@ -51,12 +52,13 @@
 @synthesize requests = _requests;
 @synthesize loadingMoreStories = _loadingMoreStories;
 @synthesize facebook = _facebook;
+@synthesize fbEngine = _fbEngine;
+@synthesize fbFeed = _fbFeed;
 
 #pragma mark View methods
 - (void)viewDidLoad
 {
     [super viewDidLoad]; 
-    [self loadFacebook];
 	// Do any additional setup after loading the view, typically from a nib.
     
     self.title = @"Stories";
@@ -67,13 +69,20 @@
     alwaysIncludeCount = 10;
     PM = [[Persistence alloc] init];
     self.orderBy = 1;
-    self.numStoriesToShow = 50;
-    self.numDaysToShow = 3;
+    self.numStoriesToShow = 200;
+    self.numDaysToShow = 10;
     twitterEngine = [[TwitterEngine alloc] initWithCompletedSelector:@selector(twitterIsDone)];
+    fbEngine = [[FBEngine alloc] init];
+    
     hasInitialized = false;
     self.feeds = [PM GetAllFeeds];
     self.maxAllowableStoryTimeRead = 200;  //Seconds
     //[self InitializeTwitterFeed];
+    [self InitializeFBFeed];
+    fbEngine.caller = self;
+    fbEngine.PM = PM;
+    fbEngine.methodForAddingStory = NSSelectorFromString(@"AddFBPostAsStory:");
+    
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -115,42 +124,6 @@
 
 #pragma mark FB Methods
 
-- (void)loadFacebook
-{
-    self.facebook = [[Facebook alloc] initWithAppId:@"209696695817827" andDelegate:self];
-    
-    bool checkEveryTime = false;
-    if(!checkEveryTime)
-    {
-        NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-        if ([defaults objectForKey:@"FBAccessTokenKey"] 
-            && [defaults objectForKey:@"FBExpirationDateKey"]) {
-            self.facebook.accessToken = [defaults objectForKey:@"FBAccessTokenKey"];
-            self.facebook.expirationDate = [defaults objectForKey:@"FBExpirationDateKey"];
-        }
-    }
-    
-    if (![self.facebook isSessionValid]) {
-        NSArray *permissions = [[NSArray alloc] initWithObjects:
-                                @"user_likes", 
-                                @"read_stream",
-                                nil];
-        [self.facebook authorize:permissions];
-    }
-}
-
-- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url
-  sourceApplication:(NSString *)sourceApplication annotation:(id)annotation {
-    return [self.facebook handleOpenURL:url]; 
-}
-
-- (void)fbDidLogin {
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    [defaults setObject:[self.facebook accessToken] forKey:@"FBAccessTokenKey"];
-    [defaults setObject:[self.facebook expirationDate] forKey:@"FBExpirationDateKey"];
-    [defaults synchronize];
-    
-}
 
 
 
@@ -197,6 +170,18 @@
         [PM AddFeed:self.twitterFeed];
         self.twitterFeed = [PM GetLastFeed];
         [self UpdateFeedRank:self.twitterFeed];
+    }
+}
+
+- (void)InitializeFBFeed
+{
+    self.fbFeed = [PM GetFeedByURLPath:@"Facebook"];
+    if(self.fbFeed == nil)
+    {
+        self.fbFeed = [[Feed alloc] initWithName:@"Facebook" url:@"Facebook" type:4];
+        [PM AddFeed:self.fbFeed];
+        self.fbFeed = [PM GetLastFeed];
+        [self UpdateFeedRank:self.fbFeed];
     }
 }
 
@@ -297,38 +282,38 @@
 //                                           url:@"http://feeds.arstechnica.com/arstechnica/index/" 
 //                                          type:1 
 //                                          rank:1]];
-//        [PM AddFeed:[[Feed alloc] initWithName:@"Geeking with Greg" 
-//                                           url:@"http://glinden.blogspot.com/feeds/posts/default" 
-//                                          type:1 
-//                                          rank:1]];
-//        [PM AddFeed:[[Feed alloc] initWithName:@"Money and Investing" 
-//                                           url:@"http://feeds.feedburner.com/MoneyAndInvesting" 
-//                                          type:1 
-//                                          rank:1]];
-//        [PM AddFeed:[[Feed alloc] initWithName:@"Official Google Blog" 
-//                                           url:@"http://googleblog.blogspot.com/feeds/posts/default" 
-//                                          type:1 
-//                                          rank:1]];
-//        [PM AddFeed:[[Feed alloc] initWithName:@"St. Olaf News Releases" 
-//                                           url:@"http://www.stolaf.edu/news/index.cfm?fuseaction=RSS" 
-//                                          type:1 
-//                                          rank:1]];
-//        [PM AddFeed:[[Feed alloc] initWithName:@"TechCrunch" 
-//                                           url:@"http://feeds.feedburner.com/Techcrunch" 
-//                                          type:1 
-//                                          rank:1]];
-//        [PM AddFeed:[[Feed alloc] initWithName:@"The Happiness Project" 
-//                                           url:@"http://feeds.feedburner.com/TheHappinessProject" 
-//                                          type:1 
-//                                          rank:1]];
-//        [PM AddFeed:[[Feed alloc] initWithName:@"The Long Now Blog" 
-//                                           url:@"http://blog.longnow.org/feed/" 
-//                                          type:1 
-//                                          rank:1]];
-//        [PM AddFeed:[[Feed alloc] initWithName:@"Very Small Array" 
-//                                           url:@"http://www.verysmallarray.com/?feed=rss2" 
-//                                          type:1 
-//                                          rank:1]];
+        [PM AddFeed:[[Feed alloc] initWithName:@"Geeking with Greg" 
+                                           url:@"http://glinden.blogspot.com/feeds/posts/default" 
+                                          type:1 
+                                          rank:1]];
+        [PM AddFeed:[[Feed alloc] initWithName:@"Money and Investing" 
+                                           url:@"http://feeds.feedburner.com/MoneyAndInvesting" 
+                                          type:1 
+                                          rank:1]];
+        [PM AddFeed:[[Feed alloc] initWithName:@"Official Google Blog" 
+                                           url:@"http://googleblog.blogspot.com/feeds/posts/default" 
+                                          type:1 
+                                          rank:1]];
+        [PM AddFeed:[[Feed alloc] initWithName:@"St. Olaf News Releases" 
+                                           url:@"http://www.stolaf.edu/news/index.cfm?fuseaction=RSS" 
+                                          type:1 
+                                          rank:1]];
+        [PM AddFeed:[[Feed alloc] initWithName:@"TechCrunch" 
+                                           url:@"http://feeds.feedburner.com/Techcrunch" 
+                                          type:1 
+                                          rank:1]];
+        [PM AddFeed:[[Feed alloc] initWithName:@"The Happiness Project" 
+                                           url:@"http://feeds.feedburner.com/TheHappinessProject" 
+                                          type:1 
+                                          rank:1]];
+        [PM AddFeed:[[Feed alloc] initWithName:@"The Long Now Blog" 
+                                           url:@"http://blog.longnow.org/feed/" 
+                                          type:1 
+                                          rank:1]];
+        [PM AddFeed:[[Feed alloc] initWithName:@"Very Small Array" 
+                                           url:@"http://www.verysmallarray.com/?feed=rss2" 
+                                          type:1 
+                                          rank:1]];
     }
 ////    [PM AddFeed:[[Feed alloc] initWithName:@"UW Engineering" 
 ////                                       url:@"http://www.engr.wisc.edu/news/feeds/RR.xml" 
@@ -393,9 +378,34 @@
 //    }
 }
 
+- (void)AddFBPostAsStory:(Story *)fbStory
+{
+    self.outstandingFeedsToParse = 0;
+    Feed *storyFeed = [PM GetFeedByURLPath:fbStory.author];
+    if(storyFeed == nil)
+    {
+        storyFeed = [[Feed alloc] initWithName:fbStory.author url:fbStory.author type:4];
+        //storyFeed.image = [self SaveImageAndGetPathFromURLString:fbStory.imagePath];
+        storyFeed = [PM AddFeedAndGetNewFeed:storyFeed];
+    }
+    fbStory.feedID = storyFeed.feedID;
+    
+    //fbStory.imagePath = storyFeed.image;
+    
+    if(![PM StoryExistsInDB:fbStory])
+    {
+        [self UpdateStoryRank:fbStory];
+        fbStory = [PM AddStoryAndGetNewStory:fbStory];
+        [self insertOrderedStoryWithoutAnimation:fbStory];
+    }
+    [self updatePromptText];
+}
+
 - (void)TweetRetrievalCompleted
 {
+    [self refreshFacebook];
     [self updatePromptText];
+    [self.tableView reloadData];
 }
 
 
@@ -601,7 +611,7 @@
         
         totalSecondsRead = [PM GetTotalFeedReadTime:feed.feedID];
     }
-    else if((feed.type == 3) || (feed.type == 2))
+    else if((feed.type == 3) || (feed.type == 4))
     {
         //Total number of feed stories
         numFeedStoriesTotal = [PM GetNumFeedStories:feed.feedID limitedToRead:NO];
@@ -681,7 +691,19 @@
     
     int rankFromNumDateIntervalUnitsSinceCreated;
     
-    if([story.source isEqualToString:@"Twitter"])
+    if([story.source compare:@"Twitter"] == NSOrderedSame)
+    {
+        int numHoursSinceCreated = [self NumberOfHoursBetweenDate:story.dateCreated andSecondDate:[NSDate date]];
+        
+        numHoursSinceCreated = abs(numHoursSinceCreated * 2);
+        
+        if(numHoursSinceCreated > 10)
+            numHoursSinceCreated = 10;
+        
+        rankFromNumDateIntervalUnitsSinceCreated = 10-numHoursSinceCreated;
+        //NSLog(@"Story: %i:%i\n%@:%@",numHoursSinceCreated,rankFromNumDateIntervalUnitsSinceCreated,story.dateCreated,[NSDate date]);
+    }
+    if([story.source compare:@"Facebook"] == NSOrderedSame)
     {
         int numHoursSinceCreated = [self NumberOfHoursBetweenDate:story.dateCreated andSecondDate:[NSDate date]];
         
@@ -792,9 +814,9 @@
 }
 
 - (void)parseFeed:(GDataXMLElement *)rootElement entries:(NSMutableArray *)entries blogID:(int)blogID {   
-    if ([rootElement.name isEqualToString:@"Rss"]) {
+    if ([rootElement.name compare:@"rss"] == NSOrderedSame) {
         [self parseRss:rootElement entries:entries blogID:blogID];
-    } else if ([rootElement.name isEqualToString:@"feed"]) {                       
+    } else if ([rootElement.name compare:@"feed"] == NSOrderedSame) {                       
         [self parseAtom:rootElement entries:entries blogID:blogID];
     } else {
         NSLog(@"Unsupported root element: %@", rootElement.name);
@@ -886,7 +908,7 @@
     //Quit if the article is too early
     if(!alwaysInclude)
     {
-        if([articleDate isEqualToDate:lowerLimitDate])
+        if([articleDate compare:lowerLimitDate] == NSOrderedAscending)
             return nil;
     }
     
@@ -906,8 +928,8 @@
         for(GDataXMLElement *link in links) {
             NSString *rel = [[link attributeForName:@"rel"] stringValue];
             NSString *type = [[link attributeForName:@"type"] stringValue]; 
-            if ([rel isEqualToString:@"alternate"] && 
-                [type isEqualToString:@"text/html"]) {
+            if ([rel compare:@"alternate"] == NSOrderedSame && 
+                [type compare:@"text/html"] == NSOrderedSame) {
                 articleUrl = [[link attributeForName:@"href"] stringValue];
             }
         }
@@ -958,7 +980,7 @@
 {
 	Story *story = [_allEntries objectAtIndex:indexPath.row];
     
-    if([story.source isEqualToString:@"Twitter"])
+    if([story.source compare:@"Twitter"] == NSOrderedSame)
     {
         return 100;
     }
@@ -1021,21 +1043,23 @@
 {
     UITableViewCell *cell;
 	Story *story = [_allEntries objectAtIndex:indexPath.row];
+    UIColor *textColor;
+    if(story.isRead)
+        textColor = [UIColor grayColor];
+    else
+        textColor = [UIColor blackColor];
+    
+    cell.textLabel.textColor = textColor;
+    cell.detailTextLabel.textColor = textColor;
+    
     if([story.source isEqualToString:@"Twitter"])
     {
         cell = [tableView dequeueReusableCellWithIdentifier:@"StoryCellTwitter"];
-        UIColor *textColor;
-        if(story.isRead)
-            textColor = [UIColor grayColor];
-        else
-            textColor = [UIColor blackColor];
-        
-        cell.textLabel.textColor = textColor;
-        cell.detailTextLabel.textColor = textColor;
         
         //Actually set the text here
         UILabel *titleLabel = (UILabel *)[cell viewWithTag:100];
         titleLabel.text = story.title;
+        titleLabel.text = [titleLabel.text stringByAppendingFormat:@"\n%@",[story GetDateCreatedString]];
         
         UILabel *rankLabel = (UILabel *)[cell viewWithTag:102];
         rankLabel.text = [NSString stringWithFormat:@"%i|%i",story.rank+story.feedRankModifier,[PM GetFeedRankByFeedID:story.feedID]];
@@ -1056,21 +1080,42 @@
         authorLabel.textColor = textColor;
         createdLabel.textColor = textColor;
     }
+    else if([story.source isEqualToString:@"Facebook"])
+    {
+        cell = [tableView dequeueReusableCellWithIdentifier:@"StoryCellTwitter"];
+        
+        //Actually set the text here
+        UILabel *titleLabel = (UILabel *)[cell viewWithTag:100];
+        titleLabel.text = story.title;
+        titleLabel.text = [titleLabel.text stringByAppendingFormat:@"\n%@",[story GetDateCreatedString]];
+        
+        UILabel *rankLabel = (UILabel *)[cell viewWithTag:102];
+        rankLabel.text = [NSString stringWithFormat:@"%i|%i",story.rank+story.feedRankModifier,[PM GetFeedRankByFeedID:story.feedID]];
+        
+        UILabel *authorLabel = (UILabel *)[cell viewWithTag:103];
+        authorLabel.text = [@"" stringByAppendingString:story.author];
+        
+        UILabel *createdLabel = (UILabel *)[cell viewWithTag:104];
+        createdLabel.text = [story GetDateCreatedString];
+        
+        UIImageView *storyImageView = (UIImageView *)[cell viewWithTag:105];
+        UIImage *storyImage = [[UIImage alloc] initWithContentsOfFile:story.imagePath];
+        storyImageView.image = storyImage;
+        
+        //Update colors based on isRead
+        rankLabel.textColor = textColor;
+        titleLabel.textColor = textColor;
+        authorLabel.textColor = textColor;
+        createdLabel.textColor = textColor;
+    }
     else 
     {
         cell = [tableView dequeueReusableCellWithIdentifier:@"StoryCellRSS"];
-        UIColor *textColor;
-        if(story.isRead)
-            textColor = [UIColor grayColor];
-        else
-            textColor = [UIColor blackColor];
-        
-        cell.textLabel.textColor = textColor;
-        cell.detailTextLabel.textColor = textColor;
         
         //Actually set the text here
         UILabel *titleLabel = (UILabel *)[cell viewWithTag:100];
         titleLabel.text = [NSString stringWithFormat:@"%@",story.title];
+        titleLabel.text = [titleLabel.text stringByAppendingFormat:@"\n%@",[story GetDateCreatedString]];
         
         UILabel *subtitleLabel = (UILabel *)[cell viewWithTag:101];
         subtitleLabel.text = story.source;
@@ -1089,7 +1134,6 @@
         
         //UILabel *feedNumPerDayLabel = (UILabel *)[cell viewWithTag:104];
         //feedNumPerDayLabel.text =  [NSString stringWithFormat:@"%.2f",numFeedStoriesPerDay];
-        
         //Update colors based on isRead
         rankLabel.textColor = textColor;
         titleLabel.textColor = textColor;
@@ -1194,6 +1238,7 @@
     int numReadPMStories = [PM GetNumFeedStories:0 limitedToRead:1];
     int numMyStories = [PM GetNumFeedStories:2 limitedToRead:0];
     int numTwitterStories = [PM GetNumFeedStoriesBySource:@"Twitter" limitedToRead:0];
+    int numFBStories = [PM GetNumFeedStoriesBySource:@"Facebook" limitedToRead:0];
     
     
     debugMsg = [debugMsg stringByAppendingFormat:@"NumStories: %i\n",numStories];
@@ -1207,6 +1252,7 @@
     debugMsg = [debugMsg stringByAppendingFormat:@"NumRPMStories: %i\n",numReadPMStories];
     debugMsg = [debugMsg stringByAppendingFormat:@"NumMyStories: %i\n",numMyStories];
     debugMsg = [debugMsg stringByAppendingFormat:@"NumTwitter: %i\n",numTwitterStories];
+    debugMsg = [debugMsg stringByAppendingFormat:@"NumFB:    %i\n",numFBStories];
     
     UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Debug info" 
                                                     message:debugMsg
@@ -1402,6 +1448,7 @@
                 durationRead = self.maxAllowableStoryTimeRead;
             
             [PM SetStoryDurationRead:story.storyID toDuration:durationRead];
+            story.durationRead = durationRead;
         }
         
         //Update Story rank
@@ -1515,6 +1562,7 @@
 
 - (void)twitterIsDone
 {
+    [self refreshFacebook];
     [self loadingIsCompleted];
 }
 
@@ -1524,6 +1572,13 @@
     
     [twitterEngine fetchDataWithSelector:@selector(AddTweetAsStory:) withCompletionHandler:@selector(TweetRetrievalCompleted) withCaller:self count:50];
     
+    //Update story count and 'Loading' string labels
+    [self updatePromptText];
+}
+
+- (void)refreshFacebook
+{
+    [fbEngine loadFacebookStories];
     //Update story count and 'Loading' string labels
     [self updatePromptText];
 }

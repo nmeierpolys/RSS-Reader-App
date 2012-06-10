@@ -270,10 +270,17 @@
 
 - (NSString *)BodyWithURLsAsLinks:(NSString *)bodyToParse;
 {
-    if(self.body == nil)
-        return @"";
-    
-    if((bodyToParse == nil) || (bodyToParse.length > 0))
+    NSString *stringToUse = @"";
+    if((bodyToParse == nil) || (bodyToParse.length < 1))
+    {
+        if(self.body != nil)
+            stringToUse = self.body;
+    }
+    else 
+    {
+        stringToUse = bodyToParse;
+    }
+    if(stringToUse.length < 1)
         return @"";
     
     NSString *regexToReplaceRawLinks;
@@ -292,7 +299,7 @@
     
     modifiedString = [regex stringByReplacingMatchesInString:bodyToParse
                                                                options:0
-                                                                 range:NSMakeRange(0, [bodyToParse length])
+                                                                 range:NSMakeRange(0, [stringToUse length])
                                                           withTemplate:@"<a href=\"$1\">$1</a>"];
     
     //Replace Twitter users

@@ -117,9 +117,9 @@
                                                                   accountsWithAccountType:accountTypeTwitter];
                                                  self.account = [self.accounts objectAtIndex:0];
                                                  [self fetchPostsWithSelector:selector withCompletionHandler:complSelector withCaller:caller count:count maxID:maxID];
+                                                 [caller performSelector:complSelector];
                                              });
                                          }
-                                         [caller performSelector:complSelector];
                                      }];
     }
     else 

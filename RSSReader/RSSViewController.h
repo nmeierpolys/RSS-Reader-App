@@ -14,8 +14,9 @@
 #import "TwitterEngine.h"
 #import "FBConnect.h"
 #import "ASIHTTPRequest.h"
+#import "FBEngine.h"
 
-@interface RSSViewController : UIPullToReloadTableViewController <FBSessionDelegate> {
+@interface RSSViewController : UIPullToReloadTableViewController {
     Story *tempStory;
     NSMutableArray *allEntries;
     NSMutableArray *_feeds;
@@ -33,6 +34,7 @@
     NSDate *lastUpdated;
     int currentRangeLowestRank;
     Feed *twitterFeed;
+    Feed *fbFeed;
     
     TwitterEngine *twitterEngine;
     bool insertStoryLocked;
@@ -42,6 +44,7 @@
     
     bool loadingMoreStories;
     Facebook *facebook;
+    FBEngine *fbEngine;
 }
 
 //IBOutlets
@@ -64,9 +67,11 @@
 
 //Properties
 @property (strong, nonatomic) Feed *twitterFeed;
+@property (strong, nonatomic) Feed *fbFeed;
 @property (weak, nonatomic) Persistence *PM;
 @property (weak, nonatomic) TwitterEngine *twitterEngine;
 @property (weak, nonatomic) Story *oldestStory;
+@property (weak, nonatomic) FBEngine *fbEngine;
 @property (retain) NSMutableArray *allEntries;
 @property (retain) NSMutableArray *feeds;
 @property (retain) NSMutableArray *requests;
@@ -98,6 +103,7 @@
 
 //Miscellaneous methods
 - (void)InitializeTwitterFeed;
+- (void)InitializeFBFeed;
 - (void)sortArray;
 - (void)updateArrayRanks;
 - (Story *)GetSelectedStory;

@@ -1110,6 +1110,40 @@ static NSString * DatabaseLock = nil;
     }
 }
 
+- (void)SetFeedImagePath:(NSString *)filePath forFeedUrl:(NSString *)feedUrl
+{
+    NSLog(@"%@",filePath);
+    @synchronized ([Persistence databaseLock]) {
+        [self initializeDatabaseIfNeeded];
+        
+        NSString *sqlStr = [NSString stringWithFormat:@"update feed set image='%@' where url='%@'",filePath,feedUrl];
+        
+        const char *sql = [self GetSqlStringFromNSString:sqlStr];
+        sqlite3_stmt *statement;
+        
+        if (sqlite3_prepare_v2(database, sql, -1, &statement, NULL) == SQLITE_OK)
+        {
+            sqlite3_exec(database, sql, nil, nil, nil);
+        }
+        
+        sqlite3_finalize(statement);
+        
+        
+        //Now update linked Story records
+        
+        sqlStr = [NSString stringWithFormat:@"update story set imagePath='%@' where url='%@'",filePath,feedUrl];
+        
+        sql = [self GetSqlStringFromNSString:sqlStr];
+        
+        if (sqlite3_prepare_v2(database, sql, -1, &statement, NULL) == SQLITE_OK)
+        {
+            sqlite3_exec(database, sql, nil, nil, nil);
+        }
+        
+        sqlite3_finalize(statement);
+    }
+}
+
 - (void)SetStoryRank:(int)storyID toRank:(int)rank
 {
     @synchronized ([Persistence databaseLock]) {

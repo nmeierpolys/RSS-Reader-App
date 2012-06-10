@@ -65,5 +65,6 @@
 - (NSMutableArray *)GetAllFeeds;
 - (int)GetTotalStoryModifiersForFeedByID:(int)feedID;
 - (void)SetStoryFeedRankModifier:(int)storyID toValue:(int)newRankModifier;
+- (void)SetFeedImagePath:(NSString *)filePath forFeedUrl:(NSString *)feedUrl;
 
 @end
