@@ -15,13 +15,13 @@
 #import "FBConnect.h"
 #import "ASIHTTPRequest.h"
 #import "FBEngine.h"
+#import "RSSEngine.h"
 
 @interface RSSViewController : UIPullToReloadTableViewController {
     Story *tempStory;
     NSMutableArray *allEntries;
     NSMutableArray *_feeds;
     NSMutableArray *requests;
-    NSOperationQueue *_queue;
     Persistence *PM;
     NSDate *lowerLimitDate;
     int alwaysIncludeCount;
@@ -45,6 +45,11 @@
     bool loadingMoreStories;
     Facebook *facebook;
     FBEngine *fbEngine;
+    RSSEngine *rssEngine;
+    FeedUtils *feedUtil;
+    StoryUtils *storyUtil;
+    
+    bool debugMode;
 }
 
 //IBOutlets
@@ -61,6 +66,9 @@
 - (IBAction)btnSort:(id)sender;
 - (IBAction)btnSend:(id)sender;
 - (IBAction)btnDebugInfo:(id)sender;
+- (IBAction)btnTwitter:(id)sender;
+- (IBAction)btnFB:(id)sender;
+- (IBAction)btnRSS:(id)sender;
 
 //Other actions
 //- (IBAction)swipeCellLeft:(id)sender;

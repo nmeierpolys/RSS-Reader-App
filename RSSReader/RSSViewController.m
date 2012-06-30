@@ -59,11 +59,11 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad]; 
-	// Do any additional setup after loading the view, typically from a nib.
     
     self.title = @"Stories";
     _allEntries = [NSMutableArray array];
     self.feeds = [NSMutableArray array];
+    
     [self updatePromptText];
     self.queue = [[NSOperationQueue alloc] init];
     alwaysIncludeCount = 10;
@@ -71,17 +71,35 @@
     self.orderBy = 1;
     self.numStoriesToShow = 200;
     self.numDaysToShow = 10;
-    twitterEngine = [[TwitterEngine alloc] initWithCompletedSelector:@selector(twitterIsDone)];
-    fbEngine = [[FBEngine alloc] init];
-    
     hasInitialized = false;
     self.feeds = [PM GetAllFeeds];
     self.maxAllowableStoryTimeRead = 200;  //Seconds
-    //[self InitializeTwitterFeed];
+    
+    //Twitter Engine Setup
+    twitterEngine = [[TwitterEngine alloc] initWithCompletedSelector:@selector(twitterIsDone)];
+    
+    //FB Engine Setup
+    fbEngine = [[FBEngine alloc] init];
     [self InitializeFBFeed];
     fbEngine.caller = self;
     fbEngine.PM = PM;
-    fbEngine.methodForAddingStory = NSSelectorFromString(@"AddFBPostAsStory:");
+    fbEngine.methodForAddingStory = @selector(AddFBPostAsStory:);
+    feedUtil = [[FeedUtils alloc] init];
+    feedUtil.PM = PM;
+    storyUtil = [[StoryUtils alloc] init];
+    storyUtil.PM = PM;
+    
+    //RSS Engine Setup
+    rssEngine = [[RSSEngine alloc] initWithFeedUtils:feedUtil
+                andStoryUtils:storyUtil 
+                        andPM:PM 
+               andLoadCompSel:@selector(rssIsDone)
+             andUpdateProText:@selector(updatePromptText)
+                    andCaller:self];
+    rssEngine.alwaysIncludeCount = alwaysIncludeCount;
+    rssEngine.numDaysToShow = numDaysToShow;
+    [rssEngine setFeeds:self.feeds];
+    debugMode = true;
     
 }
 
@@ -95,11 +113,6 @@
 
 - (void)viewWillUnload
 {
-    //    NSLog(@"viewWillUnload");
-    //    for (Story *entry in _allEntries) {
-    //        [self UpdateStoryRank:entry];
-    //        [PM SetStoryRank:entry.storyID toRank:entry.rank];
-    //    }
 }
 
 - (void)viewDidUnload
@@ -108,7 +121,6 @@
     [self setLabelCount:nil];
     [self setLabelLastUpdated:nil];
     [super viewDidUnload];
-    // Release any retained subviews of the main view.
 }
 
 - (void) viewWillAppear:(BOOL)animated
@@ -123,9 +135,6 @@
 
 
 #pragma mark FB Methods
-
-
-
 
 #pragma mark App Methods
 
@@ -144,8 +153,7 @@
 }
 
 - (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning]; // Releases the view if it doesn't have a superview
-    // Release anything that's not essential, such as cached data
+    [super didReceiveMemoryWarning];
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
@@ -157,8 +165,6 @@
     }
 }
 
-
-
 #pragma mark Initialization
 
 - (void)InitializeTwitterFeed
@@ -169,7 +175,7 @@
         self.twitterFeed = [[Feed alloc] initWithName:@"Twitter" url:@"Twitter" type:2];
         [PM AddFeed:self.twitterFeed];
         self.twitterFeed = [PM GetLastFeed];
-        [self UpdateFeedRank:self.twitterFeed];
+        [feedUtil UpdateFeedRank:self.twitterFeed];
     }
 }
 
@@ -181,7 +187,7 @@
         self.fbFeed = [[Feed alloc] initWithName:@"Facebook" url:@"Facebook" type:4];
         [PM AddFeed:self.fbFeed];
         self.fbFeed = [PM GetLastFeed];
-        [self UpdateFeedRank:self.fbFeed];
+        [feedUtil UpdateFeedRank:self.fbFeed];
     }
 }
 
@@ -213,31 +219,30 @@
                                       type:1
                                       rank:1]];
     self.feeds = [PM GetAllFeeds]; 
+    [rssEngine setFeeds:self.feeds];
 }
 
 - (void)initialPopulateFeeds
 {
     [PM ClearFeeds];
     [self InitializeTwitterFeed];
-    bool showTwitterOnly = false;
-    if(!showTwitterOnly)
-    {
-        [PM AddFeed:[[Feed alloc] initWithName:@"Vikes Geek" 
-                                           url:@"http://vikesgeek.blogspot.com/feeds/posts/default" 
-                                          type:1
-                                          rank:1]];
+    
+//        [PM AddFeed:[[Feed alloc] initWithName:@"Vikes Geek" 
+//                                           url:@"http://vikesgeek.blogspot.com/feeds/posts/default" 
+//                                          type:1
+//                                          rank:1]];
         [PM AddFeed:[[Feed alloc] initWithName:@"Vegas Chatter" 
                                            url:@"http://feeds.feedburner.com/vegaschatter?format=xml" 
                                           type:1
                                           rank:1]];
-//        [PM AddFeed:[[Feed alloc] initWithName:@"Ray Wenderlich" 
-//                                           url:@"http://feeds.feedburner.com/RayWenderlich" 
-//                                          type:1
-//                                          rank:1]];
-//        [PM AddFeed:[[Feed alloc] initWithName:@"Las Vegas Startups" 
-//                                           url:@"http://feeds.feedburner.com/LasVegasStartups" 
-//                                          type:1
-//                                          rank:1]];
+        [PM AddFeed:[[Feed alloc] initWithName:@"Ray Wenderlich" 
+                                           url:@"http://feeds.feedburner.com/RayWenderlich" 
+                                          type:1
+                                          rank:1]];
+        [PM AddFeed:[[Feed alloc] initWithName:@"Las Vegas Startups" 
+                                           url:@"http://feeds.feedburner.com/LasVegasStartups" 
+                                          type:1
+                                          rank:1]];
 //        [PM AddFeed:[[Feed alloc] initWithName:@"ThansCorner" 
 //                                           url:@"http://www.thanscorner.info/feed" 
 //                                          type:1
@@ -274,10 +279,10 @@
 //                                           url:@"http://feeds.feedburner.com/GraphJam" 
 //                                          type:1 
 //                                          rank:1]];
-//        [PM AddFeed:[[Feed alloc] initWithName:@"Joel on Software" 
-//                                           url:@"http://www.joelonsoftware.com/rss.xml" 
-//                                          type:1 
-//                                          rank:1]];
+        [PM AddFeed:[[Feed alloc] initWithName:@"Joel on Software" 
+                                           url:@"http://www.joelonsoftware.com/rss.xml" 
+                                          type:1 
+                                          rank:1]];
 //        [PM AddFeed:[[Feed alloc] initWithName:@"Ars Technica" 
 //                                           url:@"http://feeds.arstechnica.com/arstechnica/index/" 
 //                                          type:1 
@@ -286,66 +291,49 @@
                                            url:@"http://glinden.blogspot.com/feeds/posts/default" 
                                           type:1 
                                           rank:1]];
-        [PM AddFeed:[[Feed alloc] initWithName:@"Money and Investing" 
-                                           url:@"http://feeds.feedburner.com/MoneyAndInvesting" 
-                                          type:1 
-                                          rank:1]];
-        [PM AddFeed:[[Feed alloc] initWithName:@"Official Google Blog" 
-                                           url:@"http://googleblog.blogspot.com/feeds/posts/default" 
-                                          type:1 
-                                          rank:1]];
-        [PM AddFeed:[[Feed alloc] initWithName:@"St. Olaf News Releases" 
-                                           url:@"http://www.stolaf.edu/news/index.cfm?fuseaction=RSS" 
-                                          type:1 
-                                          rank:1]];
-        [PM AddFeed:[[Feed alloc] initWithName:@"TechCrunch" 
-                                           url:@"http://feeds.feedburner.com/Techcrunch" 
-                                          type:1 
-                                          rank:1]];
-        [PM AddFeed:[[Feed alloc] initWithName:@"The Happiness Project" 
-                                           url:@"http://feeds.feedburner.com/TheHappinessProject" 
-                                          type:1 
-                                          rank:1]];
+//        [PM AddFeed:[[Feed alloc] initWithName:@"Money and Investing" 
+//                                           url:@"http://feeds.feedburner.com/MoneyAndInvesting" 
+//                                          type:1 
+//                                          rank:1]];
+//        [PM AddFeed:[[Feed alloc] initWithName:@"Official Google Blog" 
+//                                           url:@"http://googleblog.blogspot.com/feeds/posts/default" 
+//                                          type:1 
+//                                          rank:1]];
+//        [PM AddFeed:[[Feed alloc] initWithName:@"St. Olaf News Releases" 
+//                                           url:@"http://www.stolaf.edu/news/index.cfm?fuseaction=RSS" 
+//                                          type:1 
+//                                          rank:1]];
+//        [PM AddFeed:[[Feed alloc] initWithName:@"TechCrunch" 
+//                                           url:@"http://feeds.feedburner.com/Techcrunch" 
+//                                          type:1 
+//                                          rank:1]];
+//        [PM AddFeed:[[Feed alloc] initWithName:@"The Happiness Project" 
+//                                           url:@"http://feeds.feedburner.com/TheHappinessProject" 
+//                                          type:1 
+//                                          rank:1]];
         [PM AddFeed:[[Feed alloc] initWithName:@"The Long Now Blog" 
                                            url:@"http://blog.longnow.org/feed/" 
                                           type:1 
                                           rank:1]];
-        [PM AddFeed:[[Feed alloc] initWithName:@"Very Small Array" 
-                                           url:@"http://www.verysmallarray.com/?feed=rss2" 
-                                          type:1 
-                                          rank:1]];
-    }
-////    [PM AddFeed:[[Feed alloc] initWithName:@"UW Engineering" 
-////                                       url:@"http://www.engr.wisc.edu/news/feeds/RR.xml" 
-////                                      type:1 
-////                                      rank:1]];
-//    [PM AddFeed:[[Feed alloc] initWithName:@"Hacker News Summary"
-//                                       url:@"http://fulltextrssfeed.com/news.ycombinator.com/rss" 
+//        [PM AddFeed:[[Feed alloc] initWithName:@"Very Small Array" 
+//                                           url:@"http://www.verysmallarray.com/?feed=rss2" 
+//                                          type:1 
+//                                          rank:1]];
+    //}
+//    [PM AddFeed:[[Feed alloc] initWithName:@"UW Engineering" 
+//                                       url:@"http://www.engr.wisc.edu/news/feeds/RR.xml" 
 //                                      type:1 
 //                                      rank:1]];
+    [PM AddFeed:[[Feed alloc] initWithName:@"Hacker News Summary"
+                                       url:@"http://fulltextrssfeed.com/news.ycombinator.com/rss" 
+                                      type:1 
+                                      rank:1]];
     self.feeds = [PM GetAllFeeds];
+    [rssEngine setFeeds:self.feeds];
 }
 
 
 #pragma mark Twitter
-
-- (NSString *)SaveImageAndGetPathFromURLString:(NSString *)urlStr
-{
-    NSURL  *url = [NSURL URLWithString:urlStr];
-    NSData *urlData = [NSData dataWithContentsOfURL:url];
-    NSString *filePath = @"";
-    NSRange rangeOfDelimiter = [urlStr rangeOfString:@"/" options:NSBackwardsSearch];
-    NSString *fileName = [urlStr substringFromIndex:rangeOfDelimiter.location+1];
-    if (urlData)
-    {
-        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-        NSString *documentsDirectory = [paths objectAtIndex:0];  
-        //NSString *
-        filePath = [NSString stringWithFormat:@"%@/%@", documentsDirectory,fileName];
-        [urlData writeToFile:filePath atomically:YES];
-    }
-    return filePath;
-}
 
 - (void)AddTweetAsStory:(Story *)tweetStory
 {
@@ -354,7 +342,7 @@
     if(storyFeed == nil)
     {
         storyFeed = [[Feed alloc] initWithName:tweetStory.author url:tweetStory.author type:3];
-        storyFeed.image = [self SaveImageAndGetPathFromURLString:tweetStory.imagePath];
+        storyFeed.image = [storyUtil SaveImageAndGetPathFromURLString:tweetStory.imagePath];
         storyFeed = [PM AddFeedAndGetNewFeed:storyFeed];
     }
     
@@ -364,7 +352,7 @@
     
     if(![PM StoryExistsInDB:tweetStory])
     {
-        [self UpdateStoryRank:tweetStory];
+        [storyUtil UpdateStoryRank:tweetStory];
         tweetStory = [PM AddStoryAndGetNewStory:tweetStory];
         [self insertOrderedStoryWithoutAnimation:tweetStory];
         //[self insertOrderedStoryWithAnimation:tweetStory];
@@ -394,7 +382,7 @@
     
     if(![PM StoryExistsInDB:fbStory])
     {
-        [self UpdateStoryRank:fbStory];
+        [storyUtil UpdateStoryRank:fbStory];
         fbStory = [PM AddStoryAndGetNewStory:fbStory];
         [self insertOrderedStoryWithoutAnimation:fbStory];
     }
@@ -415,7 +403,7 @@
 {
     int numStories = _allEntries.count;
     self.labelCount.text = [NSString stringWithFormat:@"%i Stories",numStories];
-
+    self.outstandingFeedsToParse = rssEngine.outstandingFeedsToParse;
     if((self.outstandingFeedsToParse < 1) && twitterEngine.requestCompleted)
     {
         [self.pullToReloadHeaderView setLastUpdatedDate: [NSDate date]];
@@ -437,11 +425,11 @@
     {
         [[NSOperationQueue mainQueue] addOperationWithBlock:^{
             for (Feed *feed in feeds) {
-                [self UpdateFeedRank:feed];
+                [feedUtil UpdateFeedRank:feed];
             }
             
             for (Story *entry in entries) {
-                [self UpdateStoryRank:entry];
+                [storyUtil UpdateStoryRank:entry];
             }
             
             for (Story *entry in entries) {
@@ -580,390 +568,16 @@
     return result;
 }
 
-#pragma mark Rank
-- (void)UpdateFeedRank:(Feed *)feed
-{
-    if(feed == nil)
-        return;
-    
-    int rank = 0;
-    int numFeedStoriesTotal = 0;
-    int numDaysSinceFirstFeedPost = 0;
-    float numFeedStoriesPerDay = 0;
-    int numReadStories = 0;
-    int totalSecondsRead = 0;
-    int sumStoryModifiers = 0;
-    int avgStoryModifier = 0;
-    int rankFromStoryModifier = 0;
-    NSDate *earliestDate;
-    
-    
-    if((feed.type == 1) || (feed.type == 2))
-    {
-        //Total number of feed stories
-        numFeedStoriesTotal = [PM GetNumFeedStories:feed.feedID limitedToRead:NO];
-        
-        //Total days since the feed's first post (on record)
-        earliestDate = [PM GetEarliestFeedStoryCreatedDate:feed.feedID];
-        
-        //Total number of read stories
-        numReadStories = [PM GetNumFeedStories:feed.feedID limitedToRead:YES];
-        
-        totalSecondsRead = [PM GetTotalFeedReadTime:feed.feedID];
-    }
-    else if((feed.type == 3) || (feed.type == 4))
-    {
-        //Total number of feed stories
-        numFeedStoriesTotal = [PM GetNumFeedStories:feed.feedID limitedToRead:NO];
-        
-        //Total days since the feed's first post (on record)
-        earliestDate = [PM GetEarliestFeedStoryCreatedDate:feed.feedID];
-        
-        //Total number of read stories
-        numReadStories = [PM GetNumFeedStories:feed.feedID limitedToRead:YES];
-        
-        totalSecondsRead = [PM GetTotalFeedReadTime:feed.feedID];
-    }
-    
-    numDaysSinceFirstFeedPost = [self NumberOfDaysBetweenDate:earliestDate andSecondDate:[NSDate date]];
-    
-    if(numFeedStoriesTotal < 1)
-        numFeedStoriesTotal = 1;
-    
-    //Total number of feed stories per day (on average) + 1 to include today's stories
-    numFeedStoriesPerDay = (float)numFeedStoriesTotal / (numDaysSinceFirstFeedPost + 1);
-    
-    int rankFromNumStoriesPerDay = 0;
-    if(numFeedStoriesPerDay > 0)
-        rankFromNumStoriesPerDay = (int)1/numFeedStoriesPerDay;
-    if(rankFromNumStoriesPerDay > 20)
-        rankFromNumStoriesPerDay = 20;
-    else if((rankFromNumStoriesPerDay < 1) && (rankFromNumStoriesPerDay > 0))
-        rankFromNumStoriesPerDay = 1;
-    
-    float fractionRead;
-    if(numFeedStoriesTotal > 0)
-        fractionRead = (float)numReadStories / numFeedStoriesTotal;
-    int rankFromFractionRead = fractionRead * 20;
-    
-    //Bonus for lots read
-    int rankFromBonusForLotsRead = 0;
-//    if(numReadStories > 0)
-//        rankFromBonusForLotsRead = 5;
-    
-    //Amount of time spent reading
-    int rankFromTotalSecondsRead = (totalSecondsRead / numFeedStoriesTotal) / 5;
-    if(rankFromTotalSecondsRead > 50)
-        rankFromTotalSecondsRead = 50;
-    
-    //Story Modifiers
-    sumStoryModifiers = [PM GetTotalStoryModifiersForFeedByID:feed.feedID]*2;
-    if(numFeedStoriesTotal != 0)
-    {
-        avgStoryModifier = sumStoryModifiers / numFeedStoriesTotal;
-        rankFromStoryModifier = avgStoryModifier;
-    }
-    
-    int oldRank = feed.rank;
-    
-    //Sum up rank
-    feed.rank = rank + rankFromNumStoriesPerDay + rankFromFractionRead + rankFromTotalSecondsRead + rankFromStoryModifier;
-    
-    //Send it down to the database if necessary
-    if(oldRank != feed.rank)
-    {
-        [PM SetFeedRank:feed.feedID toRank:feed.rank];
-    }
-}
-
-- (void)UpdateStoryRank:(Story *)story
-{   
-    //Total number of feed stories
-    //int numFeedStoriesTotal = [PM GetNumFeedStories:story.feedID limitedToRead:NO];
-    
-    //Total days since the feed's first post (on record)
-    //NSDate *earliestDate = [PM GetEarliestFeedStoryCreatedDate:story.feedID];
-    //int numDaysSinceFirstFeedPost = [self NumberOfDaysBetweenDate:earliestDate andSecondDate:[N SDate date]];
-    
-    //Total number of feed stories per day (on average) + 1 to include today's stories
-    //float numFeedStoriesPerDay = (float)numFeedStoriesTotal / (numDaysSinceFirstFeedPost + 1);
-    
-    
-    int rankFromNumDateIntervalUnitsSinceCreated;
-    
-    if([story.source compare:@"Twitter"] == NSOrderedSame)
-    {
-        int numHoursSinceCreated = [self NumberOfHoursBetweenDate:story.dateCreated andSecondDate:[NSDate date]];
-        
-        numHoursSinceCreated = abs(numHoursSinceCreated * 2);
-        
-        if(numHoursSinceCreated > 10)
-            numHoursSinceCreated = 10;
-        
-        rankFromNumDateIntervalUnitsSinceCreated = 10-numHoursSinceCreated;
-        //NSLog(@"Story: %i:%i\n%@:%@",numHoursSinceCreated,rankFromNumDateIntervalUnitsSinceCreated,story.dateCreated,[NSDate date]);
-    }
-    if([story.source compare:@"Facebook"] == NSOrderedSame)
-    {
-        int numHoursSinceCreated = [self NumberOfHoursBetweenDate:story.dateCreated andSecondDate:[NSDate date]];
-        
-        numHoursSinceCreated = abs(numHoursSinceCreated * 2);
-        
-        if(numHoursSinceCreated > 10)
-            numHoursSinceCreated = 10;
-        
-        rankFromNumDateIntervalUnitsSinceCreated = 10-numHoursSinceCreated;
-        //NSLog(@"Story: %i:%i\n%@:%@",numHoursSinceCreated,rankFromNumDateIntervalUnitsSinceCreated,story.dateCreated,[NSDate date]);
-    }
-    else
-    {
-        int numDaysSinceCreated = abs([self NumberOfDaysBetweenDate:story.dateCreated andSecondDate:[NSDate date]]);
-        
-        if(numDaysSinceCreated > 10)
-            numDaysSinceCreated = 10;
-        
-        rankFromNumDateIntervalUnitsSinceCreated = 10-numDaysSinceCreated;
-    }
-    
-    //Days since created
-    //int numDaysSinceCreated = [self NumberOfDaysBetweenDate:story.dateCreated andSecondDate:[NSDate date]];
-    
-    story.rank = rankFromNumDateIntervalUnitsSinceCreated*2;
-}
-
 - (void)updateArrayRanks
 {
     int numStories = _allEntries.count;
     Story *thisStory;
     for (int i=0; i<numStories; i++) {
         thisStory = [_allEntries objectAtIndex:i];
-        [self UpdateStoryRank:thisStory];
-        [self SetStoryFeedRank:thisStory];
+        [storyUtil UpdateStoryRank:thisStory];
+        [storyUtil SetStoryFeedRank:thisStory];
     }
 }
-
-- (void)SetStoryFeedRank:(Story *)story
-{
-    story.feedRank = [PM GetFeedRankByFeedID:story.feedID];
-}
-
-
-#pragma mark Parse Feed
-
-- (void)requestFinished:(ASIHTTPRequest *)request {
-//    [self performSelectorInBackground: @selector (requestFinishedBackgroundWorker:) withObject:request];
-//}
-//- (void)requestFinishedBackgroundWorker:(ASIHTTPRequest *)request {
-    int blogID = 1;
-    blogID = [self GetFeedIDFromURL:[request url]];
-    NSError *error;
-    GDataXMLDocument *doc = [[GDataXMLDocument alloc] initWithData:[request responseData] 
-                                                           options:0 error:&error];
-    
-    if(!self.stopLoading)
-    {
-        if (doc == nil) {
-            //NSLog(@"Failed to parse %@", request.url);
-        } else {
-            NSMutableArray *entries = [[NSMutableArray alloc] init];
-            [self parseFeed:doc.rootElement entries:entries blogID:blogID];                
-            
-            Feed *thisFeed = [PM GetFeedByID:blogID];
-            [self UpdateFeedRank:thisFeed];
-            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                for (Story *entry in entries) {
-                    [self performSelectorOnMainThread:@selector(insertOrderedStoryWithAnimation:) withObject:entry waitUntilDone:YES];
-                    
-                    //[self insertOrderedStoryWithAnimation:entry];
-                }  
-                [self UpdateFeedRank:thisFeed];
-            }];
-        }
-        
-        self.outstandingFeedsToParse--;
-        if(self.outstandingFeedsToParse < 1)
-        {
-            self.twitterEngine.requestCompleted = false;
-            if(self.loadingMoreStories)
-            {
-                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                    [twitterEngine getNextOldestTweets:@selector(AddTweetAsStory:) withCompletionHandler:@selector(TweetRetrievalCompleted) withCaller:self count:50];
-                    self.loadingMoreStories = false;
-                }];
-            }
-            else
-            {
-                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                    [self refreshTwitter];
-                }];
-            }
-        }
-        else 
-        {
-            [self loadingIsCompleted];
-        }
-         
-        [self updatePromptText];
-    }
-}
-
-- (void)requestFailed:(ASIHTTPRequest *)request {
-    
-    //NSError *error = [request error];
-    self.outstandingFeedsToParse--;
-}
-
-- (void)parseFeed:(GDataXMLElement *)rootElement entries:(NSMutableArray *)entries blogID:(int)blogID {   
-    if ([rootElement.name compare:@"rss"] == NSOrderedSame) {
-        [self parseRss:rootElement entries:entries blogID:blogID];
-    } else if ([rootElement.name compare:@"feed"] == NSOrderedSame) {                       
-        [self parseAtom:rootElement entries:entries blogID:blogID];
-    } else {
-        NSLog(@"Unsupported root element: %@", rootElement.name);
-    }    
-}
-
-- (void)parseRss:(GDataXMLElement *)rootElement 
-         entries:(NSMutableArray *)entries 
-          blogID:(int)blogID{
-    
-    NSArray *channels = [rootElement elementsForName:@"channel"];
-    for (GDataXMLElement *channel in channels) {            
-        //NSLog(@"--%i",blogID);
-        NSString *blogTitle = [channel valueForChild:@"title"];                    
-        
-        NSArray *items = [channel elementsForName:@"item"];
-        int storyCount = 0;
-        for (GDataXMLElement *item in items) {
-            storyCount++;
-            Story *entry = [self parseItemToStory:item 
-                                    withBlogTitle:blogTitle 
-                                         itemType:1 
-                                    alwaysInclude:(storyCount < alwaysIncludeCount)
-                            blogID:blogID];
-            if(entry == nil)
-                return;
-            
-            bool storyExists = [PM StoryExistsInDB:entry];
-            
-            if(!storyExists)
-            {
-                [self UpdateStoryRank:entry];
-                entry = [PM AddStoryAndGetNewStory:entry];
-                if(entry != nil)
-                    [entries addObject:entry];
-            }
-        }      
-    }
-    
-}
-
-- (void)parseAtom:(GDataXMLElement *)rootElement 
-          entries:(NSMutableArray *)entries 
-           blogID:(int)blogID
-{
-    
-    NSString *blogTitle = [rootElement valueForChild:@"title"];                    
-    
-    NSArray *items = [rootElement elementsForName:@"entry"];
-    int storyCount = 0;
-    for (GDataXMLElement *item in items) {
-        storyCount++;
-        Story *entry = [self parseItemToStory:item 
-                                withBlogTitle:blogTitle 
-                                     itemType:2 
-                                alwaysInclude:(storyCount == alwaysIncludeCount)
-                                       blogID:blogID];
-        if(entry == nil)
-            return;
-        
-        bool storyExists = [PM StoryExistsInDB:entry];
-        if(!storyExists)
-        {
-            entry = [PM AddStoryAndGetNewStory:entry];
-        }
-        
-    }      
-    
-}
-
-- (Story *)parseItemToStory:(GDataXMLElement *)item 
-              withBlogTitle:(NSString *)blogTitle 
-                   itemType:(int)type
-              alwaysInclude:(bool)alwaysInclude
-                     blogID:(int)blogID
-{
-    //Type is an enumaration:  1 => RSS  2 => Atom
-    
-    //Date Created
-    NSString *articleDateString;
-    if(type == 1)
-        articleDateString = [item valueForChild:@"pubDate"];
-    else
-        articleDateString = [item valueForChild:@"updated"];  
-    NSDate *articleDate = [NSDate dateFromInternetDateTimeString:articleDateString formatHint:DateFormatHintRFC822];
-    if(articleDate == nil)
-        articleDate = [NSDate dateWithTimeIntervalSinceNow:-1*60*60*24];
-    
-    //Quit if the article is too early
-    if(!alwaysInclude)
-    {
-        if([articleDate compare:lowerLimitDate] == NSOrderedAscending)
-            return nil;
-    }
-    
-    //Title
-    NSString *articleTitle = [item valueForChild:@"title"];
-    
-    //Author
-    NSString *articleAuthor = [item valueForChild:@"dc:creator"];
-    
-    //URL
-    NSString *articleUrl;
-    if(type == 1)
-        articleUrl = [item valueForChild:@"link"];    
-    else  
-    {
-        NSArray *links = [item elementsForName:@"link"];        
-        for(GDataXMLElement *link in links) {
-            NSString *rel = [[link attributeForName:@"rel"] stringValue];
-            NSString *type = [[link attributeForName:@"type"] stringValue]; 
-            if ([rel compare:@"alternate"] == NSOrderedSame && 
-                [type compare:@"text/html"] == NSOrderedSame) {
-                articleUrl = [[link attributeForName:@"href"] stringValue];
-            }
-        }
-    }
-    
-    //Content
-    NSString *articleContent = [item valueForChild:@"content"];
-    if(articleContent == nil)
-        articleContent = [item valueForChild:@"content:encoded"];
-    if(articleContent == nil)
-        articleContent = [item valueForChild:@"description"];
-    
-    Story *entry = [[Story alloc] initWithTitle:articleTitle
-                                         author:articleAuthor
-                                           body:articleContent
-                                         source:blogTitle
-                                            url:articleUrl
-                                    dateCreated:articleDate
-                                  dateRetrieved:[NSDate date] 
-                                         isRead:NO 
-                                      imagePath:@"" 
-                                     isFavorite:NO 
-                                           rank:0
-                                        isDirty:NO
-                                        storyID:0
-                                         feedID:blogID
-                                   durationRead:0
-                               feedRankModifier:0];
-    entry.imagePath = @"n/a";
-    
-    return entry;
-}
-
-
 
 #pragma mark TableView Methods
 - (id)initWithStyle:(UITableViewStyle)style
@@ -1185,10 +799,10 @@
     Story *tappedStory = [self GetStoryForTouchEvent:event];
     if (tappedStory != nil)
     {
-        tappedStory.feedRankModifier++;
+        tappedStory.feedRankModifier += 5;
         [PM SetStoryFeedRankModifier:tappedStory.storyID toValue:tappedStory.feedRankModifier];
         
-        [self UpdateFeedRank:[PM GetFeedByID:tappedStory.feedID]];
+        [feedUtil UpdateFeedRank:[PM GetFeedByID:tappedStory.feedID]];
         [self.tableView reloadData];
     }
 }
@@ -1198,10 +812,10 @@
     Story *tappedStory = [self GetStoryForTouchEvent:event];
     if (tappedStory != nil)
     {
-        tappedStory.feedRankModifier--;
+        tappedStory.feedRankModifier -= 5;
         [PM SetStoryFeedRankModifier:tappedStory.storyID toValue:tappedStory.feedRankModifier];
         
-        [self UpdateFeedRank:[PM GetFeedByID:tappedStory.feedID]];
+        [feedUtil UpdateFeedRank:[PM GetFeedByID:tappedStory.feedID]];
         [self.tableView reloadData];
     }
 }
@@ -1233,7 +847,7 @@
     int numDaysToShowLoc = self.numDaysToShow;
     int numStoriesToShowLoc = self.numStoriesToShow;
     int numFeeds = self.feeds.count;
-    int outstandingFeedsToParseLoc = self.outstandingFeedsToParse;
+    int outstandingFeedsToParseLoc = rssEngine.outstandingFeedsToParse;
     int numPMStories = [PM GetNumFeedStories:0 limitedToRead:0];
     int numReadPMStories = [PM GetNumFeedStories:0 limitedToRead:1];
     int numMyStories = [PM GetNumFeedStories:2 limitedToRead:0];
@@ -1296,43 +910,6 @@
 }
 
 #pragma mark Helper methods
-
-- (int)NumberOfDaysBetweenDate:(NSDate *)firstDate andSecondDate:(NSDate *)secondDate
-{
-    NSDate *fromDate;
-    NSDate *toDate;
-    
-    
-    NSCalendar *calendar = [NSCalendar currentCalendar];
-    
-    [calendar rangeOfUnit:NSDayCalendarUnit startDate:&fromDate
-                 interval:NULL forDate:firstDate];
-    [calendar rangeOfUnit:NSDayCalendarUnit startDate:&toDate
-                 interval:NULL forDate:secondDate];
-    
-    NSDateComponents *difference = [calendar components:NSDayCalendarUnit
-                                               fromDate:fromDate toDate:toDate options:0];
-    
-    return [difference day];
-}
-- (int)NumberOfHoursBetweenDate:(NSDate *)firstDate andSecondDate:(NSDate *)secondDate
-{
-    NSDate *fromDate;
-    NSDate *toDate;
-    
-    
-    NSCalendar *calendar = [NSCalendar currentCalendar];
-    
-    [calendar rangeOfUnit:NSHourCalendarUnit startDate:&fromDate
-                 interval:NULL forDate:firstDate];
-    [calendar rangeOfUnit:NSHourCalendarUnit startDate:&toDate
-                 interval:NULL forDate:secondDate];
-    
-    NSDateComponents *difference = [calendar components:NSHourCalendarUnit
-                                               fromDate:fromDate toDate:toDate options:0];
-    
-    return [difference hour];
-}
 
 -(void)sendStoryViaEmail:(Story *)storyToSend 
 {
@@ -1437,7 +1014,7 @@
         //Update Feed rank
         Feed *storyFeed = [PM GetFeedByID:story.feedID];
         storyFeed.timesRead++;
-        [self UpdateFeedRank:storyFeed];
+        [feedUtil UpdateFeedRank:storyFeed];
         
         //Set duration read
         if(openedDate != nil)
@@ -1526,6 +1103,8 @@
 
 
 - (void)refresh {
+    [rssEngine refresh];
+    return;
     //Update lastUpdated property
     self.lastUpdated = [NSDate date];
     [self cancelParsing];
@@ -1557,13 +1136,26 @@
 
 - (void)loadingIsCompleted
 {
+    //[self refreshTwitter];
     //[self SortTableView];
 }
 
 - (void)twitterIsDone
 {
-    [self refreshFacebook];
-    [self loadingIsCompleted];
+    //[self refreshFacebook];
+    //[self loadingIsCompleted];
+}
+
+- (void)facebookIsDone
+{
+    //[self refreshFacebook];
+    //[self loadingIsCompleted];
+}
+
+- (void)rssIsDone
+{
+    //[self refreshFacebook];
+    //[self loadingIsCompleted];
 }
 
 - (void)refreshTwitter
@@ -1581,6 +1173,11 @@
     [fbEngine loadFacebookStories];
     //Update story count and 'Loading' string labels
     [self updatePromptText];
+}
+
+- (void)refreshRSS
+{
+    [rssEngine refresh];
 }
 
 - (int)GetFeedIDFromURL:(NSURL *)url
@@ -1605,7 +1202,7 @@
 
 - (IBAction)btnReFeed:(id)sender {
     [PM ClearFeeds];
-    [self initialPopulateFeeds];
+    [self initialPopulateStephFeeds];
 }
 
 - (IBAction)btnLoadMoreStories:(id)sender {
@@ -1628,7 +1225,7 @@
     self.oldestStory = [entries lastObject];
     
     for (Story *entry in entries) {
-        [self UpdateStoryRank:entry];
+        [storyUtil UpdateStoryRank:entry];
         [self insertOrderedStoryWithAnimation:entry];
     }
     
@@ -1731,6 +1328,18 @@
 
 - (IBAction)btnDebugInfo:(id)sender {
     [self ShowDebugAlert];
+}
+
+- (IBAction)btnTwitter:(id)sender {
+    [self refreshTwitter];
+}
+
+- (IBAction)btnFB:(id)sender {
+    [self refreshFacebook];
+}
+
+- (IBAction)btnRSS:(id)sender {
+    [self refreshRSS];
 }
 
 @end

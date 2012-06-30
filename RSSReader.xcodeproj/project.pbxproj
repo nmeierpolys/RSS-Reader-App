@@ -53,6 +53,10 @@
 		F1424D981564A0C800DC04ED /* arrow_down.png in Resources */ = {isa = PBXBuildFile; fileRef = F1424D941564A0C800DC04ED /* arrow_down.png */; };
 		F1424D991564A0C800DC04ED /* arrow_up.png in Resources */ = {isa = PBXBuildFile; fileRef = F1424D951564A0C800DC04ED /* arrow_up.png */; };
 		F1424D9A1564A0C800DC04ED /* arrow_down@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F1424D961564A0C800DC04ED /* arrow_down@2x.png */; };
+		F1470814159BF98100ECFB4C /* RSSEngine.m in Sources */ = {isa = PBXBuildFile; fileRef = F1470813159BF98100ECFB4C /* RSSEngine.m */; };
+		F1470818159BFE3D00ECFB4C /* FeedUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = F1470817159BFE3D00ECFB4C /* FeedUtils.m */; };
+		F147081B159BFE4A00ECFB4C /* StoryUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = F147081A159BFE4A00ECFB4C /* StoryUtils.m */; };
+		F1470822159C018C00ECFB4C /* DebugUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = F1470821159C018C00ECFB4C /* DebugUtils.m */; };
 		F15996C615817DF900804FA7 /* FBEngine.m in Sources */ = {isa = PBXBuildFile; fileRef = F15996C515817DF900804FA7 /* FBEngine.m */; };
 		F174DF3F157A91BA00987CF7 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F174DF3E157A91BA00987CF7 /* CoreData.framework */; };
 		F1A25BCB153D37D700462549 /* Accounts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F1A25BCA153D37D700462549 /* Accounts.framework */; };
@@ -165,6 +169,14 @@
 		F1424D941564A0C800DC04ED /* arrow_down.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = arrow_down.png; sourceTree = "<group>"; };
 		F1424D951564A0C800DC04ED /* arrow_up.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = arrow_up.png; sourceTree = "<group>"; };
 		F1424D961564A0C800DC04ED /* arrow_down@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "arrow_down@2x.png"; sourceTree = "<group>"; };
+		F1470812159BF98100ECFB4C /* RSSEngine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RSSEngine.h; sourceTree = "<group>"; };
+		F1470813159BF98100ECFB4C /* RSSEngine.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RSSEngine.m; sourceTree = "<group>"; };
+		F1470816159BFE3D00ECFB4C /* FeedUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FeedUtils.h; sourceTree = "<group>"; };
+		F1470817159BFE3D00ECFB4C /* FeedUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FeedUtils.m; sourceTree = "<group>"; };
+		F1470819159BFE4A00ECFB4C /* StoryUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StoryUtils.h; sourceTree = "<group>"; };
+		F147081A159BFE4A00ECFB4C /* StoryUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StoryUtils.m; sourceTree = "<group>"; };
+		F1470820159C018C00ECFB4C /* DebugUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebugUtils.h; sourceTree = "<group>"; };
+		F1470821159C018C00ECFB4C /* DebugUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DebugUtils.m; sourceTree = "<group>"; };
 		F15996C415817DF900804FA7 /* FBEngine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FBEngine.h; sourceTree = "<group>"; };
 		F15996C515817DF900804FA7 /* FBEngine.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FBEngine.m; sourceTree = "<group>"; };
 		F174DF3E157A91BA00987CF7 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
@@ -427,6 +439,14 @@
 				F13F0B14156C88A800C379E2 /* FBTestViewController.m */,
 				F15996C415817DF900804FA7 /* FBEngine.h */,
 				F15996C515817DF900804FA7 /* FBEngine.m */,
+				F1470812159BF98100ECFB4C /* RSSEngine.h */,
+				F1470813159BF98100ECFB4C /* RSSEngine.m */,
+				F1470816159BFE3D00ECFB4C /* FeedUtils.h */,
+				F1470817159BFE3D00ECFB4C /* FeedUtils.m */,
+				F1470819159BFE4A00ECFB4C /* StoryUtils.h */,
+				F147081A159BFE4A00ECFB4C /* StoryUtils.m */,
+				F1470820159C018C00ECFB4C /* DebugUtils.h */,
+				F1470821159C018C00ECFB4C /* DebugUtils.m */,
 			);
 			path = RSSReader;
 			sourceTree = "<group>";
@@ -619,6 +639,10 @@
 				F1A25BD0153D384300462549 /* TwitterEngine.m in Sources */,
 				F13F0B15156C88A800C379E2 /* FBTestViewController.m in Sources */,
 				F15996C615817DF900804FA7 /* FBEngine.m in Sources */,
+				F1470814159BF98100ECFB4C /* RSSEngine.m in Sources */,
+				F1470818159BFE3D00ECFB4C /* FeedUtils.m in Sources */,
+				F147081B159BFE4A00ECFB4C /* StoryUtils.m in Sources */,
+				F1470822159C018C00ECFB4C /* DebugUtils.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
